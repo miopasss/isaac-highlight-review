@@ -8,6 +8,7 @@
 -- ============================================================================
 local text = {}
 
+
 local W = 62
 
 local function line(ch) return string.rep(ch or "─", W) end
@@ -99,6 +100,7 @@ function text.book(book, opts)
             end
             w(string.format("     口袋  金 %d→%d   弹 %d→%d   钥 %d→%d",
                 h.c or 0, h.co or 0, h.bmb or 0, h.bmbo or 0, h.key or 0, h.keyo or 0))
+
 
 
             local items = {}
