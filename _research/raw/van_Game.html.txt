@@ -1,0 +1,1447 @@
+﻿Game - BoI: Lua API Docs
+Skip to content
+WARNING
+Due to the new DLC, some informations on this website can potentially be out-of-date.
+If you notice errors, please use the "Pencil"
+icon in the top right to edit the page.
+-->
+BoI: Lua API Docs
+Game
+Initializing search
+wofsauge/IsaacDocs
+Home
+Docs
+Entities
+Tutorials
+XMLs
+FAQ
+Tools
+Bugs
+Tags
+Lua 5.3 Docs
+BoI: Lua API Docs
+wofsauge/IsaacDocs
+Home
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Game
+Table of contents
+Constructors
+Game ()
+Functions
+Add路Devil路Room路Deal ()
+Add路Encountered路Boss ()
+Add路Pixelation ()
+Add路Stage路Without路Damage ()
+Add路Stage路Without路Hearts路Picked ()
+Add路Treasure路Rooms路Visited ()
+Bomb路Damage ()
+Bomb路Explosion路Effects ()
+Bomb路Tearflag路Effects ()
+Butter路Bean路Fart ()
+Change路Room ()
+Charm路Fart ()
+Clear路Donation路Mod路Angel ()
+Clear路Donation路Mod路Greed ()
+Clear路Stages路Without路Damage ()
+Clear路Stages路Without路Hearts路Picked ()
+Darken ()
+Donate路Angel ()
+Donate路Greed ()
+End ()
+Fadein ()
+Fadeout ()
+Fart ()
+Finish路Challenge ()
+Get路Ambush ()
+Get路Darkness路Modifier ()
+Get路Devil路Room路Deals ()
+Get路Donation路Mod路Angel ()
+Get路Donation路Mod路Greed ()
+Get路Font ()
+Get路Frame路Count ()
+Get路Greed路Boss路Wave路Num ()
+Get路Greed路Waves路Num ()
+Get路HUD ()
+Get路Item路Overlay ()
+Get路Item路Pool ()
+Get路Last路Devil路Room路Stage ()
+Get路Last路Level路With路Damage ()
+Get路Last路Level路Without路Half路Hp ()
+Get路Level ()
+Get路Nearest路Player ()
+Get路Num路Encountered路Bosses ()
+Get路Num路Players ()
+Get路Player ()
+Get路Random路Player ()
+Get路Room ()
+Get路Screen路Shake路Countdown ()
+Get路Seeds ()
+Get路Stages路Without路Damage ()
+Get路Stages路Without路Hearts路Picked ()
+Get路State路Flag ()
+Get路Target路Darkness ()
+Get路Treasure路Room路Visit路Count ()
+Get路Victory路Lap ()
+Has路Encountered路Boss ()
+Has路Hallucination ()
+Is路Greed路Mode ()
+Is路Paused ()
+Make路Shockwave ()
+Move路To路Random路Room ()
+Next路Victory路Lap ()
+Render ()
+Reroll路Enemy ()
+Reroll路Level路Collectibles ()
+Reroll路Level路Pickups ()
+Set路Last路Devil路Room路Stage ()
+Set路Last路Level路With路Damage ()
+Set路Last路Level路Without路Half路Hp ()
+Set路State路Flag ()
+Shake路Screen ()
+Show路Fortune ()
+Show路Hallucination ()
+Show路Rule ()
+Spawn ()
+Spawn路Entity路Desc ()
+Spawn路Particles ()
+Start路Room路Transition ()
+Start路Stage路Transition ()
+Update ()
+Update路Strange路Attractor ()
+Variables
+Blue路Womb路Par路Time
+Boss路Rush路Par路Time
+Challenge
+Difficulty
+Screen路Shake路Offset
+Time路Counter
+Room
+Level
+ModCallbacks
+Enums
+Enums
+ActionTriggers
+ActiveSlot
+BabySubType
+BackdropType
+BatterySubType
+BedSubType
+BombSubType
+BombVariant
+ButtonAction
+CacheFlag
+CallbackPriority
+Card
+Challenge
+ChampionColor
+ChestSubType
+CoinSubType
+CollectibleType
+DamageFlag
+Difficulty
+Direction
+DoorSlot
+DoorState
+DoorVariant
+DrawStringAlignment
+EffectVariant
+EntityCollisionClass
+EntityFlag
+EntityGridCollisionClass
+EntityPartition
+EntityType
+FamiliarVariant
+GameStateFlag
+GridCollisionClass
+GridEntityType
+GridRooms
+HeartSubType
+InputHook
+ItemConfig
+ItemPoolType
+ItemType
+Keyboard
+KeySubType
+LaserOffset
+LaserSubType
+LaserVariant
+LevelCurse
+LevelStage
+LevelStateFlag
+LocustSubtypes
+ModCallbacks
+Mouse
+Music
+NpcState
+NullItemID
+PickupPrice
+PickupVariant
+PillColor
+PillEffect
+PlayerForm
+PlayerSpriteLayer
+PlayerType
+PoopPickupSubType
+PoopSpellType
+ProjectileFlags
+ProjectileVariant
+RenderMode
+RoomDescriptor
+RoomShape
+RoomTransitionAnim
+RoomType
+SackSubType
+SeedEffect
+SkinColor
+SortingLayer
+SoundEffect
+StageType
+TearFlags
+TearVariant
+TrinketType
+UseFlag
+WeaponType
+Globals
+Global Functions
+BitSet128
+Color
+CppContainer
+CppContainer
+ArrayProxy
+ArrayProxy
+RoomConfigEntries
+RoomConfigSpawns
+RoomDescriptor
+intValues
+EntityList
+Vector
+Vector
+CardConfigList
+CostumeConfigList
+EffectList
+ItemConfigList
+PillConfigList
+VectorList
+Entity
+Entity
+Entity
+EntityBomb
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPickup
+EntityPlayer
+EntityProjectile
+EntityTear
+EntityPtr
+EntityRef
+Font
+FontRenderSettings
+Game
+Game
+Table of contents
+Constructors
+Game ()
+Functions
+Add路Devil路Room路Deal ()
+Add路Encountered路Boss ()
+Add路Pixelation ()
+Add路Stage路Without路Damage ()
+Add路Stage路Without路Hearts路Picked ()
+Add路Treasure路Rooms路Visited ()
+Bomb路Damage ()
+Bomb路Explosion路Effects ()
+Bomb路Tearflag路Effects ()
+Butter路Bean路Fart ()
+Change路Room ()
+Charm路Fart ()
+Clear路Donation路Mod路Angel ()
+Clear路Donation路Mod路Greed ()
+Clear路Stages路Without路Damage ()
+Clear路Stages路Without路Hearts路Picked ()
+Darken ()
+Donate路Angel ()
+Donate路Greed ()
+End ()
+Fadein ()
+Fadeout ()
+Fart ()
+Finish路Challenge ()
+Get路Ambush ()
+Get路Darkness路Modifier ()
+Get路Devil路Room路Deals ()
+Get路Donation路Mod路Angel ()
+Get路Donation路Mod路Greed ()
+Get路Font ()
+Get路Frame路Count ()
+Get路Greed路Boss路Wave路Num ()
+Get路Greed路Waves路Num ()
+Get路HUD ()
+Get路Item路Overlay ()
+Get路Item路Pool ()
+Get路Last路Devil路Room路Stage ()
+Get路Last路Level路With路Damage ()
+Get路Last路Level路Without路Half路Hp ()
+Get路Level ()
+Get路Nearest路Player ()
+Get路Num路Encountered路Bosses ()
+Get路Num路Players ()
+Get路Player ()
+Get路Random路Player ()
+Get路Room ()
+Get路Screen路Shake路Countdown ()
+Get路Seeds ()
+Get路Stages路Without路Damage ()
+Get路Stages路Without路Hearts路Picked ()
+Get路State路Flag ()
+Get路Target路Darkness ()
+Get路Treasure路Room路Visit路Count ()
+Get路Victory路Lap ()
+Has路Encountered路Boss ()
+Has路Hallucination ()
+Is路Greed路Mode ()
+Is路Paused ()
+Make路Shockwave ()
+Move路To路Random路Room ()
+Next路Victory路Lap ()
+Render ()
+Reroll路Enemy ()
+Reroll路Level路Collectibles ()
+Reroll路Level路Pickups ()
+Set路Last路Devil路Room路Stage ()
+Set路Last路Level路With路Damage ()
+Set路Last路Level路Without路Half路Hp ()
+Set路State路Flag ()
+Shake路Screen ()
+Show路Fortune ()
+Show路Hallucination ()
+Show路Rule ()
+Spawn ()
+Spawn路Entity路Desc ()
+Spawn路Particles ()
+Start路Room路Transition ()
+Start路Stage路Transition ()
+Update ()
+Update路Strange路Attractor ()
+Variables
+Blue路Womb路Par路Time
+Boss路Rush路Par路Time
+Challenge
+Difficulty
+Screen路Shake路Offset
+Time路Counter
+GridEntity
+GridEntity
+GridEntity
+GridEntityDoor
+GridEntityPit
+GridEntityPoop
+GridEntityPressurePlate
+GridEntityRock
+GridEntitySpikes
+GridEntityTNT
+GridEntityDesc
+HUD
+ItemConfig
+ItemConfig
+ItemConfig Functions
+ItemConfig - Card
+ItemConfig - Costume
+ItemConfig - Item
+ItemConfig - PillEffect
+Input
+Isaac
+ItemPool
+KColor
+Level
+MusicManager
+Mod Reference
+Options
+PathFinder
+PlayerTypes
+PlayerTypes
+PlayerTypesActiveItemDesc
+PlayerTypesPosVel
+ProjectileParams
+QueueItemData
+Room
+RoomConfig
+RoomConfig
+Entry
+Room
+Spawn
+RoomDescriptor
+RNG
+Seeds
+Sprite
+SFXManager
+TearParams
+TemporaryEffect
+TemporaryEffects
+Vector
+Entities
+Entities
+Overview
+Boss Data
+Boss Data
+Chapter 1
+Chapter 1.5
+Chapter 2
+Chapter 2.5
+Chapter 3
+Chapter 3.5
+Chapter 4
+Chapter 4.5
+Final Bosses
+Entity Data
+Fissure Spawner
+Ball & Chain
+Tutorials
+Tutorials
+Example Project
+Functions in Lua
+Good Coding Practices
+Getting Coding Help
+Math and Lua Tips
+Adding Costumes to items without LUA
+Debugging with ZeroBrane Studio
+Debug Console
+Using additional .lua Files
+Using the standard library
+Writing screen shaders
+Render text
+Directories and save files
+Mod Organization
+Storing Data
+Custom Callbacks
+XMLs
+XMLs
+XML Overview
+achievements.xml
+ambush.xml
+ANM2 format
+babies.xml
+bombcostumes.xml
+backdrops.xml
+bosscolors.xml
+bossoverlays.xml
+bosspools.xml
+bossportraits.xml
+challenges.xml
+costumes2.xml
+curses.xml
+cutscenes.xml
+entities2.xml
+fortunes.txt
+fxlayers.xml
+giantbook.xml
+itempools.xml
+items.xml
+items_metadata.xml
+locusts.xml
+minibosses.xml
+music.xml
+nightmares.xml
+players.xml
+playerforms.xml
+pocketitems.xml
+preload.xml
+recipes.xml
+rules.txt
+seedmenu.xml
+seeds.txt
+sounds.xml
+stages.xml
+translations.xml
+wisps.xml
+FAQ
+FAQ
+FAQ
+Interactive FAQ
+Basic Information
+Getting Started
+Coding Help
+Lua Language
+Troubleshooting
+Launch Options
+Tools
+Tools
+Tools Overview
+XML Validator
+Animation Editor
+Itempool Editor
+Bugs
+Tags
+Lua 5.3 Docs
+Table of contents
+Constructors
+Game ()
+Functions
+Add路Devil路Room路Deal ()
+Add路Encountered路Boss ()
+Add路Pixelation ()
+Add路Stage路Without路Damage ()
+Add路Stage路Without路Hearts路Picked ()
+Add路Treasure路Rooms路Visited ()
+Bomb路Damage ()
+Bomb路Explosion路Effects ()
+Bomb路Tearflag路Effects ()
+Butter路Bean路Fart ()
+Change路Room ()
+Charm路Fart ()
+Clear路Donation路Mod路Angel ()
+Clear路Donation路Mod路Greed ()
+Clear路Stages路Without路Damage ()
+Clear路Stages路Without路Hearts路Picked ()
+Darken ()
+Donate路Angel ()
+Donate路Greed ()
+End ()
+Fadein ()
+Fadeout ()
+Fart ()
+Finish路Challenge ()
+Get路Ambush ()
+Get路Darkness路Modifier ()
+Get路Devil路Room路Deals ()
+Get路Donation路Mod路Angel ()
+Get路Donation路Mod路Greed ()
+Get路Font ()
+Get路Frame路Count ()
+Get路Greed路Boss路Wave路Num ()
+Get路Greed路Waves路Num ()
+Get路HUD ()
+Get路Item路Overlay ()
+Get路Item路Pool ()
+Get路Last路Devil路Room路Stage ()
+Get路Last路Level路With路Damage ()
+Get路Last路Level路Without路Half路Hp ()
+Get路Level ()
+Get路Nearest路Player ()
+Get路Num路Encountered路Bosses ()
+Get路Num路Players ()
+Get路Player ()
+Get路Random路Player ()
+Get路Room ()
+Get路Screen路Shake路Countdown ()
+Get路Seeds ()
+Get路Stages路Without路Damage ()
+Get路Stages路Without路Hearts路Picked ()
+Get路State路Flag ()
+Get路Target路Darkness ()
+Get路Treasure路Room路Visit路Count ()
+Get路Victory路Lap ()
+Has路Encountered路Boss ()
+Has路Hallucination ()
+Is路Greed路Mode ()
+Is路Paused ()
+Make路Shockwave ()
+Move路To路Random路Room ()
+Next路Victory路Lap ()
+Render ()
+Reroll路Enemy ()
+Reroll路Level路Collectibles ()
+Reroll路Level路Pickups ()
+Set路Last路Devil路Room路Stage ()
+Set路Last路Level路With路Damage ()
+Set路Last路Level路Without路Half路Hp ()
+Set路State路Flag ()
+Shake路Screen ()
+Show路Fortune ()
+Show路Hallucination ()
+Show路Rule ()
+Spawn ()
+Spawn路Entity路Desc ()
+Spawn路Particles ()
+Start路Room路Transition ()
+Start路Stage路Transition ()
+Update ()
+Update路Strange路Attractor ()
+Variables
+Blue路Womb路Par路Time
+Boss路Rush路Par路Time
+Challenge
+Difficulty
+Screen路Shake路Offset
+Time路Counter
+Globals
+Class
+Class "Game"
+鈿擄笌
+Info
+This class can be accessed by using its constructor:
+Example Code
+1
+local
+game
+=
+Game
+()
+Constructors
+鈿擄笌
+Game ()
+鈿擄笌
+Game
+Game ( )
+鈿擄笌
+Returns a Game object.
+Example Code
+Example usage:
+1
+2
+Game
+():
+IsPaused
+()
+--returns true if the game is paused
+Functions
+鈿擄笌
+Add路Devil路Room路Deal ()
+鈿擄笌
+void AddDevilRoomDeal ( )
+鈿擄笌
+Increments taken devil deals by 1. (This will impact Angel room chance)
+Add路Encountered路Boss ()
+鈿擄笌
+void AddEncounteredBoss (
+EntityType
+Boss, int Variant )
+鈿擄笌
+Add路Pixelation ()
+鈿擄笌
+void AddPixelation ( int Duration )
+鈿擄笌
+Triggers the effect of the "retro vision" pill.
+Add路Stage路Without路Damage ()
+鈿擄笌
+void AddStageWithoutDamage ( )
+鈿擄笌
+Increases the ingame counter, that keeps track of the stages you cleared without taking damage. (useful for Devil deal manipulations)
+Add路Stage路Without路Hearts路Picked ()
+鈿擄笌
+void AddStageWithoutHeartsPicked ( )
+鈿擄笌
+Increases the ingame counter, that keeps track of stages you cleared without picking up hearts.
+Add路Treasure路Rooms路Visited ()
+鈿擄笌
+void AddTreasureRoomsVisited ( )
+鈿擄笌
+Bomb路Damage ()
+鈿擄笌
+void BombDamage (
+Vector
+Position, float Damage, float Radius, boolean LineCheck = true,
+Entity
+Source = nil,
+TearFlags
+TearFlags =
+TearFlags
+.TEAR_NORMAL, int DamageFlags =
+DamageFlags
+.DAMAGE_EXPLOSION, boolean DamageSource = false )
+鈿擄笌
+Bomb路Explosion路Effects ()
+鈿擄笌
+void BombExplosionEffects (
+Vector
+Position, float Damage,
+TearFlags
+TearFlags =
+TearFlags
+.TEAR_NORMAL,
+Color
+Color = Color.Default,
+Entity
+Source = nil, float RadiusMult = 1, boolean LineCheck = true, boolean DamageSource = false, int DamageFlags =
+DamageFlags
+.DAMAGE_EXPLOSION )
+鈿擄笌
+The complete bomb explosion package: Do damage, spawn boomgraphics, and apply tearflag-based effects.
+Bomb路Tearflag路Effects ()
+鈿擄笌
+void BombTearflagEffects (
+Vector
+Position, float Radius,
+TearFlags
+TearFlags,
+Entity
+Source = nil, float RadiusMult = 1)
+鈿擄笌
+Does bomb-exclusive special effects.
+Butter路Bean路Fart ()
+鈿擄笌
+void ButterBeanFart (
+Vector
+Position, float Radius,
+Entity
+Source, boolean ShowEffect, boolean DoSuperKnockback )
+鈿擄笌
+Change路Room ()
+鈿擄笌
+void ChangeRoom ( int RoomIndex, int Dimension = -1 )
+鈿擄笌
+This function should be used over
+Level.ChangeRoom
+because that function will not update the fxlayers properly.
+Dimension Info
+Dimension: ID of the dimension to get the room from
+1
+2
+3
+4
+* -1: Current dimension
+* 0: Main dimension
+* 1: Secondary dimension, used by Downpour mirror dimension and Mines escape sequence
+* 2: Death Certificate dimension
+Charm路Fart ()
+鈿擄笌
+void CharmFart (
+Vector
+Position, float Radius,
+Entity
+Source )
+鈿擄笌
+Clear路Donation路Mod路Angel ()
+鈿擄笌
+void ClearDonationModAngel ( )
+鈿擄笌
+Clear路Donation路Mod路Greed ()
+鈿擄笌
+void ClearDonationModGreed ( )
+鈿擄笌
+Clear路Stages路Without路Damage ()
+鈿擄笌
+void ClearStagesWithoutDamage ( )
+鈿擄笌
+Sets the counter for stages cleared without damage to 0.
+Clear路Stages路Without路Hearts路Picked ()
+鈿擄笌
+void ClearStagesWithoutHeartsPicked ( )
+鈿擄笌
+Sets the counter for stages cleared without picking up hearts to 0.
+Darken ()
+鈿擄笌
+void Darken ( float Darkness, int Timeout )
+鈿擄笌
+Darkens the room. This is the function that is called internally during The Lamb fight or when Dice Rooms are activated.
+Donate路Angel ()
+鈿擄笌
+void DonateAngel ( int Donate )
+鈿擄笌
+Donating 10 coins to a donation machine will increase the odds of an Angel Room if you haven't taken a devil deal. This simulates that behavior without actually adding coins to the donation machine.
+Donate路Greed ()
+鈿擄笌
+void DonateGreed ( int Donate )
+鈿擄笌
+End ()
+鈿擄笌
+void End ( Ending Ending )
+鈿擄笌
+Ending notes
+1: Game over "Dear Diary" (exit/restart)
+2: Mom / Epilogue (movie)
+3: Mom's Heart / End 1/2/3/4/5/6/7/8/9/10/11 (movie) or just Credits depending on context
+4: Satan / End 12 (movie)
+5: Isaac / End 13 (movie)
+6: The Lamb / End 15 (movie)
+7: ??? / End 14 (movie)
+8: Mega Satan / End 16 (movie)
+9: Greed / End 18 (movie)
+10: Hush / End 17 (movie)
+11: Delirium / End 20 (movie)
+12: Greedier / End 19 (movie)
+13: Mother / End 21 (movie)
+14: The Beast / Final (movie)
+Successful endings increment your win streak. If you pass a bad number like 0 then you can artificially increase your win streak as much as you want.
+Fadein ()
+鈿擄笌
+void Fadein ( float Speed )
+鈿擄笌
+void Fadein ( float Speed, boolean ShowIcon = true,
+KColor
+Color = KColor.Black )
+鈿擄笌
+Fadeout ()
+鈿擄笌
+void Fadeout ( float Speed, FadeoutTarget Target )
+鈿擄笌
+void Fadeout ( float Speed, FadeoutTarget Target,
+KColor
+Color = KColor.Black )
+鈿擄笌
+Notes
+FadeoutTarget types:
+0: File Select Menu
+1: File Selected Menu (New run, Start game, etc.)
+2: Title
+3: New Game (Starts a new run)
+4: Victory lap
+Fart ()
+鈿擄笌
+void Fart (
+Vector
+Position, float Radius = 85,
+Entity
+Source = nil, float FartScale = 1, int FartSubType = 0,
+Color
+FartColor = Color.Default )
+鈿擄笌
+Finish路Challenge ()
+鈿擄笌
+void FinishChallenge ( )
+鈿擄笌
+Get路Ambush ()
+鈿擄笌
+Ambush GetAmbush ( )
+鈿擄笌
+Bug
+Since it returns UserData, this function is unusable and therefore broken.
+Get路Darkness路Modifier ()
+鈿擄笌
+float GetDarknessModifier ( )
+鈿擄笌
+Get路Devil路Room路Deals ()
+鈿擄笌
+int GetDevilRoomDeals ( )
+鈿擄笌
+Get路Donation路Mod路Angel ()
+鈿擄笌
+int GetDonationModAngel ( )
+鈿擄笌
+Get the value that indicates the angel-counter of a shop-donation maschine. This Stat increases everytime you donate to a shop. A higher number grants a few advantages.
+Get路Donation路Mod路Greed ()
+鈿擄笌
+int GetDonationModGreed ( )
+鈿擄笌
+Get路Font ()
+鈿擄笌
+Font
+GetFont ( )
+鈿擄笌
+Get路Frame路Count ()
+鈿擄笌
+int GetFrameCount ( )
+鈿擄笌
+Returns the number of frames the gameplay is actively running. Pauses are therefore not included!
+1 second equals 30 frames.
+This function therefore works drastically different than
+Isaac
+.
+GetFrameCount
+()
+Example Code
+This code returns hours, minutes, seconds, and milliseconds of the game running actively:
+1
+2
+3
+4
+5
+local
+curTime
+=
+Game
+():
+GetFrameCount
+()
+local
+msecs
+=
+curTime
+%
+30
+*
+(
+10
+/
+3
+)
+-- turns the millisecond value range from [0 to 30] to [0 to 100]
+local
+secs
+=
+math.floor
+(
+curTime
+/
+30
+)
+%
+60
+local
+mins
+=
+math.floor
+(
+curTime
+/
+30
+/
+60
+)
+%
+60
+local
+hours
+=
+math.floor
+(
+curTime
+/
+30
+/
+60
+/
+60
+)
+%
+60
+Get路Greed路Boss路Wave路Num ()
+鈿擄笌
+int GetGreedBossWaveNum ( )
+鈿擄笌
+Get路Greed路Waves路Num ()
+鈿擄笌
+int GetGreedWavesNum ( )
+鈿擄笌
+Get路HUD ()
+鈿擄笌
+HUD
+GetHUD ( )
+鈿擄笌
+Get路Item路Overlay ()
+鈿擄笌
+ItemOverlay GetItemOverlay ( )
+鈿擄笌
+Bug
+Since it returns UserData, this function is unusable and therefore broken.
+Get路Item路Pool ()
+鈿擄笌
+ItemPool
+GetItemPool ( )
+鈿擄笌
+Get路Last路Devil路Room路Stage ()
+鈿擄笌
+LevelStage
+GetLastDevilRoomStage ( )
+鈿擄笌
+Bug
+Since it returns UserData, this function is unusable and therefore broken.
+Get路Last路Level路With路Damage ()
+鈿擄笌
+LevelStage
+GetLastLevelWithDamage ( )
+鈿擄笌
+Bug
+Since it returns UserData, this function is unusable and therefore broken.
+Get路Last路Level路Without路Half路Hp ()
+鈿擄笌
+LevelStage
+GetLastLevelWithoutHalfHp ( )
+鈿擄笌
+Bug
+Since it returns UserData, this function is unusable and therefore broken.
+Get路Level ()
+鈿擄笌
+Level
+GetLevel ( )
+鈿擄笌
+Get路Nearest路Player ()
+鈿擄笌
+EntityPlayer
+GetNearestPlayer (
+Vector
+Pos )
+鈿擄笌
+Get路Num路Encountered路Bosses ()
+鈿擄笌
+int GetNumEncounteredBosses ( )
+鈿擄笌
+Get路Num路Players ()
+鈿擄笌
+int GetNumPlayers ( )
+鈿擄笌
+Get路Player ()
+鈿擄笌
+EntityPlayer
+GetPlayer ( int Index )
+鈿擄笌
+Returns the
+EntityPlayer
+with the given index. This function can return
+nil
+if the function is called before any player is initialized. If an index is given, that is not used, it will return the last player in the list.
+This function is the same as
+Isaac.GetPlayer()
+.
+Get路Random路Player ()
+鈿擄笌
+EntityPlayer
+GetRandomPlayer (
+Vector
+Pos, float Radius )
+鈿擄笌
+Get路Room ()
+鈿擄笌
+Room
+GetRoom ( )
+鈿擄笌
+Get路Screen路Shake路Countdown ()
+鈿擄笌
+int GetScreenShakeCountdown ( )
+鈿擄笌
+Get路Seeds ()
+鈿擄笌
+Seeds
+GetSeeds ( )
+鈿擄笌
+Get路Stages路Without路Damage ()
+鈿擄笌
+int GetStagesWithoutDamage ( )
+鈿擄笌
+Get路Stages路Without路Hearts路Picked ()
+鈿擄笌
+int GetStagesWithoutHeartsPicked ( )
+鈿擄笌
+Get路State路Flag ()
+鈿擄笌
+boolean GetStateFlag (
+GameStateFlag
+GameStateFlag )
+鈿擄笌
+Get路Target路Darkness ()
+鈿擄笌
+float GetTargetDarkness ( )
+鈿擄笌
+Get路Treasure路Room路Visit路Count ()
+鈿擄笌
+int GetTreasureRoomVisitCount ( )
+鈿擄笌
+Get路Victory路Lap ()
+鈿擄笌
+int GetVictoryLap ( )
+鈿擄笌
+Has路Encountered路Boss ()
+鈿擄笌
+boolean HasEncounteredBoss (
+EntityType
+Boss, int Variant )
+鈿擄笌
+Has路Hallucination ()
+鈿擄笌
+boolean HasHallucination ( )
+鈿擄笌
+Returns true if the Delirium animation (Static noise intersected with past gameplay fotage) is playing right now.
+Is路Greed路Mode ()
+鈿擄笌
+boolean IsGreedMode ( )
+鈿擄笌
+Returns true if the current gamemode is set to Greed or Greedier mode.
+To differentiate between Greed and Greedier mode, you need to use the
+Game().Difficulty
+attribute.
+Is路Paused ()
+鈿擄笌
+boolean IsPaused ( )
+鈿擄笌
+Returns true, if the game is in a state, where the player is unable to input any thing or the game logic is paused. This includes having the pause menu opened, being in room transitions/cutscenes or while displaying a "big book" animation.
+Make路Shockwave ()
+鈿擄笌
+void MakeShockwave (
+Vector
+Position, float Amplitude, float Speed, int Duration )
+鈿擄笌
+Reference
+Monstro's stomp: Amplitude = 0.035 | Speed = 0.025 | Duration = 10
+Move路To路Random路Room ()
+鈿擄笌
+void MoveToRandomRoom ( boolean IAmErrorRoom, int Seed,
+EntityPlayer
+Player )
+鈿擄笌
+Next路Victory路Lap ()
+鈿擄笌
+void NextVictoryLap ( )
+鈿擄笌
+Render ()
+鈿擄笌
+void Render ( )
+鈿擄笌
+Reroll路Enemy ()
+鈿擄笌
+boolean RerollEnemy (
+Entity
+e )
+鈿擄笌
+Reroll路Level路Collectibles ()
+鈿擄笌
+void RerollLevelCollectibles ( )
+鈿擄笌
+Reroll路Level路Pickups ()
+鈿擄笌
+void RerollLevelPickups ( int Seed )
+鈿擄笌
+Set路Last路Devil路Room路Stage ()
+鈿擄笌
+void SetLastDevilRoomStage (
+LevelStage
+Stage )
+鈿擄笌
+Set路Last路Level路With路Damage ()
+鈿擄笌
+void SetLastLevelWithDamage (
+LevelStage
+Stage )
+鈿擄笌
+Set路Last路Level路Without路Half路Hp ()
+鈿擄笌
+void SetLastLevelWithoutHalfHp (
+LevelStage
+Stage )
+鈿擄笌
+Set路State路Flag ()
+鈿擄笌
+void SetStateFlag (
+GameStateFlag
+GameStateFlag, boolean Val )
+鈿擄笌
+Shake路Screen ()
+鈿擄笌
+void ShakeScreen ( int Timeout )
+鈿擄笌
+Show路Fortune ()
+鈿擄笌
+void ShowFortune ( )
+鈿擄笌
+Show路Hallucination ()
+鈿擄笌
+void ShowHallucination ( int FrameCount,
+BackdropType
+Backdrop = BackdropType.NUM_BACKDROPS )
+鈿擄笌
+Plays the Delirium animation (Static noise intersected with past gameplay fotage), which will also change the background of the current room.
+Workaround Code for AB+ mods
+This function was broken in AB+, so there was this implementation in order to recreate the effect.
+This code emulated the effect of this function by hijacking the Delirious item effect
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+local
+usagetime
+=
+-
+1
+-- stores the last time the effect was called.
+-- call this function to play the Hallucination effect
+function
+playHallucination
+()
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+usagetime
+=
+Game
+().
+TimeCounter
+player
+:
+UseActiveItem
+(
+510
+,
+false
+,
+false
+,
+false
+,
+false
+)
+-- use the delirious item without applying the costume
+player
+:
+GetEffects
+():
+RemoveCollectibleEffect
+(
+510
+)
+-- remove any unwanted side effects of the item usage
+end
+-- Removes all spawned NPC entities when activating the function
+function
+mod
+:
+onFriendlyInit
+(
+npc
+)
+if
+Game
+().
+TimeCounter
+-
+usagetime
+==
+0
+then
+-- only remove enemies that spawned when the effect was called!
+npc
+:
+Remove
+()
+end
+end
+mod
+:
+AddCallback
+(
+ModCallbacks
+.
+MC_POST_NPC_INIT
+,
+mod
+.
+onFriendlyInit
+)
+Show路Rule ()
+鈿擄笌
+void ShowRule ( )
+鈿擄笌
+Spawn ()
+鈿擄笌
+Entity
+Spawn (
+EntityType
+Type, int Variant,
+Vector
+Position,
+Vector
+Velocity,
+Entity
+Spawner, int SubType, int Seed )
+鈿擄笌
+There are two spawn functions.
+Isaac.Spawn()
+, which spawns an entity with a random seed, and
+Game():Spawn()
+(this one), which spawns an entity with a specific seed. However due to a bug,
+Isaac.Spawn()
+has a chance to generate a seed of 0, which crashes the game. If you need to spawn an entity with a random seed, you should always use
+Game():Spawn()
+with a helper function that calls
+Random()
+and arbitrarily sets the seed to 1 when the seed is 0.
+Example Code
+This code spawns a Leech with specific seed.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+Game
+():
+Spawn
+(
+EntityType
+.
+ENTITY_LEECH
+,
+-- Type
+0
+,
+-- Variant
+Game
+():
+GetRoom
+():
+GetCenterPos
+(),
+-- Position
+Vector
+(
+0
+,
+0
+),
+-- Velocity
+nil
+,
+-- Parent
+0
+,
+-- SubType
+Game
+():
+GetRoom
+():
+GetSpawnSeed
+()
+-- Seed (the "GetSpawnSeed()" function gets a reproducible seed based on the room, e.g. "2496979501")
+)
+Spawn路Entity路Desc ()
+鈿擄笌
+EntityNPC
+SpawnEntityDesc ( EntityDesc desc,
+Vector
+Position,
+Entity
+Spawner )
+鈿擄笌
+Spawn路Particles ()
+鈿擄笌
+void SpawnParticles (
+Vector
+Pos,
+EffectVariant
+ParticleType, int NumParticles, float Speed,
+Color
+Color = Color.Default, float Height = 100000, int SubType = 0 )
+鈿擄笌
+Start路Room路Transition ()
+鈿擄笌
+void StartRoomTransition ( int RoomIndex,
+Direction
+Direction,
+RoomTransitionAnim
+Animation = RoomTransitionAnim.WALK,
+EntityPlayer
+Player = nil, int Dimension = -1 )
+鈿擄笌
+Note that if you use
+RoomTransitionAnim.PIXELATION
+(2), you must not interrupt the effect (e.g. with another room transition or room change) once it starts playing. Otherwise, after around 11 interuptions, the "log.txt" will start to become spammed with "[ASSERT] - PushRenderTarget: stack overflow!". This is because internally, the game uses a finite buffer to store information about the effect, and if it is interrupted, the buffer will never be cleared.
+Dimension Info
+Dimension: ID of the dimension to get the room from
+1
+2
+3
+4
+* -1: Current dimension
+* 0: Main dimension
+* 1: Secondary dimension, used by Downpour mirror dimension and Mines escape sequence
+* 2: Death Certificate dimension
+Notes
+The boss vs screen overrides all of these transitions, however, using RoomTransitionAnim.DEATH_CERTIFICATE will make it so the player appears lying down after the vs screen and the game will be paused while they get up.
+Bugs
+The Direction variable is completely ignored at all times, with the game instead calculating the direction between the two rooms itself for the animation. The two rooms are the current room and the room of the RoomIndex. It has no impact on the doors either.
+Start路Stage路Transition ()
+鈿擄笌
+void StartStageTransition ( boolean SameStage, int TransitionOverride,
+EntityPlayer
+Player )
+鈿擄笌
+Starts a transition animation, like the ones used when entering a trapdoor or light beam to reach the next stage.
+SameStage
+will cause the stage to be reseeded if set to true. Otherwise, the game will progress to the next stage. The next stage is selected based on the rules of transition internally defined.
+If
+GameStateFlag.STATE_SECRET_PATH
+is set, the transition will move towards the alternate path.
+If
+GameStateFlag.STATE_HEAVEN_PATH
+is set, and the current stage is Womb II / XL or ???, the transition will move towards Cathedral, otherwise it will move toward Sheol.
+If
+GameStateFlag.STATE_BACKWARDS_PATH
+is set, this will progress towards the next stage in the Ascent.
+If the current stage is Corpse II / XL, the transition will progress towards ???.
+TransitionOverride
+can be used to trigger special stage transitions that will progress to a stage that is not necessarily the next one available.
+2: Sacrifice Room teleportation. Progress towards Dark Room regardless of current floor.
+3: Void trapdoor. Progress towards The Void regardless of current floor.
+4: unknown. Freeze all logic updates, but the console can still be opened.
+5: Ascent transition. If
+SameStage
+is set to true, progress towards the Ascent version of the current floor (softlocks the game if the current floor doesn't have an Ascent version). If
+SameStage
+is set to false, move to the next stage (in the non Ascent path), and then enter the Ascent version of this new stage.
+6: Home Glowing Hourglass. Progress towards Home, regardless of the current floor.
+Bug
+Contrary to previous beliefs, this function will crash when
+not
+provided with an EntityPlayer. It is worth noting however, that the function, even when used correctly, is inconsistent and seems to sometimes crash for no reason.
+Reverse engineering the game shows that the Lua binder associated with this function improperly calls Game::StartStageTransition which results in a C++ stack corruption. As a result, correct calls to this function may or may not crash the game.
+Update ()
+鈿擄笌
+void Update ( )
+鈿擄笌
+Update路Strange路Attractor ()
+鈿擄笌
+void UpdateStrangeAttractor (
+Vector
+Position, float Force = 10, float Radius = 250 )
+鈿擄笌
+Variables
+鈿擄笌
+Blue路Womb路Par路Time
+鈿擄笌
+int BlueWombParTime
+鈿擄笌
+Boss路Rush路Par路Time
+鈿擄笌
+int BossRushParTime
+鈿擄笌
+Number of frames of game time.
+Challenge
+鈿擄笌
+Challenge
+Challenge
+鈿擄笌
+Difficulty
+鈿擄笌
+const
+Difficulty
+Difficulty
+鈿擄笌
+Screen路Shake路Offset
+鈿擄笌
+const
+Vector
+ScreenShakeOffset
+鈿擄笌
+Time路Counter
+鈿擄笌
+int TimeCounter
+鈿擄笌
+same as FrameCounter but can be modified, mostly used for timed events (bossrush, daily, ...) and not for timestepping
+Last update:
+August 20, 2025
+Back to top
+Copyright © 2021 - 2026 Wofsauge (Discord: Wofsauge#6503)
+Made with
+Material for MkDocs

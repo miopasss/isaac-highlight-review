@@ -1,0 +1,790 @@
+﻿EntityNPC - BoI: Lua API Docs
+Skip to content
+WARNING
+Due to the new DLC, some informations on this website can potentially be out-of-date.
+If you notice errors, please use the "Pencil"
+icon in the top right to edit the page.
+-->
+BoI: Lua API Docs
+EntityNPC
+Initializing search
+wofsauge/IsaacDocs
+Home
+Docs
+Entities
+Tutorials
+XMLs
+FAQ
+Tools
+Bugs
+Tags
+Lua 5.3 Docs
+BoI: Lua API Docs
+wofsauge/IsaacDocs
+Home
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityNPC
+Table of contents
+Class Diagram
+Functions
+Anim路Walk路Frame ()
+Calc路Target路Position ()
+Can路Be路Damaged路From路Velocity ()
+Can路Reroll ()
+Fire路Boss路Projectiles ()
+Fire路Projectiles ()
+Get路Alive路Enemy路Count ()
+Get路Boss路Color路Idx ()
+Get路Champion路Color路Idx ()
+Get路Player路Target ()
+Is路Boss ()
+Is路Champion ()
+Kill路Unique ()
+Make路Champion ()
+Make路Splat ()
+Morph ()
+Play路Sound ()
+Query路NPCs路Group ()
+Query路NPCs路Spawner路Type ()
+Query路NPCs路Type ()
+Reset路Path路Finder路Target ()
+Throw路Spider ()
+Variables
+Can路Shut路Doors
+Child路NPC
+Entity路Ref
+Group路Idx
+I1
+I2
+Parent路NPC
+Pathfinder
+Projectile路Cooldown
+Projectile路Delay
+Scale
+State
+State路Frame
+V1
+V2
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+ActionTriggers
+ActiveSlot
+BabySubType
+BackdropType
+BatterySubType
+BedSubType
+BombSubType
+BombVariant
+ButtonAction
+CacheFlag
+CallbackPriority
+Card
+Challenge
+ChampionColor
+ChestSubType
+CoinSubType
+CollectibleType
+DamageFlag
+Difficulty
+Direction
+DoorSlot
+DoorState
+DoorVariant
+DrawStringAlignment
+EffectVariant
+EntityCollisionClass
+EntityFlag
+EntityGridCollisionClass
+EntityPartition
+EntityType
+FamiliarVariant
+GameStateFlag
+GridCollisionClass
+GridEntityType
+GridRooms
+HeartSubType
+InputHook
+ItemConfig
+ItemPoolType
+ItemType
+Keyboard
+KeySubType
+LaserOffset
+LaserSubType
+LaserVariant
+LevelCurse
+LevelStage
+LevelStateFlag
+LocustSubtypes
+ModCallbacks
+Mouse
+Music
+NpcState
+NullItemID
+PickupPrice
+PickupVariant
+PillColor
+PillEffect
+PlayerForm
+PlayerSpriteLayer
+PlayerType
+PoopPickupSubType
+PoopSpellType
+ProjectileFlags
+ProjectileVariant
+RenderMode
+RoomDescriptor
+RoomShape
+RoomTransitionAnim
+RoomType
+SackSubType
+SeedEffect
+SkinColor
+SortingLayer
+SoundEffect
+StageType
+TearFlags
+TearVariant
+TrinketType
+UseFlag
+WeaponType
+Globals
+Global Functions
+BitSet128
+Color
+CppContainer
+CppContainer
+ArrayProxy
+ArrayProxy
+RoomConfigEntries
+RoomConfigSpawns
+RoomDescriptor
+intValues
+EntityList
+Vector
+Vector
+CardConfigList
+CostumeConfigList
+EffectList
+ItemConfigList
+PillConfigList
+VectorList
+Entity
+Entity
+Entity
+EntityBomb
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityNPC
+Table of contents
+Class Diagram
+Functions
+Anim路Walk路Frame ()
+Calc路Target路Position ()
+Can路Be路Damaged路From路Velocity ()
+Can路Reroll ()
+Fire路Boss路Projectiles ()
+Fire路Projectiles ()
+Get路Alive路Enemy路Count ()
+Get路Boss路Color路Idx ()
+Get路Champion路Color路Idx ()
+Get路Player路Target ()
+Is路Boss ()
+Is路Champion ()
+Kill路Unique ()
+Make路Champion ()
+Make路Splat ()
+Morph ()
+Play路Sound ()
+Query路NPCs路Group ()
+Query路NPCs路Spawner路Type ()
+Query路NPCs路Type ()
+Reset路Path路Finder路Target ()
+Throw路Spider ()
+Variables
+Can路Shut路Doors
+Child路NPC
+Entity路Ref
+Group路Idx
+I1
+I2
+Parent路NPC
+Pathfinder
+Projectile路Cooldown
+Projectile路Delay
+Scale
+State
+State路Frame
+V1
+V2
+EntityPickup
+EntityPlayer
+EntityProjectile
+EntityTear
+EntityPtr
+EntityRef
+Font
+FontRenderSettings
+Game
+GridEntity
+GridEntity
+GridEntity
+GridEntityDoor
+GridEntityPit
+GridEntityPoop
+GridEntityPressurePlate
+GridEntityRock
+GridEntitySpikes
+GridEntityTNT
+GridEntityDesc
+HUD
+ItemConfig
+ItemConfig
+ItemConfig Functions
+ItemConfig - Card
+ItemConfig - Costume
+ItemConfig - Item
+ItemConfig - PillEffect
+Input
+Isaac
+ItemPool
+KColor
+Level
+MusicManager
+Mod Reference
+Options
+PathFinder
+PlayerTypes
+PlayerTypes
+PlayerTypesActiveItemDesc
+PlayerTypesPosVel
+ProjectileParams
+QueueItemData
+Room
+RoomConfig
+RoomConfig
+Entry
+Room
+Spawn
+RoomDescriptor
+RNG
+Seeds
+Sprite
+SFXManager
+TearParams
+TemporaryEffect
+TemporaryEffects
+Vector
+Entities
+Entities
+Overview
+Boss Data
+Boss Data
+Chapter 1
+Chapter 1.5
+Chapter 2
+Chapter 2.5
+Chapter 3
+Chapter 3.5
+Chapter 4
+Chapter 4.5
+Final Bosses
+Entity Data
+Fissure Spawner
+Ball & Chain
+Tutorials
+Tutorials
+Example Project
+Functions in Lua
+Good Coding Practices
+Getting Coding Help
+Math and Lua Tips
+Adding Costumes to items without LUA
+Debugging with ZeroBrane Studio
+Debug Console
+Using additional .lua Files
+Using the standard library
+Writing screen shaders
+Render text
+Directories and save files
+Mod Organization
+Storing Data
+Custom Callbacks
+XMLs
+XMLs
+XML Overview
+achievements.xml
+ambush.xml
+ANM2 format
+babies.xml
+bombcostumes.xml
+backdrops.xml
+bosscolors.xml
+bossoverlays.xml
+bosspools.xml
+bossportraits.xml
+challenges.xml
+costumes2.xml
+curses.xml
+cutscenes.xml
+entities2.xml
+fortunes.txt
+fxlayers.xml
+giantbook.xml
+itempools.xml
+items.xml
+items_metadata.xml
+locusts.xml
+minibosses.xml
+music.xml
+nightmares.xml
+players.xml
+playerforms.xml
+pocketitems.xml
+preload.xml
+recipes.xml
+rules.txt
+seedmenu.xml
+seeds.txt
+sounds.xml
+stages.xml
+translations.xml
+wisps.xml
+FAQ
+FAQ
+FAQ
+Interactive FAQ
+Basic Information
+Getting Started
+Coding Help
+Lua Language
+Troubleshooting
+Launch Options
+Tools
+Tools
+Tools Overview
+XML Validator
+Animation Editor
+Itempool Editor
+Bugs
+Tags
+Lua 5.3 Docs
+Table of contents
+Class Diagram
+Functions
+Anim路Walk路Frame ()
+Calc路Target路Position ()
+Can路Be路Damaged路From路Velocity ()
+Can路Reroll ()
+Fire路Boss路Projectiles ()
+Fire路Projectiles ()
+Get路Alive路Enemy路Count ()
+Get路Boss路Color路Idx ()
+Get路Champion路Color路Idx ()
+Get路Player路Target ()
+Is路Boss ()
+Is路Champion ()
+Kill路Unique ()
+Make路Champion ()
+Make路Splat ()
+Morph ()
+Play路Sound ()
+Query路NPCs路Group ()
+Query路NPCs路Spawner路Type ()
+Query路NPCs路Type ()
+Reset路Path路Finder路Target ()
+Throw路Spider ()
+Variables
+Can路Shut路Doors
+Child路NPC
+Entity路Ref
+Group路Idx
+I1
+I2
+Parent路NPC
+Pathfinder
+Projectile路Cooldown
+Projectile路Delay
+Scale
+State
+State路Frame
+V1
+V2
+Class
+Class "EntityNPC"
+鈿擄笌
+Info
+You can get this class by using the following function:
+Entity.ToNPC()
+Game.SpawnEntityDesc()
+Example Code
+local entity = Isaac.GetRoomEntities()[1]:ToNPC()
+Class Diagram
+鈿擄笌
+classDiagram
+class Entity:::diagramCurrentPage
+class EntityBomb
+class EntityEffect
+class EntityFamiliar
+class EntityKnife
+class EntityLaser
+class EntityNPC
+class EntityPickup
+class EntityPlayer
+class EntityProjectile
+class EntityTear
+Entity <|-- EntityBomb
+Entity <|-- EntityEffect
+Entity <|-- EntityFamiliar
+Entity <|-- EntityKnife
+Entity <|-- EntityLaser
+Entity <|-- EntityNPC
+Entity <|-- EntityPickup
+Entity <|-- EntityPlayer
+Entity <|-- EntityProjectile
+Entity <|-- EntityTear
+link Entity "Entity.html" "Go to page for 'Entity' class"
+link EntityBomb "EntityBomb.html" "Go to page for 'EntityBomb' class"
+link EntityEffect "EntityEffect.html" "Go to page for 'EntityEffect' class"
+link EntityFamiliar "EntityFamiliar.html" "Go to page for 'EntityFamiliar' class"
+link EntityKnife "EntityKnife.html" "Go to page for 'EntityKnife' class"
+link EntityLaser "EntityLaser.html" "Go to page for 'EntityLaser' class"
+link EntityNPC "EntityNPC.html" "Go to page for 'EntityNPC' class"
+link EntityPickup "EntityPickup.html" "Go to page for 'EntityPickup' class"
+link EntityPlayer "EntityPlayer.html" "Go to page for 'EntityPlayer' class"
+link EntityProjectile "EntityProjectile.html" "Go to page for 'EntityProjectile' class"
+link EntityTear "EntityTear.html" "Go to page for 'EntityTear' class"
+Functions
+鈿擄笌
+Anim路Walk路Frame ()
+鈿擄笌
+void AnimWalkFrame ( string HorizontalAnim, string VerticalAnim, float SpeedThreshold )
+鈿擄笌
+Calc路Target路Position ()
+鈿擄笌
+Vector
+CalcTargetPosition ( float DistanceLimit )
+鈿擄笌
+Can路Be路Damaged路From路Velocity ()
+鈿擄笌
+boolean CanBeDamagedFromVelocity (
+Vector
+Velocity )
+鈿擄笌
+Can路Reroll ()
+鈿擄笌
+boolean CanReroll ( )
+鈿擄笌
+Fire路Boss路Projectiles ()
+鈿擄笌
+EntityProjectile
+FireBossProjectiles ( int NumProjectiles,
+Vector
+TargetPos, float TrajectoryModifier,
+ProjectileParams
+Params )
+鈿擄笌
+fire a number of projectiles, optionally targeting the player direction is randomized, or slightly randomized when targeting the player FallingAccelModifier can be used to make projectiles fall faster to the ground returns a pointer to the projectile spawned last (useful e.g. when NumProjectiles=1)
+Fire路Projectiles ()
+鈿擄笌
+void FireProjectiles (
+Vector
+Pos,
+Vector
+Velocity, ProjectilesMode Mode,
+ProjectileParams
+Params )
+鈿擄笌
+ProjectilesMode
+0 : single projectile
+1 : two projectiles (uses params.Spread)
+2 : three projectiles (uses params.Spread)
+3 : three projectiles (uses params.Spread, more spread out?)
+4 : four projectiles (uses params.Spread)
+5 : five projectiles (uses params.Spread)
+6 : four projectiles in a + pattern (uses velocity.x as speed)
+7 : four projectiles in a x pattern (uses velocity.x as speed)
+8 : eight projectiles in a star pattern (uses velocity.x as speed)
+9 : N projectiles in a circle (velocity.x = speed, velocity.y = N, params.FireDirectionLimit and params.DotProductLimit to fire in an arc only)
+Get路Alive路Enemy路Count ()
+鈿擄笌
+int GetAliveEnemyCount ( )
+鈿擄笌
+Used to redirect close door enemies to any enemies for friendly npcs.
+Get路Boss路Color路Idx ()
+鈿擄笌
+int GetBossColorIdx ( )
+鈿擄笌
+Notes
+This will return the boss color idx reduced by 1. To get the actual color as set in bosscolors.xml, add +1 to the result.
+Get路Champion路Color路Idx ()
+鈿擄笌
+ChampionColorIdx
+GetChampionColorIdx ( )
+鈿擄笌
+Returns the NPC's champion color index. Returns -1 if the NPC is not a champion.
+Get路Player路Target ()
+鈿擄笌
+Entity
+GetPlayerTarget ( )
+鈿擄笌
+if there are no modifiers (best friend) this will return the player
+Is路Boss ()
+鈿擄笌
+boolean IsBoss ( )
+鈿擄笌
+Is路Champion ()
+鈿擄笌
+boolean IsChampion ( )
+鈿擄笌
+Kill路Unique ()
+鈿擄笌
+void KillUnique ( )
+鈿擄笌
+For entities with unique death animation, like Flush! vs poop enemies.
+Make路Champion ()
+鈿擄笌
+void MakeChampion ( int Seed, ChampionColor ChampionColorIdx = -1, boolean Init = false )
+鈿擄笌
+Forces a non champion to become a champion, resets hp to max hp.
+ChampionColorIdx
+: The type of champion to turn this enemy into (-1 results in a random champion type)
+Init
+: Set to true when called while initializing the enemy, false otherwise
+Make路Splat ()
+鈿擄笌
+EntityEffect
+MakeSplat ( float Size )
+鈿擄笌
+Morph ()
+鈿擄笌
+boolean Morph (
+EntityType
+type, int Variant, int SubType, int ChampionColorIdx )
+鈿擄笌
+Morph the current entity into another one.
+ChampionColorIdx
+can be used to turn the entity into a champion. Use
+-
+1
+in order to not add a champion color.
+A list of Champion colors can be found here :
+ChampionColorIdx
+Bug
+This function can not turn a champion NPC into a regular NPC! for that, use the following code:
+1
+2
+3
+4
+5
+local
+previousNPC
+=
+entity
+:
+ToNPC
+()
+-- spawn the same entity at the same location as the old one
+Isaac
+.
+Spawn
+(
+previousNPC
+.
+Type
+,
+previousNPC
+.
+Variant
+,
+previousNPC
+.
+SubType
+,
+previousNPC
+.
+Position
+,
+previousNPC
+.
+Velocity
+,
+previousNPC
+.
+Parent
+)
+-- remove old entity
+previousNPC
+:
+Remove
+()
+Example Code
+This code turns an entity into a gaper.
+1
+entity
+:
+ToNPC
+():
+Morph
+(
+EntityType
+.
+ENTITY_GAPER
+,
+0
+,
+0
+,
+-
+1
+)
+Play路Sound ()
+鈿擄笌
+void PlaySound (
+SoundEffect
+ID, float Volume, int FrameDelay, boolean Loop, float Pitch )
+鈿擄笌
+Query路NPCs路Group ()
+鈿擄笌
+EntityList
+QueryNPCsGroup ( int GroupIdx )
+鈿擄笌
+Query路NPCs路Spawner路Type ()
+鈿擄笌
+EntityList
+QueryNPCsSpawnerType (
+EntityType
+SpawnerType,
+EntityType
+Type, boolean OnlyEnemies )
+鈿擄笌
+Query路NPCs路Type ()
+鈿擄笌
+EntityList
+QueryNPCsType (
+EntityType
+Type, int Variant )
+鈿擄笌
+Reset路Path路Finder路Target ()
+鈿擄笌
+void ResetPathFinderTarget ( )
+鈿擄笌
+Throw路Spider ()
+鈿擄笌
+static const
+EntityNPC
+ThrowSpider (
+Vector
+Position,
+Entity
+Spawner,
+Vector
+TargetPos, boolean Big, float YOffset )
+鈿擄笌
+Variables
+鈿擄笌
+Can路Shut路Doors
+鈿擄笌
+boolean CanShutDoors
+鈿擄笌
+Child路NPC
+鈿擄笌
+const
+EntityNPC
+ChildNPC
+鈿擄笌
+Entity路Ref
+鈿擄笌
+Entity
+EntityRef
+鈿擄笌
+Group路Idx
+鈿擄笌
+int GroupIdx
+鈿擄笌
+Used to identify multichunks groups.
+I1
+鈿擄笌
+int I1
+鈿擄笌
+General usage int for AI specific actions. The effect and usage is manually defined for each entity. It can also not be used at all for some.
+Example
+: The Frail sets I2 to 1 when entering the second phase.
+I2
+鈿擄笌
+int I2
+鈿擄笌
+General usage int for AI specific actions. The effect and usage is manually defined for each entity. It can also not be used at all for some.
+Example
+: The Frail sets I2 to 1 when entering the second phase.
+Parent路NPC
+鈿擄笌
+const
+EntityNPC
+ParentNPC
+鈿擄笌
+parent entity, for multi-entity NPCs like Larry Jr.
+Pathfinder
+鈿擄笌
+PathFinder
+Pathfinder
+鈿擄笌
+Projectile路Cooldown
+鈿擄笌
+int ProjectileCooldown
+鈿擄笌
+projectiles can fire again when it reaches 0
+Projectile路Delay
+鈿擄笌
+int ProjectileDelay
+鈿擄笌
+>0: projectile will be fired in n frames
+Scale
+鈿擄笌
+float Scale
+鈿擄笌
+State
+鈿擄笌
+NpcState
+State
+鈿擄笌
+State路Frame
+鈿擄笌
+int StateFrame
+鈿擄笌
+V1
+鈿擄笌
+Vector
+V1
+鈿擄笌
+General usage Vector for AI specific actions. Initialized to be Vector(0,0). The effect and usage is manually defined for each entity. It can also not be used at all for some.
+V2
+鈿擄笌
+Vector
+V2
+鈿擄笌
+General usage Vector for AI specific actions. Initialized to be Vector(0,0). The effect and usage is manually defined for each entity. It can also not be used at all for some.
+Last update:
+September 21, 2026
+Back to top
+Copyright © 2021 - 2026 Wofsauge (Discord: Wofsauge#6503)
+Made with
+Material for MkDocs

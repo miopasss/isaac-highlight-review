@@ -1,0 +1,1679 @@
+﻿Isaac - BoI: Lua API Docs
+Skip to content
+WARNING
+Due to the new DLC, some informations on this website can potentially be out-of-date.
+If you notice errors, please use the "Pencil"
+icon in the top right to edit the page.
+-->
+BoI: Lua API Docs
+Isaac
+Initializing search
+wofsauge/IsaacDocs
+Home
+Docs
+Entities
+Tutorials
+XMLs
+FAQ
+Tools
+Bugs
+Tags
+Lua 5.3 Docs
+BoI: Lua API Docs
+wofsauge/IsaacDocs
+Home
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Isaac
+Table of contents
+Functions
+Add路Callback ()
+Add路Pill路Effect路To路Pool ()
+Add路Priority路Callback ()
+Console路Output ()
+Count路Bosses ()
+Count路Enemies ()
+Count路Entities ()
+Debug路String ()
+Execute路Command ()
+Explode ()
+Find路By路Type ()
+Find路In路Radius ()
+Get路Built路In路Callback路State ()
+Get路Callbacks ()
+Get路Card路Id路By路Name ()
+Get路Challenge ()
+Get路Challenge路Id路By路Name ()
+Get路Costume路Id路By路Path ()
+Get路Curse路Id路By路Name ()
+Get路Entity路Type路By路Name ()
+Get路Entity路Variant路By路Name ()
+Get路Frame路Count ()
+Get路Free路Near路Position ()
+Get路Item路Config ()
+Get路Item路Id路By路Name ()
+Get路Music路Id路By路Name ()
+Get路Pill路Effect路By路Name ()
+Get路Player ()
+Get路Player路Type路By路Name ()
+Get路Random路Position ()
+Get路Room路Entities ()
+Get路Screen路Height ()
+Get路Screen路Point路Scale ()
+Get路Screen路Width ()
+Get路Sound路Id路By路Name ()
+Get路Text路Width ()
+Get路Time ()
+Get路Trinket路Id路By路Name ()
+Grid路Spawn ()
+Has路Mod路Data ()
+Load路Mod路Data ()
+Register路Mod ()
+Remove路Callback ()
+Remove路Mod路Data ()
+Render路Scaled路Text ()
+Render路Text ()
+Run路Callback ()
+Run路Callback路With路Param ()
+Save路Mod路Data ()
+Screen路To路World ()
+Screen路To路World路Distance ()
+Set路Built路In路Callback路State ()
+Spawn ()
+World路To路Render路Position ()
+World路To路Screen ()
+World路To路Screen路Distance ()
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+ActionTriggers
+ActiveSlot
+BabySubType
+BackdropType
+BatterySubType
+BedSubType
+BombSubType
+BombVariant
+ButtonAction
+CacheFlag
+CallbackPriority
+Card
+Challenge
+ChampionColor
+ChestSubType
+CoinSubType
+CollectibleType
+DamageFlag
+Difficulty
+Direction
+DoorSlot
+DoorState
+DoorVariant
+DrawStringAlignment
+EffectVariant
+EntityCollisionClass
+EntityFlag
+EntityGridCollisionClass
+EntityPartition
+EntityType
+FamiliarVariant
+GameStateFlag
+GridCollisionClass
+GridEntityType
+GridRooms
+HeartSubType
+InputHook
+ItemConfig
+ItemPoolType
+ItemType
+Keyboard
+KeySubType
+LaserOffset
+LaserSubType
+LaserVariant
+LevelCurse
+LevelStage
+LevelStateFlag
+LocustSubtypes
+ModCallbacks
+Mouse
+Music
+NpcState
+NullItemID
+PickupPrice
+PickupVariant
+PillColor
+PillEffect
+PlayerForm
+PlayerSpriteLayer
+PlayerType
+PoopPickupSubType
+PoopSpellType
+ProjectileFlags
+ProjectileVariant
+RenderMode
+RoomDescriptor
+RoomShape
+RoomTransitionAnim
+RoomType
+SackSubType
+SeedEffect
+SkinColor
+SortingLayer
+SoundEffect
+StageType
+TearFlags
+TearVariant
+TrinketType
+UseFlag
+WeaponType
+Globals
+Global Functions
+BitSet128
+Color
+CppContainer
+CppContainer
+ArrayProxy
+ArrayProxy
+RoomConfigEntries
+RoomConfigSpawns
+RoomDescriptor
+intValues
+EntityList
+Vector
+Vector
+CardConfigList
+CostumeConfigList
+EffectList
+ItemConfigList
+PillConfigList
+VectorList
+Entity
+Entity
+Entity
+EntityBomb
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPickup
+EntityPlayer
+EntityProjectile
+EntityTear
+EntityPtr
+EntityRef
+Font
+FontRenderSettings
+Game
+GridEntity
+GridEntity
+GridEntity
+GridEntityDoor
+GridEntityPit
+GridEntityPoop
+GridEntityPressurePlate
+GridEntityRock
+GridEntitySpikes
+GridEntityTNT
+GridEntityDesc
+HUD
+ItemConfig
+ItemConfig
+ItemConfig Functions
+ItemConfig - Card
+ItemConfig - Costume
+ItemConfig - Item
+ItemConfig - PillEffect
+Input
+Isaac
+Isaac
+Table of contents
+Functions
+Add路Callback ()
+Add路Pill路Effect路To路Pool ()
+Add路Priority路Callback ()
+Console路Output ()
+Count路Bosses ()
+Count路Enemies ()
+Count路Entities ()
+Debug路String ()
+Execute路Command ()
+Explode ()
+Find路By路Type ()
+Find路In路Radius ()
+Get路Built路In路Callback路State ()
+Get路Callbacks ()
+Get路Card路Id路By路Name ()
+Get路Challenge ()
+Get路Challenge路Id路By路Name ()
+Get路Costume路Id路By路Path ()
+Get路Curse路Id路By路Name ()
+Get路Entity路Type路By路Name ()
+Get路Entity路Variant路By路Name ()
+Get路Frame路Count ()
+Get路Free路Near路Position ()
+Get路Item路Config ()
+Get路Item路Id路By路Name ()
+Get路Music路Id路By路Name ()
+Get路Pill路Effect路By路Name ()
+Get路Player ()
+Get路Player路Type路By路Name ()
+Get路Random路Position ()
+Get路Room路Entities ()
+Get路Screen路Height ()
+Get路Screen路Point路Scale ()
+Get路Screen路Width ()
+Get路Sound路Id路By路Name ()
+Get路Text路Width ()
+Get路Time ()
+Get路Trinket路Id路By路Name ()
+Grid路Spawn ()
+Has路Mod路Data ()
+Load路Mod路Data ()
+Register路Mod ()
+Remove路Callback ()
+Remove路Mod路Data ()
+Render路Scaled路Text ()
+Render路Text ()
+Run路Callback ()
+Run路Callback路With路Param ()
+Save路Mod路Data ()
+Screen路To路World ()
+Screen路To路World路Distance ()
+Set路Built路In路Callback路State ()
+Spawn ()
+World路To路Render路Position ()
+World路To路Screen ()
+World路To路Screen路Distance ()
+ItemPool
+KColor
+Level
+MusicManager
+Mod Reference
+Options
+PathFinder
+PlayerTypes
+PlayerTypes
+PlayerTypesActiveItemDesc
+PlayerTypesPosVel
+ProjectileParams
+QueueItemData
+Room
+RoomConfig
+RoomConfig
+Entry
+Room
+Spawn
+RoomDescriptor
+RNG
+Seeds
+Sprite
+SFXManager
+TearParams
+TemporaryEffect
+TemporaryEffects
+Vector
+Entities
+Entities
+Overview
+Boss Data
+Boss Data
+Chapter 1
+Chapter 1.5
+Chapter 2
+Chapter 2.5
+Chapter 3
+Chapter 3.5
+Chapter 4
+Chapter 4.5
+Final Bosses
+Entity Data
+Fissure Spawner
+Ball & Chain
+Tutorials
+Tutorials
+Example Project
+Functions in Lua
+Good Coding Practices
+Getting Coding Help
+Math and Lua Tips
+Adding Costumes to items without LUA
+Debugging with ZeroBrane Studio
+Debug Console
+Using additional .lua Files
+Using the standard library
+Writing screen shaders
+Render text
+Directories and save files
+Mod Organization
+Storing Data
+Custom Callbacks
+XMLs
+XMLs
+XML Overview
+achievements.xml
+ambush.xml
+ANM2 format
+babies.xml
+bombcostumes.xml
+backdrops.xml
+bosscolors.xml
+bossoverlays.xml
+bosspools.xml
+bossportraits.xml
+challenges.xml
+costumes2.xml
+curses.xml
+cutscenes.xml
+entities2.xml
+fortunes.txt
+fxlayers.xml
+giantbook.xml
+itempools.xml
+items.xml
+items_metadata.xml
+locusts.xml
+minibosses.xml
+music.xml
+nightmares.xml
+players.xml
+playerforms.xml
+pocketitems.xml
+preload.xml
+recipes.xml
+rules.txt
+seedmenu.xml
+seeds.txt
+sounds.xml
+stages.xml
+translations.xml
+wisps.xml
+FAQ
+FAQ
+FAQ
+Interactive FAQ
+Basic Information
+Getting Started
+Coding Help
+Lua Language
+Troubleshooting
+Launch Options
+Tools
+Tools
+Tools Overview
+XML Validator
+Animation Editor
+Itempool Editor
+Bugs
+Tags
+Lua 5.3 Docs
+Table of contents
+Functions
+Add路Callback ()
+Add路Pill路Effect路To路Pool ()
+Add路Priority路Callback ()
+Console路Output ()
+Count路Bosses ()
+Count路Enemies ()
+Count路Entities ()
+Debug路String ()
+Execute路Command ()
+Explode ()
+Find路By路Type ()
+Find路In路Radius ()
+Get路Built路In路Callback路State ()
+Get路Callbacks ()
+Get路Card路Id路By路Name ()
+Get路Challenge ()
+Get路Challenge路Id路By路Name ()
+Get路Costume路Id路By路Path ()
+Get路Curse路Id路By路Name ()
+Get路Entity路Type路By路Name ()
+Get路Entity路Variant路By路Name ()
+Get路Frame路Count ()
+Get路Free路Near路Position ()
+Get路Item路Config ()
+Get路Item路Id路By路Name ()
+Get路Music路Id路By路Name ()
+Get路Pill路Effect路By路Name ()
+Get路Player ()
+Get路Player路Type路By路Name ()
+Get路Random路Position ()
+Get路Room路Entities ()
+Get路Screen路Height ()
+Get路Screen路Point路Scale ()
+Get路Screen路Width ()
+Get路Sound路Id路By路Name ()
+Get路Text路Width ()
+Get路Time ()
+Get路Trinket路Id路By路Name ()
+Grid路Spawn ()
+Has路Mod路Data ()
+Load路Mod路Data ()
+Register路Mod ()
+Remove路Callback ()
+Remove路Mod路Data ()
+Render路Scaled路Text ()
+Render路Text ()
+Run路Callback ()
+Run路Callback路With路Param ()
+Save路Mod路Data ()
+Screen路To路World ()
+Screen路To路World路Distance ()
+Set路Built路In路Callback路State ()
+Spawn ()
+World路To路Render路Position ()
+World路To路Screen ()
+World路To路Screen路Distance ()
+Globals
+Class
+Isaac
+Global Class "Isaac"
+鈿擄笌
+Info
+You can get this class by using the
+Isaac
+global table.
+Note that to call these functions, you must use a
+.
+(period) instead of a
+:
+(colon)!
+Example Code
+1
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+Functions
+鈿擄笌
+Add路Callback ()
+鈿擄笌
+void AddCallback ( table modRef,
+ModCallback
+|string callbackId, table callbackFn, int entityId )
+鈿擄笌
+It is recommended to use the
+AddCallback
+function on a
+Mod Reference
+instead.
+Add路Pill路Effect路To路Pool ()
+鈿擄笌
+PillColor
+AddPillEffectToPool (
+PillEffect
+pillEffect )
+鈿擄笌
+Returns the
+PillColor
+of the added pill.
+Add路Priority路Callback ()
+鈿擄笌
+void AddPriorityCallback ( table modRef,
+ModCallback
+|string callbackId,
+CallbackPriority
+priority, table callbackFn, int entityId )
+鈿擄笌
+It is recommended to use the
+AddPriorityCallback
+function on a
+Mod Reference
+instead.
+Console路Output ()
+鈿擄笌
+void ConsoleOutput ( string text )
+鈿擄笌
+Prints a string into the Debug Console.
+Example Code
+You can use this example as an alternative.
+1
+2
+3
+4
+5
+6
+Isaac
+.
+ConsoleOutput
+(
+"This is a Test."
+)
+-- Output: This is a Test.
+-- Alternatively:
+print
+(
+"This is a Test."
+)
+-- Output: This is a Test.
+Count路Bosses ()
+鈿擄笌
+int CountBosses ( )
+鈿擄笌
+Returns the number of bosses in the current room.
+Count路Enemies ()
+鈿擄笌
+int CountEnemies ( )
+鈿擄笌
+Returns the number of enemies in the current room.
+Count路Entities ()
+鈿擄笌
+int CountEntities (
+Entity
+Spawner,
+EntityType
+Type = EntityType.ENTITY_NULL, int Variant = -1, int SubType = -1 )
+鈿擄笌
+Returns the number of entities in the current room that fulfill the specified requirements.
+Spawner
+refers to an Entity object (can be
+nil
+).
+Type
+refers to the found entity's type (can be
+EntityType
+.
+ENTITY_NULL
+).
+Variant
+and
+Subtype
+refer to the found entity's
+Variant
+and
+Subtype
+(can be
+-
+1
+).
+Debug路String ()
+鈿擄笌
+void DebugString ( string str )
+鈿擄笌
+Prints a string into the log file. You can find this file here:
+%
+systemdrive
+%
+\
+Users
+\
+%
+username
+%
+\
+Documents
+\
+My
+Games
+\
+Binding
+of
+Isaac
+Repentance
+\
+log
+.
+txt
+Example Code
+This code prints
+"This is a Test."
+in the log.txt file.
+1
+2
+Isaac
+.
+DebugString
+(
+"This is a Test."
+)
+-- Output: [INFO] - Lua Debug: This is a Test.
+Warning
+The max string size you can log is 10,219 bytes. If you go over this limit then the string will be truncated, but the newline character won't be appended to the end of your line and the next log line won't start on its own line.
+If you're logging english (or ascii) characters then each character is equal to 1 byte.
+If you're logging multi-byte characters (e.g. chinese characters that use 3 bytes in utf-8 encoding) then perform some simple math: 10219 / 3 = 3406 characters (rounded down)
+You can use
+string.len
+to get the number of bytes and
+utf8.len
+to get the number of characters in your string.
+Execute路Command ()
+鈿擄笌
+string ExecuteCommand ( string command )
+鈿擄笌
+This function executes a debug console command. See the
+Debug Console Tutorial
+for informations on how to use commands.
+Explode ()
+鈿擄笌
+void Explode (
+Vector
+pos,
+Entity
+source, float damage )
+鈿擄笌
+Spawn an explosion on a specified location.
+Find路By路Type ()
+鈿擄笌
+Entity
+[] FindByType (
+EntityType
+Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false )
+鈿擄笌
+Returns entities based on Type, Variant, Subtype. If Variant and/or Subtype is -1 then everything is included. Use Cache flag for multiple calls per frame.
+If an entity has
+EntityFlag.FLAG_NO_QUERY
+then it will be excluded from the results. If you need to get an entity with that flag then you should use
+GetRoomEntities
+instead.
+Find路In路Radius ()
+鈿擄笌
+Entity
+[] FindInRadius (
+Vector
+Position, float Radius,
+EntityPartition
+Partitions = 0xFFFFFFFF  )
+鈿擄笌
+Returns an array of all entities inside the range of Radius from Position filtered by Partitions mask. (include all = 0xffffffff)
+This function does not return the entities sorted by nearest first, but based on the order they were loaded.
+Get路Built路In路Callback路State ()
+鈿擄笌
+boolean GetBuiltInCallbackState (
+ModCallbacks
+callbackId )
+鈿擄笌
+Returns
+true
+if callbacks under
+callbackId
+will be ran by the game. This is normally only
+false
+if there are no callbacks added under
+callbackId
+.
+Get路Callbacks ()
+鈿擄笌
+table GetCallbacks (
+ModCallback
+|string callbackId, boolean createIfMissing = nil )
+鈿擄笌
+Returns a list of callbacks added under
+callbackId
+. Callbacks are represented as a table, for more information
+see the custom callback tutorial.
+The game holds all callbacks added to
+callbackId
+in a table, where the
+callbackId
+is the index, and the value is a table containing all callbacks added using said
+callbackId
+. If
+createIfMissing
+is
+true
+, and there are no added callbacks under
+callbackId
+, then the game will create an empty table for the
+callbackId
+for new callbacks to be added to. This empty table contains a metatable with a default
+__matchParams
+metamethod, which is called when checking if the extra parameter specified when adding the callback is valid. This function is also used with
+createIfMissing
+set to
+true
+by the game whenever any callback is added.
+If
+createIfMissing
+is
+false
+or
+nil
+and there are no callbacks added under
+callbackId
+, this function will return an empty table.
+Get路Card路Id路By路Name ()
+鈿擄笌
+Card
+GetCardIdByName ( string cardHudName )
+鈿擄笌
+Returns the
+CardID
+based on the "hud"-attribute defined in the "pocketitems.xml" file. Returns
+-1
+if no card with that "hud" attribute value could be found.
+Warning
+The name of this function is misleading, this function will only work with the "hud"-attribute value of a card and not the name of a card.
+Bug
+This function does not work for vanilla cards/runes, because they don't have the "hud" attribute defined in their entry in the pocketitems.xml file. You need to use the
+Card
+enum to get those vanilla IDs instead.
+Example Code
+This code gets the CardID of a modded card.
+1
+2
+3
+<pocketitems>
+<card
+type=
+"tarot"
+pickup=
+"1"
+description=
+"some description"
+name=
+"My new card"
+hud=
+"my_modded_card"
+/>
+</pocketitems>
+1
+Isaac
+.
+GetCardIdByName
+(
+"my_modded_card"
+)
+Get路Challenge ()
+鈿擄笌
+Challenge
+GetChallenge ( )
+鈿擄笌
+Returns the ID of a challenge the player is currently in. Returns 0 if the player is not playing any challenge.
+Get路Challenge路Id路By路Name ()
+鈿擄笌
+Challenge
+GetChallengeIdByName ( string challengeName )
+鈿擄笌
+Returns the ChallengeID of a challenge based on its name. (File: challenges.xml) Returns
+-1
+if no challenge with that name could be found (Case sensitive).
+Example Code
+This code gets the ChallengeID of Aprils fool.
+1
+2
+Isaac
+.
+GetChallengeIdByName
+(
+"Aprils fool"
+)
+--Returns: 32
+Get路Costume路Id路By路Path ()
+鈿擄笌
+int GetCostumeIdByPath ( string path )
+鈿擄笌
+Returns the CostumeID of a costume based on its file path. (File: costumes2.xml) Returns
+-1
+if no costume with that path could be found.
+Example Code
+This code gets the CostumeID of the Poop transformation costume.
+1
+2
+Isaac
+.
+GetCostumeIdByPath
+(
+"gfx/characters/n027_Transformation_Poop.anm2"
+)
+--Returns: 27
+Get路Curse路Id路By路Name ()
+鈿擄笌
+LevelCurse
+GetCurseIdByName ( string curseName )
+鈿擄笌
+Returns the CurseID of a curse based on its name. (File: curses.xml) Returns
+-1
+if no curse with that name could be found.
+Example Code
+This code gets the CurseID of Curse of the Unknown.
+1
+2
+Isaac
+.
+GetCurseIdByName
+(
+"Curse of the Unknown"
+)
+--Returns: 4
+Get路Entity路Type路By路Name ()
+鈿擄笌
+EntityType
+GetEntityTypeByName ( string entityName )
+鈿擄笌
+Returns the EntityType of an entity based on its name. (File: entities2.xml) Returns
+0
+if no entity with that name could be found.
+Notes
+There is no SubType version of this function.
+Example Code
+This code gets the EntityType of Flaming Gaper.
+1
+2
+Isaac
+.
+GetEntityTypeByName
+(
+"Flaming Gaper"
+)
+--Returns: 10
+Get路Entity路Variant路By路Name ()
+鈿擄笌
+int GetEntityVariantByName ( string entityName )
+鈿擄笌
+Returns the variant of an entity based on its name. (File: entities2.xml) Returns
+-1
+if no entity with that name could be found.
+Notes
+There is no SubType version of this function.
+Example Code
+This code gets the variant of Flaming Gaper.
+1
+2
+Isaac
+.
+GetEntityVariantByName
+(
+"Flaming Gaper"
+)
+--Returns: 2
+Get路Frame路Count ()
+鈿擄笌
+int GetFrameCount ( )
+鈿擄笌
+Returns the amount of frames the game as a whole is running. The counter increases even when the game is paused or when you are in the main menu!
+1 second equals roughtly 60 frames.
+This function therefore works drastically different than
+Game
+():
+GetFrameCount
+()
+Get路Free路Near路Position ()
+鈿擄笌
+Vector
+GetFreeNearPosition (
+Vector
+pos, float step )
+鈿擄笌
+Get路Item路Config ()
+鈿擄笌
+ItemConfig
+GetItemConfig ( )
+鈿擄笌
+This is the only way to access the
+ItemConfig
+object.
+Get路Item路Id路By路Name ()
+鈿擄笌
+CollectibleType
+GetItemIdByName ( string itemName )
+鈿擄笌
+Returns the ItemID of a Collectible. (File: items.xml) Returns
+-1
+if no item with that name could be found.
+Example Code
+This code gets the ItemID of Brimstone.
+1
+2
+Isaac
+.
+GetItemIdByName
+(
+"Brimstone"
+)
+--Returns: 118
+Get路Music路Id路By路Name ()
+鈿擄笌
+Music
+GetMusicIdByName ( string musicName )
+鈿擄笌
+Returns the MusicID of a music track. (File: music.xml) Returns
+-1
+if no music with that name could be found.
+Example Code
+This code gets the MusicID of the Title Screen.
+1
+2
+Isaac
+.
+GetMusicIdByName
+(
+"Title Screen"
+)
+--Returns: 61
+Get路Pill路Effect路By路Name ()
+鈿擄笌
+PillEffect
+GetPillEffectByName ( string pillEffect )
+鈿擄笌
+Returns the PillEffectID based on its name. (File: pocketitems.xml) Returns
+-1
+if no pill with that name could be found.
+Example Code
+This code gets the PillEffectID of I can see forever!.
+1
+2
+Isaac
+.
+GetPillEffectByName
+(
+"I can see forever!"
+)
+--Returns: 23
+Get路Player ()
+鈿擄笌
+EntityPlayer
+GetPlayer ( int playerID = 0 )
+鈿擄笌
+Returns the EntityPlayer that matches the provided player ID. Player IDs start at 0 and increment upwards. For example, when playing as Jacob & Esau, Jacob will have a player ID of 0 and Esau will have a player ID of 1.
+If an invalid player ID is passed (such as -20 or 20), the function will instead assume a player index of 0.
+This function can return
+nil
+if it is called before any player is initialized (i.e. if you call it in the main menu).
+This function is the same as
+Game():GetPlayer()
+.
+Example Code
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+local
+function
+getPlayers
+()
+local
+game
+=
+Game
+()
+local
+numPlayers
+=
+game
+:
+GetNumPlayers
+()
+local
+players
+=
+{}
+for
+i
+=
+0
+,
+numPlayers
+-
+1
+do
+local
+player
+=
+Isaac
+.
+GetPlayer
+(
+i
+)
+table.insert
+(
+players
+,
+player
+)
+end
+return
+players
+end
+Get路Player路Type路By路Name ()
+鈿擄笌
+PlayerType
+GetPlayerTypeByName ( string playerName , boolean Tainted = false )
+鈿擄笌
+Returns the PlayerType (ID) of a character based on its name. (File: players.xml) Returns
+-1
+if no player with that name could be found.
+Warning
+In Repentance, character names where made translateable and therefore use the translation placeholder as their "base name". For example, to get the
+PlayerType
+of Cain, you need to use this function with the character name
+#AZAZEL_NAME
+instead of
+Azazel
+.
+It is therefore recommended to use this function for modded characters, and use the
+PlayerType
+enum directly, if you want to have the PlayerType of a vanilla character.
+Example Code
+This code gets the PlayerType of Azazel.
+1
+2
+3
+4
+5
+-- REPENTANCE:
+Isaac
+.
+GetPlayerTypeByName
+(
+"#AZAZEL_NAME"
+)
+--Returns: 7
+-- AFTERBIRTH+:
+Isaac
+.
+GetPlayerTypeByName
+(
+"Azazel"
+)
+--Returns: 7
+Get路Random路Position ()
+鈿擄笌
+Vector
+GetRandomPosition ( )
+鈿擄笌
+Returns a random position inside the current room. The Return value is a Vector containing the position in world coordinates.
+Get路Room路Entities ()
+鈿擄笌
+Entity
+[] GetRoomEntities ( )
+鈿擄笌
+Returns an iterable table containing all entities in the room at the time the function was called.
+This behavior is different to
+Room::GetEntities()
+, which returns a raw pointer to the array that stores all entities of the room at any given time.
+For most usecases, its advised to use
+Isaac.GetRoomEntities()
+!
+Example Code
+This code prints the Type, Variant and SubType of each entity in the room.
+1
+2
+3
+for
+i
+,
+entity
+in
+ipairs
+(
+Isaac
+.
+GetRoomEntities
+())
+do
+print
+(
+entity
+.
+Type
+,
+entity
+.
+Variant
+,
+entity
+.
+SubType
+)
+end
+Get路Screen路Height ()
+鈿擄笌
+float GetScreenHeight ( )
+鈿擄笌
+Get路Screen路Point路Scale ()
+鈿擄笌
+float GetScreenPointScale ( )
+鈿擄笌
+Returns a number denoting how "zoomed in" the screen is. This can be
+1.0
+or
+2.0
+, depending on the resolution of the game window.
+Video Demonstration
+Demonstration of how the size of the game window changes the value this function returns.
+Get路Screen路Width ()
+鈿擄笌
+float GetScreenWidth ( )
+鈿擄笌
+Get路Sound路Id路By路Name ()
+鈿擄笌
+SoundEffect
+GetSoundIdByName ( string soundName )
+鈿擄笌
+Returns the
+SoundEffect
+of a sound based on its name. (File: sounds.xml) Returns
+-1
+if no sound with that name could be found.
+Example Code
+This code gets the SoundEffectID of a sound named "Custom Sound Effect"
+1
+Isaac
+.
+GetSoundIdByName
+(
+"Custom Sound Effect"
+)
+Get路Text路Width ()
+鈿擄笌
+int GetTextWidth ( string str )
+鈿擄笌
+Returns the width of the given string in pixels based on the "terminus8" font (same font as used in Isaac.RenderText())
+Get路Time ()
+鈿擄笌
+int GetTime ( )
+鈿擄笌
+Returns the current time in milliseconds since the computer's operating system was started.
+This is useful for measuring how much real time has passed independent of how many frames have passed. (Frames are not a very good indicator of how much time has passed, because the game locks up to load new data on every level transition and room transition.)
+For example, you could use this to implement an on-screen speedrunning timer based on real-time, or to benchmark the performance impact of one function over another.
+Get路Trinket路Id路By路Name ()
+鈿擄笌
+TrinketType
+GetTrinketIdByName ( string trinketName )
+鈿擄笌
+Returns the TrinketType of a trinket based on its name. (File: items.xml) Returns
+-1
+if no trinket with that name could be found.
+Example Code
+This code gets the TrinketType of Lucky Toe.
+1
+2
+Isaac
+.
+GetTrinketIdByName
+(
+"Lucky Toe"
+)
+--Returns: 42
+Grid路Spawn ()
+鈿擄笌
+GridEntity
+GridSpawn (
+GridEntityType
+gridEntityType, int variant,
+Vector
+position, boolean forced )
+鈿擄笌
+Spawn a
+GridEntity
+at the given position (world coordinates).
+Bugs
+The "forced" argument can override the grid entity at the given location in certain cases. For example: it won't work with a rock, but will work with a rock that's been blown up. You can check the location with
+Isaac.GetFreeNearPosition
+to see if the game considers that location free. Check the returned grid entity's type to make sure the replacement happened. Otherwise, you may need to remove the grid entity at the given location before spawning something else in its place.
+For example, to spawn a super secret rock in the center of the room:
+1
+2
+3
+4
+local
+game
+=
+Game
+()
+local
+room
+=
+game
+:
+GetRoom
+()
+local
+centerPos
+=
+room
+:
+GetCenterPos
+()
+Isaac
+.
+GridSpawn
+(
+GridEntityType
+.
+GRID_ROCK_SS
+,
+0
+,
+centerPos
+,
+true
+)
+Has路Mod路Data ()
+鈿擄笌
+boolean HasModData ( table modRef )
+鈿擄笌
+Returns "true" if your mod has Data stored using the "SaveModData()" function. Aka. if there is a "saveX.dat" file in your mod folder.
+There are 3 "saveX.dat" files, one per Savegame. The number indicates the savegame it corresponds to. The number will be determined automatically by the game.
+For AB+, they are stored inside their mod's folder next to the "main.lua" file.
+For Repentance, They are stored in the "data" folder next to the "mods" folder inside the game files.
+It is recommended to use the
+HasData
+function on a
+Mod Reference
+instead.
+Load路Mod路Data ()
+鈿擄笌
+string LoadModData ( table modRef )
+鈿擄笌
+Returns a string that was stored in a "saveX.dat" file using the "SaveModData()" function. If there is no "saveX.dat" file in your mod, this function will return an empty string.
+There are 3 "saveX.dat" files, one per Savegame. The number indicates the savegame it corresponds to. The number will be determined automatically by the game.
+If you call this function in the main menu, it will return the save data for save slot 1 by default.
+For AB+, they are stored inside their mod's folder next to the "main.lua" file.
+For Repentance, They are stored in the "data" folder next to the "mods" folder inside the game files.
+It is recommended to use the
+LoadData
+function on a
+Mod Reference
+instead.
+Register路Mod ()
+鈿擄笌
+void RegisterMod ( table modRef, string modName, int apiVersion )
+鈿擄笌
+Registers a table with the game to use as a
+Mod Reference
+.
+It is recommended to use the global
+RegisterMod
+function instead.
+Remove路Callback ()
+鈿擄笌
+void RemoveCallback ( table modRef,
+ModCallback
+|string callbackId, table callbackFn )
+鈿擄笌
+It is recommended to use the
+RemoveCallback
+function on a
+Mod Reference
+instead.
+Remove路Mod路Data ()
+鈿擄笌
+void RemoveModData ( table modRef )
+鈿擄笌
+Deletes the stored "saveX.dat" file if it exists.
+There are 3 "saveX.dat" files, one per Savegame. They are stored in the mod's folder next to the "main.lua" file. The number indicates the savegame it corresponds to. The number will be determined automatically by the game.
+It is recommended to use the
+RemoveData
+function on a
+Mod Reference
+instead.
+Render路Scaled路Text ()
+鈿擄笌
+void RenderScaledText ( string str, float X, float Y, float ScaleX, float ScaleY, float R, float G, float B, float A )
+鈿擄笌
+Renders a scaled text on the Screen. X and Y coordinates need to be in screen coordinates ( x[0,~500) y [0,~350) ). ScaleX, ScaleY, R ,G ,B and A need to be between [0,1]. Some scale values can cause the font to display deformed and pixelated.
+Example Code
+This code renders the player position on the screen.
+1
+2
+3
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+text
+=
+"X: "
+..
+player
+.
+Position
+.
+X
+..
+", Y: "
+..
+player
+.
+Position
+.
+Y
+Isaac
+.
+RenderScaledText
+(
+text
+,
+50
+,
+50
+,
+0.5
+,
+0.5
+,
+1
+,
+1
+,
+1
+,
+1
+)
+Render路Text ()
+鈿擄笌
+void RenderText ( string str, float X, float Y, float R, float G, float B, float A )
+鈿擄笌
+Renders a text with the default size on the Screen. X and Y coordinates need to be in screen coordinates ( x[0,~500) y [0,~350) ). R,G,B and A need to be between [0,1].
+Example Code
+This code renders the player position on the screen.
+1
+2
+3
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+pos
+=
+player
+.
+Position
+Isaac
+.
+RenderText
+(
+"X: "
+..
+pos
+.
+X
+..
+" Y: "
+..
+pos
+.
+Y
+,
+50
+,
+50
+,
+1
+,
+1
+,
+1
+,
+1
+)
+Run路Callback ()
+鈿擄笌
+void RunCallback (
+ModCallback
+|string callbackId )
+鈿擄笌
+Runs all callbacks added under
+callbackId
+, breaking on the first return and returning that value.
+Run路Callback路With路Param ()
+鈿擄笌
+void RunCallbackWithParam (
+ModCallback
+|string callbackId )
+鈿擄笌
+Runs all callbacks added under
+callbackId
+, breaking on the first return and returning that value.
+Save路Mod路Data ()
+鈿擄笌
+void SaveModData ( table modRef, string data )
+鈿擄笌
+Stores a string in a "saveX.dat" file. The stored Data persists thruout resets and game restart, so its perfect to store persistent data.
+There are 3 "saveX.dat" files, one per Savegame. The number indicates the savegame it corresponds to. The number will be determined automatically by the game.
+For AB+, they are stored inside their mod's folder next to the "main.lua" file.
+For Repentance, They are stored in the "data" folder next to the "mods" folder inside the game files.
+It is recommended to use the
+SaveData
+function on a
+Mod Reference
+instead.
+Screen路To路World ()
+鈿擄笌
+Vector
+ScreenToWorld (
+Vector
+pos )
+鈿擄笌
+Transfers Screen (aka. Window coordinates) into Worldcoordinates. This can be used to get a specific location in the room in World coordnates The World coordinate system is x[0,inf) y[0,inf).
+Screen路To路World路Distance ()
+鈿擄笌
+Vector
+ScreenToWorldDistance (
+Vector
+pos )
+鈿擄笌
+Set路Built路In路Callback路State ()
+鈿擄笌
+void SetBuiltInCallbackState (
+ModCallbacks
+callbackId, boolean state )
+鈿擄笌
+Sets whether callbacks under
+callbackId
+will be ran by the game. The game uses this to activate a
+ModCallbacks
+once a callback is added under one, or deactivate them when those callbacks have been removed.
+Spawn ()
+鈿擄笌
+Entity
+Spawn (
+EntityType
+entityType, int entityVariant, int entitySubtype,
+Vector
+position,
+Vector
+velocity,
+Entity
+Spawner )
+鈿擄笌
+Spawns the defined entity at the given location. If the position is not free, it spawns it in the nearest free position.
+There are two spawn functions.
+Isaac.Spawn()
+(this one), which spawns an entity with a random seed, and
+Game():Spawn()
+, which spawns an entity with a specific seed. However due to a bug,
+Isaac.Spawn()
+has a chance to generate a seed of 0, which crashes the game. If you need to spawn an entity with a random seed, you should always use
+Game():Spawn()
+with a helper function that calls
+Random()
+and arbitrarily sets the seed to 1 when the seed is 0. (
+IsaacScript
+users can just use the
+spawn
+helper function, which uses
+Game.Spawn
+under the hood.)
+Example Code
+This code spawns a random collectible at in center of the current room.
+1
+Isaac
+.
+Spawn
+(
+EntityType
+.
+ENTITY_PICKUP
+,
+PickupVariant
+.
+PICKUP_COLLECTIBLE
+,
+0
+,
+Vector
+(
+320
+,
+280
+),
+Vector
+(
+0
+,
+0
+),
+nil
+)
+Bug
+Because the random seed is generated using the
+Random()
+function, there is a chance that the entity's InitSeed is set to 0, which causes a crash if the entity needs to use RNG.
+World路To路Render路Position ()
+鈿擄笌
+Vector
+WorldToRenderPosition (
+Vector
+pos )
+鈿擄笌
+Transfers world (aka. game coordinates) into Rendercoordinates. This can be used to render things at fixed positions in a room. The Render coordinate system is x[0,inf) y[0,inf). It defines the Position on the rendering-plane in the current room.
+Example Code
+This code render "test" at the position of the mouse cursor independend on if the game is in full screen or not.
+1
+2
+3
+local
+mousePos
+=
+Input
+.
+GetMousePosition
+(
+true
+)
+local
+renderpos
+=
+Isaac
+.
+WorldToRenderPosition
+(
+mousePos
+)
+*
+2
+Isaac
+.
+RenderText
+(
+"test"
+,
+renderpos
+.
+X
+,
+renderpos
+.
+Y
+,
+1
+,
+1
+,
+1
+,
+1
+)
+World路To路Screen ()
+鈿擄笌
+Vector
+WorldToScreen (
+Vector
+pos )
+鈿擄笌
+Transfers world (aka. game coordinates) into Screen (aka. Window) coordinates. This can be used to render things next to an entity. The Screen coordinate system is x[0,inf) y[0,inf). Normally, it goes till ~500x ~300y. The return vector contains integer values or numbers ending with .5
+Example Code
+This code render "test" at the position of the player. The text will move with isaac.
+1
+2
+3
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+screenpos
+=
+Isaac
+.
+WorldToScreen
+(
+player
+.
+Position
+)
+Isaac
+.
+RenderText
+(
+"test"
+,
+screenpos
+.
+X
+,
+screenpos
+.
+Y
+,
+1
+,
+1
+,
+1
+,
+1
+)
+World路To路Screen路Distance ()
+鈿擄笌
+Vector
+WorldToScreenDistance (
+Vector
+pos )
+鈿擄笌
+Last update:
+August 17, 2026
+Back to top
+Copyright © 2021 - 2026 Wofsauge (Discord: Wofsauge#6503)
+Made with
+Material for MkDocs

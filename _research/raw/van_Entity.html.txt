@@ -1,0 +1,2072 @@
+﻿Entity - BoI: Lua API Docs
+Skip to content
+WARNING
+Due to the new DLC, some informations on this website can potentially be out-of-date.
+If you notice errors, please use the "Pencil"
+icon in the top right to edit the page.
+-->
+BoI: Lua API Docs
+Entity
+Initializing search
+wofsauge/IsaacDocs
+Home
+Docs
+Entities
+Tutorials
+XMLs
+FAQ
+Tools
+Bugs
+Tags
+Lua 5.3 Docs
+BoI: Lua API Docs
+wofsauge/IsaacDocs
+Home
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+Entity
+Table of contents
+Class Diagram
+Functions
+Add路Burn ()
+Add路Charmed ()
+Add路Confusion ()
+Add路Entity路Flags ()
+Add路Fear ()
+Add路Freeze ()
+Add路Health ()
+Add路Midas路Freeze ()
+Add路Poison ()
+Add路Shrink ()
+Add路Slowing ()
+Add路Velocity ()
+Blood路Explode ()
+Can路Shut路Doors ()
+Clear路Entity路Flags ()
+Collides路With路Grid ()
+Die ()
+Exists ()
+Get路Boss路ID ()
+Get路Color ()
+Get路Data ()
+Get路Drop路RNG ()
+Get路Entity路Flags ()
+Get路Last路Child ()
+Get路Last路Parent ()
+Get路Sprite ()
+Has路Common路Parent路With路Entity ()
+Has路Entity路Flags ()
+Has路Full路Health ()
+Has路Mortal路Damage ()
+Is路Active路Enemy ()
+Is路Boss ()
+Is路Dead ()
+Is路Enemy ()
+Is路Flying ()
+Is路Frame ()
+Is路Invincible ()
+Is路Visible ()
+Is路Vulnerable路Enemy ()
+Kill ()
+Kill路With路Source ()
+Multiply路Friction ()
+Post路Render ()
+Remove ()
+Remove路Status路Effects ()
+Render ()
+Render路Shadow路Layer ()
+Set路Color ()
+Set路Size ()
+Set路Sprite路Frame ()
+Set路Sprite路Overlay路Frame ()
+Take路Damage ()
+To路Bomb ()
+To路Effect ()
+To路Familiar ()
+To路Knife ()
+To路Laser ()
+To路NPC ()
+To路Pickup ()
+To路Player ()
+To路Projectile ()
+To路Tear ()
+Update ()
+Variables
+Child
+Collision路Damage
+Color
+Depth路Offset
+Drop路Seed
+Entity路Collision路Class
+FlipX
+Frame路Count
+Friction
+Grid路Collision路Class
+Hit路Points
+Index
+Init路Seed
+Mass
+Max路Hit路Points
+Parent
+Position
+Position路Offset
+Render路ZOffset
+Size
+Size路Multi
+Sorting路Layer
+Spawner路Entity
+Spawner路Type
+Spawner路Variant
+Spawn路Grid路Index
+Splat路Color
+Sprite路Offset
+Sprite路Rotation
+Sprite路Scale
+Sub路Type
+Target
+Target路Position
+Type
+Variant
+Velocity
+Visible
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+ActionTriggers
+ActiveSlot
+BabySubType
+BackdropType
+BatterySubType
+BedSubType
+BombSubType
+BombVariant
+ButtonAction
+CacheFlag
+CallbackPriority
+Card
+Challenge
+ChampionColor
+ChestSubType
+CoinSubType
+CollectibleType
+DamageFlag
+Difficulty
+Direction
+DoorSlot
+DoorState
+DoorVariant
+DrawStringAlignment
+EffectVariant
+EntityCollisionClass
+EntityFlag
+EntityGridCollisionClass
+EntityPartition
+EntityType
+FamiliarVariant
+GameStateFlag
+GridCollisionClass
+GridEntityType
+GridRooms
+HeartSubType
+InputHook
+ItemConfig
+ItemPoolType
+ItemType
+Keyboard
+KeySubType
+LaserOffset
+LaserSubType
+LaserVariant
+LevelCurse
+LevelStage
+LevelStateFlag
+LocustSubtypes
+ModCallbacks
+Mouse
+Music
+NpcState
+NullItemID
+PickupPrice
+PickupVariant
+PillColor
+PillEffect
+PlayerForm
+PlayerSpriteLayer
+PlayerType
+PoopPickupSubType
+PoopSpellType
+ProjectileFlags
+ProjectileVariant
+RenderMode
+RoomDescriptor
+RoomShape
+RoomTransitionAnim
+RoomType
+SackSubType
+SeedEffect
+SkinColor
+SortingLayer
+SoundEffect
+StageType
+TearFlags
+TearVariant
+TrinketType
+UseFlag
+WeaponType
+Globals
+Global Functions
+BitSet128
+Color
+CppContainer
+CppContainer
+ArrayProxy
+ArrayProxy
+RoomConfigEntries
+RoomConfigSpawns
+RoomDescriptor
+intValues
+EntityList
+Vector
+Vector
+CardConfigList
+CostumeConfigList
+EffectList
+ItemConfigList
+PillConfigList
+VectorList
+Entity
+Entity
+Entity
+Entity
+Table of contents
+Class Diagram
+Functions
+Add路Burn ()
+Add路Charmed ()
+Add路Confusion ()
+Add路Entity路Flags ()
+Add路Fear ()
+Add路Freeze ()
+Add路Health ()
+Add路Midas路Freeze ()
+Add路Poison ()
+Add路Shrink ()
+Add路Slowing ()
+Add路Velocity ()
+Blood路Explode ()
+Can路Shut路Doors ()
+Clear路Entity路Flags ()
+Collides路With路Grid ()
+Die ()
+Exists ()
+Get路Boss路ID ()
+Get路Color ()
+Get路Data ()
+Get路Drop路RNG ()
+Get路Entity路Flags ()
+Get路Last路Child ()
+Get路Last路Parent ()
+Get路Sprite ()
+Has路Common路Parent路With路Entity ()
+Has路Entity路Flags ()
+Has路Full路Health ()
+Has路Mortal路Damage ()
+Is路Active路Enemy ()
+Is路Boss ()
+Is路Dead ()
+Is路Enemy ()
+Is路Flying ()
+Is路Frame ()
+Is路Invincible ()
+Is路Visible ()
+Is路Vulnerable路Enemy ()
+Kill ()
+Kill路With路Source ()
+Multiply路Friction ()
+Post路Render ()
+Remove ()
+Remove路Status路Effects ()
+Render ()
+Render路Shadow路Layer ()
+Set路Color ()
+Set路Size ()
+Set路Sprite路Frame ()
+Set路Sprite路Overlay路Frame ()
+Take路Damage ()
+To路Bomb ()
+To路Effect ()
+To路Familiar ()
+To路Knife ()
+To路Laser ()
+To路NPC ()
+To路Pickup ()
+To路Player ()
+To路Projectile ()
+To路Tear ()
+Update ()
+Variables
+Child
+Collision路Damage
+Color
+Depth路Offset
+Drop路Seed
+Entity路Collision路Class
+FlipX
+Frame路Count
+Friction
+Grid路Collision路Class
+Hit路Points
+Index
+Init路Seed
+Mass
+Max路Hit路Points
+Parent
+Position
+Position路Offset
+Render路ZOffset
+Size
+Size路Multi
+Sorting路Layer
+Spawner路Entity
+Spawner路Type
+Spawner路Variant
+Spawn路Grid路Index
+Splat路Color
+Sprite路Offset
+Sprite路Rotation
+Sprite路Scale
+Sub路Type
+Target
+Target路Position
+Type
+Variant
+Velocity
+Visible
+EntityBomb
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPickup
+EntityPlayer
+EntityProjectile
+EntityTear
+EntityPtr
+EntityRef
+Font
+FontRenderSettings
+Game
+GridEntity
+GridEntity
+GridEntity
+GridEntityDoor
+GridEntityPit
+GridEntityPoop
+GridEntityPressurePlate
+GridEntityRock
+GridEntitySpikes
+GridEntityTNT
+GridEntityDesc
+HUD
+ItemConfig
+ItemConfig
+ItemConfig Functions
+ItemConfig - Card
+ItemConfig - Costume
+ItemConfig - Item
+ItemConfig - PillEffect
+Input
+Isaac
+ItemPool
+KColor
+Level
+MusicManager
+Mod Reference
+Options
+PathFinder
+PlayerTypes
+PlayerTypes
+PlayerTypesActiveItemDesc
+PlayerTypesPosVel
+ProjectileParams
+QueueItemData
+Room
+RoomConfig
+RoomConfig
+Entry
+Room
+Spawn
+RoomDescriptor
+RNG
+Seeds
+Sprite
+SFXManager
+TearParams
+TemporaryEffect
+TemporaryEffects
+Vector
+Entities
+Entities
+Overview
+Boss Data
+Boss Data
+Chapter 1
+Chapter 1.5
+Chapter 2
+Chapter 2.5
+Chapter 3
+Chapter 3.5
+Chapter 4
+Chapter 4.5
+Final Bosses
+Entity Data
+Fissure Spawner
+Ball & Chain
+Tutorials
+Tutorials
+Example Project
+Functions in Lua
+Good Coding Practices
+Getting Coding Help
+Math and Lua Tips
+Adding Costumes to items without LUA
+Debugging with ZeroBrane Studio
+Debug Console
+Using additional .lua Files
+Using the standard library
+Writing screen shaders
+Render text
+Directories and save files
+Mod Organization
+Storing Data
+Custom Callbacks
+XMLs
+XMLs
+XML Overview
+achievements.xml
+ambush.xml
+ANM2 format
+babies.xml
+bombcostumes.xml
+backdrops.xml
+bosscolors.xml
+bossoverlays.xml
+bosspools.xml
+bossportraits.xml
+challenges.xml
+costumes2.xml
+curses.xml
+cutscenes.xml
+entities2.xml
+fortunes.txt
+fxlayers.xml
+giantbook.xml
+itempools.xml
+items.xml
+items_metadata.xml
+locusts.xml
+minibosses.xml
+music.xml
+nightmares.xml
+players.xml
+playerforms.xml
+pocketitems.xml
+preload.xml
+recipes.xml
+rules.txt
+seedmenu.xml
+seeds.txt
+sounds.xml
+stages.xml
+translations.xml
+wisps.xml
+FAQ
+FAQ
+FAQ
+Interactive FAQ
+Basic Information
+Getting Started
+Coding Help
+Lua Language
+Troubleshooting
+Launch Options
+Tools
+Tools
+Tools Overview
+XML Validator
+Animation Editor
+Itempool Editor
+Bugs
+Tags
+Lua 5.3 Docs
+Table of contents
+Class Diagram
+Functions
+Add路Burn ()
+Add路Charmed ()
+Add路Confusion ()
+Add路Entity路Flags ()
+Add路Fear ()
+Add路Freeze ()
+Add路Health ()
+Add路Midas路Freeze ()
+Add路Poison ()
+Add路Shrink ()
+Add路Slowing ()
+Add路Velocity ()
+Blood路Explode ()
+Can路Shut路Doors ()
+Clear路Entity路Flags ()
+Collides路With路Grid ()
+Die ()
+Exists ()
+Get路Boss路ID ()
+Get路Color ()
+Get路Data ()
+Get路Drop路RNG ()
+Get路Entity路Flags ()
+Get路Last路Child ()
+Get路Last路Parent ()
+Get路Sprite ()
+Has路Common路Parent路With路Entity ()
+Has路Entity路Flags ()
+Has路Full路Health ()
+Has路Mortal路Damage ()
+Is路Active路Enemy ()
+Is路Boss ()
+Is路Dead ()
+Is路Enemy ()
+Is路Flying ()
+Is路Frame ()
+Is路Invincible ()
+Is路Visible ()
+Is路Vulnerable路Enemy ()
+Kill ()
+Kill路With路Source ()
+Multiply路Friction ()
+Post路Render ()
+Remove ()
+Remove路Status路Effects ()
+Render ()
+Render路Shadow路Layer ()
+Set路Color ()
+Set路Size ()
+Set路Sprite路Frame ()
+Set路Sprite路Overlay路Frame ()
+Take路Damage ()
+To路Bomb ()
+To路Effect ()
+To路Familiar ()
+To路Knife ()
+To路Laser ()
+To路NPC ()
+To路Pickup ()
+To路Player ()
+To路Projectile ()
+To路Tear ()
+Update ()
+Variables
+Child
+Collision路Damage
+Color
+Depth路Offset
+Drop路Seed
+Entity路Collision路Class
+FlipX
+Frame路Count
+Friction
+Grid路Collision路Class
+Hit路Points
+Index
+Init路Seed
+Mass
+Max路Hit路Points
+Parent
+Position
+Position路Offset
+Render路ZOffset
+Size
+Size路Multi
+Sorting路Layer
+Spawner路Entity
+Spawner路Type
+Spawner路Variant
+Spawn路Grid路Index
+Splat路Color
+Sprite路Offset
+Sprite路Rotation
+Sprite路Scale
+Sub路Type
+Target
+Target路Position
+Type
+Variant
+Velocity
+Visible
+Class
+Class "Entity"
+鈿擄笌
+Info
+First, see
+the tutorial on entities
+.
+You can get this class by using the following function:
+List of all functions that return 'Entity' objects
+EntityList.Get()
+Entity.GetLastChild()
+Entity.GetLastParent()
+Entity.Child
+Entity.Parent
+Entity.SpawnerEntity
+Entity.Target
+EntityLaser.BounceLaser()
+EntityNPC.GetPlayerTarget()
+EntityNPC.EntityRef
+EntityPlayer.AddBlueFlies
+EntityPlayer.AddBlueSpider
+EntityPlayer.GetActiveWeaponEntity
+EntityPlayer.GetNPCTarget
+EntityPlayer.GetTractorBeam
+EntityPlayer.ThrowBlueSpider
+EntityPlayer.ThrowHeldEntity
+EntityPtr
+EntityRef.Entity
+EntityTear.StickTarget
+Game.Spawn()
+Isaac.Spawn()
+Example Code
+local entity = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, 0, Vector(320,280), Vector(0,0), nil)
+Class Diagram
+鈿擄笌
+classDiagram
+class Entity:::diagramCurrentPage
+class EntityBomb
+class EntityEffect
+class EntityFamiliar
+class EntityKnife
+class EntityLaser
+class EntityNPC
+class EntityPickup
+class EntityPlayer
+class EntityProjectile
+class EntityTear
+Entity <|-- EntityBomb
+Entity <|-- EntityEffect
+Entity <|-- EntityFamiliar
+Entity <|-- EntityKnife
+Entity <|-- EntityLaser
+Entity <|-- EntityNPC
+Entity <|-- EntityPickup
+Entity <|-- EntityPlayer
+Entity <|-- EntityProjectile
+Entity <|-- EntityTear
+link Entity "Entity.html" "Go to page for 'Entity' class"
+link EntityBomb "EntityBomb.html" "Go to page for 'EntityBomb' class"
+link EntityEffect "EntityEffect.html" "Go to page for 'EntityEffect' class"
+link EntityFamiliar "EntityFamiliar.html" "Go to page for 'EntityFamiliar' class"
+link EntityKnife "EntityKnife.html" "Go to page for 'EntityKnife' class"
+link EntityLaser "EntityLaser.html" "Go to page for 'EntityLaser' class"
+link EntityNPC "EntityNPC.html" "Go to page for 'EntityNPC' class"
+link EntityPickup "EntityPickup.html" "Go to page for 'EntityPickup' class"
+link EntityPlayer "EntityPlayer.html" "Go to page for 'EntityPlayer' class"
+link EntityProjectile "EntityProjectile.html" "Go to page for 'EntityProjectile' class"
+link EntityTear "EntityTear.html" "Go to page for 'EntityTear' class"
+Functions
+鈿擄笌
+Add路Burn ()
+鈿擄笌
+void AddBurn (
+EntityRef
+Source, int Duration, float Damage )
+鈿擄笌
+void AddBurn (
+EntityRef
+Source, int Duration, float Damage, boolean IgnoreBosses )
+鈿擄笌
+Adds a burn effect to an enemy.
+Duration
+is in number of frames.
+Damage
+is the damage taken per frame.
+Duration Information
+Duration
+must be a minimum of 3 frames to deal damage. Every consecutive damage tick is 20 frames apart.
+2 damage ticks = 23 frames
+3 damage ticks = 43 frames
+4 damage ticks = 63 frames
+Duration
+has an upper limit. For an EntityPlayer, its maximum is one interval. For a normal entity, the maximum is 6 intervals.
+Example Code
+This code damages every entity in the room for 1 second with the damage source set to the player. The total damage dealt is 1.
+1
+2
+3
+4
+5
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+entities
+=
+Isaac
+.
+GetRoomEntities
+()
+for
+i
+,
+entity
+in
+ipairs
+(
+entities
+)
+do
+entity
+:
+AddBurn
+(
+EntityRef
+(
+player
+),
+30
+,
+1
+)
+end
+Add路Charmed ()
+鈿擄笌
+void AddCharmed (
+EntityRef
+sourceEntity, int Duration )
+鈿擄笌
+void AddCharmed (
+EntityRef
+sourceEntity, int Duration, boolean IgnoreBosses )
+鈿擄笌
+Adds a charmed-effect to an enemy. Duration is in Number of Frames. Charmed enemies are friendly towards Isaac and attack other enemies.
+Duration
+=
+-
+1
+makes the effect permanent and the enemy will follow you even to different rooms.
+Example Code
+This code charms every entity in the room for 1 second.
+1
+2
+3
+4
+5
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+entities
+=
+Isaac
+.
+GetRoomEntities
+()
+for
+i
+,
+entity
+in
+ipairs
+()
+do
+entity
+:
+AddCharmed
+(
+EntityRef
+(
+player
+),
+30
+)
+end
+Add路Confusion ()
+鈿擄笌
+void AddConfusion (
+EntityRef
+Source, int Duration, boolean IgnoreBosses )
+鈿擄笌
+Adds a confusion effect to an entity.
+Duration infos
+The Duration has a maximum of 5 seconds
+Example Code
+This code confuses every entity in the room for 1 second while ignoring bosses.
+1
+2
+3
+4
+5
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+entities
+=
+Isaac
+.
+GetRoomEntities
+()
+for
+i
+,
+entity
+in
+ipairs
+(
+entities
+)
+do
+entity
+:
+AddConfusion
+(
+EntityRef
+(
+player
+),
+30
+,
+true
+)
+end
+Add路Entity路Flags ()
+鈿擄笌
+void AddEntityFlags ( int Flags )
+鈿擄笌
+Add
+EntityFlags
+to the entity. Flags are used to add specific effects like being friendly or being immune from spike damage. You can add multiple flags at the same time by bitwise-concatenating them.
+Example Code
+This code adds slowing and confusion to the entity.
+1
+2
+3
+4
+5
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+entities
+=
+Isaac
+.
+GetRoomEntities
+()
+for
+i
+,
+entity
+in
+ipairs
+(
+entities
+)
+do
+entity
+:
+AddEntityFlags
+(
+EntityFlag
+.
+FLAG_SLOW
+|
+EntityFlag
+.
+FLAG_CONFUSION
+)
+end
+Add路Fear ()
+鈿擄笌
+void AddFear (
+EntityRef
+Source, int Duration )
+鈿擄笌
+void AddFear (
+EntityRef
+Source, int Duration, boolean IgnoreBosses )
+鈿擄笌
+Adds a fear-effect to an entity.
+Duration infos
+The Duration has a maximum of 5 seconds
+Example Code
+This code frightens every entity in the room for 1 second.
+1
+2
+3
+4
+5
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+entities
+=
+Isaac
+.
+GetRoomEntities
+()
+for
+i
+,
+entity
+in
+ipairs
+(
+entities
+)
+do
+entity
+:
+AddFear
+(
+EntityRef
+(
+player
+),
+30
+)
+end
+Add路Freeze ()
+鈿擄笌
+void AddFreeze (
+EntityRef
+Source, int Duration )
+鈿擄笌
+void AddFreeze (
+EntityRef
+Source, int Duration, boolean IgnoreBosses )
+鈿擄笌
+Freezes an entity, making it unable to move and attack.
+Duration infos
+The Duration has a maximum of 5 seconds
+Example Code
+This code freezes every entity in the room for 1 second.
+1
+2
+3
+4
+5
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+entities
+=
+Isaac
+.
+GetRoomEntities
+()
+for
+i
+,
+entity
+in
+ipairs
+(
+entities
+)
+do
+entity
+:
+AddFreeze
+(
+EntityRef
+(
+player
+),
+30
+)
+end
+Add路Health ()
+鈿擄笌
+void AddHealth ( float HitPoints )
+鈿擄笌
+Heals an entity.
+Add路Midas路Freeze ()
+鈿擄笌
+void AddMidasFreeze (
+EntityRef
+Source, int Duration )
+鈿擄笌
+void AddMidasFreeze (
+EntityRef
+Source, int Duration, boolean IgnoreBosses )
+鈿擄笌
+Turns the entity into a gold statue (can't move, can't attack, drops coins when killed)
+Duration infos
+The Duration has a maximum of 5 seconds
+Bug
+The golden color applied to the entity will stay for the full duration passed into the function, despite the freeze effect only lasting for a maximum of 5 seconds.
+Example Code
+This code turns every entity in the room into gold for 1 second.
+1
+2
+3
+4
+5
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+entities
+=
+Isaac
+.
+GetRoomEntities
+()
+for
+i
+,
+entity
+in
+ipairs
+(
+entities
+)
+do
+entity
+:
+AddMidasFreeze
+(
+EntityRef
+(
+player
+),
+30
+)
+end
+Add路Poison ()
+鈿擄笌
+void AddPoison (
+EntityRef
+Source, int Duration, float Damage )
+鈿擄笌
+void AddPoison (
+EntityRef
+Source, int Duration, float Damage, boolean IgnoreBosses )
+鈿擄笌
+Adds a poison effect to the entity.
+Duration infos
+The Duration must be a minimum of 3 frames to deal damage. Every consecutive damage tick is 20 frames apart.
+1
+2
+3
+4
+2 Damage-ticks = 23 frames
+3 = 43
+4 = 63
+...
+Bug
+The Duration value seems to have an upper limit. For a PlayerEntity, it's only lasting for the duration of one damage interval. For Entities it's up to 6 damage-intervals.
+Example Code
+This code applies a poison effect to every entity in the room for 1 second.
+1
+2
+3
+4
+5
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+entities
+=
+Isaac
+.
+GetRoomEntities
+()
+for
+i
+,
+entity
+in
+ipairs
+(
+entities
+)
+do
+entity
+:
+AddPoison
+(
+EntityRef
+(
+player
+),
+30
+,
+1
+)
+end
+Add路Shrink ()
+鈿擄笌
+void AddShrink (
+EntityRef
+Source, int Duration )
+鈿擄笌
+void AddShrink (
+EntityRef
+Source, int Duration, boolean IgnoreBosses )
+鈿擄笌
+Adds a shrink effect to the entity.
+Duration infos
+The Duration has a maximum of 5 seconds
+Example Code
+This code shrinks every entity in the room for 1 second.
+1
+2
+3
+4
+5
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+entities
+=
+Isaac
+.
+GetRoomEntities
+()
+for
+i
+,
+entity
+in
+ipairs
+(
+entities
+)
+do
+entity
+:
+AddShrink
+(
+EntityRef
+(
+player
+),
+30
+)
+end
+Add路Slowing ()
+鈿擄笌
+void AddSlowing (
+EntityRef
+Source, int Duration, float SlowValue,
+Color
+SlowColor )
+鈿擄笌
+void AddSlowing (
+EntityRef
+Source, int Duration, float SlowValue,
+Color
+SlowColor, boolean IgnoreBosses )
+鈿擄笌
+Makes the friction higher, effectively slowing down the entity.
+Example Code
+This code slows every entity in the room for 1 second with 0.5 original speed and applies a red color to it.
+1
+2
+3
+4
+5
+6
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+slowColor
+=
+Color
+(
+1
+,
+0
+,
+0
+,
+1
+,
+0
+,
+0
+,
+0
+)
+local
+entities
+=
+Isaac
+.
+GetRoomEntities
+()
+for
+i
+,
+entity
+in
+ipairs
+(
+entities
+)
+do
+entity
+:
+AddSlowing
+(
+EntityRef
+(
+player
+),
+30
+,
+0.5
+,
+slowColor
+)
+end
+Add路Velocity ()
+鈿擄笌
+void AddVelocity (
+Vector
+Velocity )
+鈿擄笌
+void AddVelocity (
+Vector
+Velocity, boolean IgnoreTimeScale = false )
+鈿擄笌
+Adds velocity to the entity. This can be used to move him in a certain direction (for example as a result of collision)
+IgnoreTimeScale
+- if true, TimeScale is treated as if it were 1.0, ignoring effects that would otherwise slow down or speed up the entity (e.g. Stopwatch)
+Blood路Explode ()
+鈿擄笌
+void BloodExplode ( )
+鈿擄笌
+Explodes with gibs and blood.
+Can路Shut路Doors ()
+鈿擄笌
+boolean CanShutDoors ( )
+鈿擄笌
+Enemies keep the doors shut.
+Clear路Entity路Flags ()
+鈿擄笌
+void ClearEntityFlags ( int Flags )
+鈿擄笌
+Removes all of the provided
+EntityFlags
+from the entity.
+Collides路With路Grid ()
+鈿擄笌
+boolean CollidesWithGrid ( )
+鈿擄笌
+Returns true if the entity is currently colliding with a valid GridEntity, as dictated by its
+Entity.GridCollisionClass
+.
+Die ()
+鈿擄笌
+void Die ( )
+鈿擄笌
+Kills the entity and triggers its death animation.
+Exists ()
+鈿擄笌
+boolean Exists ( )
+鈿擄笌
+Checks whether the entity is still spawned in the current room.
+This is mostly useful in situations where you are unwrapping an
+EntityPtr
+and the corresponding entity may or may not have been killed in the interim period.
+Get路Boss路ID ()
+鈿擄笌
+int GetBossID ( )
+鈿擄笌
+If the entity is a boss, it returns its specific boss id. If it isn't a boss it will return 0.
+A boss ID is
+NOT
+equal to the entity Type, but is defined as a separate value in the entities2.xml file inside the "bossID" attribute.
+For Delirium, this function returns the boss id Delirium is currently transformed into.
+Get路Color ()
+鈿擄笌
+const
+Color
+GetColor ( )
+鈿擄笌
+Returns the Color object associated with this entity.
+Get路Data ()
+鈿擄笌
+table GetData ( )
+鈿擄笌
+Returns a Lua table that contains mod-related data associated with the entity. Initially, this will always be an empty table. Any values stored in the table by mods will persist until the entity is despawned.
+GetData is typically used by smaller mods as a quick way to store information about an entity without having to create a dedicated data structure.
+Example Code
+This code adds custom data to an entity or prints it in the console if it exists.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+function
+checkAndSetData
+(
+entity
+)
+local
+data
+=
+entity
+:
+GetData
+()
+if
+data
+.
+foo
+==
+nil
+then
+-- Keys of data should be strings
+data
+.
+foo
+=
+"bar"
+-- Values of data can be any data type
+print
+(
+"Assigned an initial key of: foo --> bar"
+)
+else
+print
+(
+"Key foo already exists: "
+..
+tostring
+(
+data
+.
+foo
+))
+end
+end
+There are three main problems with
+GetData
+:
+Data is not unique per mod, which means that using
+GetData
+is essentially the same thing as using a global variable. Using global variables is bad for two main reasons. First, other mods can overwrite or mess with your data, so it isn't safe to use them. Second, the scope of global variables makes it difficult to determine where the variable is used when reading the code, and makes it harder to track down bugs, especially in larger programs.
+Most entities will despawn when leaving the room. For example, even though heart pickups are persisted by the game, they will be despawned and respawned each time the room is left and reentered, respectively. Thus, most entities will have their data deleted upon leaving the room. The exceptions to this are players, familiars, and entities with
+EntityFlag.FLAG_PERSISTENT
+.
+Even for entities that don't despawn when you leave a room,
+GetData
+is still not a suitable storage mechanism because it will be deleted when exiting to the menu or restarting/finishing a run. Well-programmed mods should never lose state when end-users save and quit the game, so instead of programming a
+GetData
+conversion + serialization routine, it's much simpler to just avoid using it to begin with.
+Modders should consider using data structures that are local to their own mod in order to avoid conflicts and any of the other issues previously presented. The index for such data structures is usually the pointer hash, which can be retrieved for any entity by using the
+GetPtrHash
+function.
+Get路Drop路RNG ()
+鈿擄笌
+RNG
+GetDropRNG ( )
+鈿擄笌
+Returns the assigned RNG object for the entity. This RNG is used to determine the items that are dropped on the entity's death.
+Get路Entity路Flags ()
+鈿擄笌
+int GetEntityFlags ( )
+鈿擄笌
+Get the
+EntityFlags
+of the entity. This will be a number which acts like a bitmask.
+Example Code
+This code prints something in the console, if the entity has a specific
+EntityFlags
+.
+1
+2
+3
+if
+entity
+:
+GetEntityFlags
+()
+&
+EntityFlag
+.
+FLAG_CONFUSION
+==
+EntityFlag
+.
+FLAG_CONFUSION
+then
+print
+(
+"This entity is confused!"
+)
+end
+Get路Last路Child ()
+鈿擄笌
+Entity
+GetLastChild ( )
+鈿擄笌
+Returns the last child of this entity. This is useful for certain segmented enemies so you can go all the way to the bottom "tail" entity in one method call.
+Return behavior
+If no child is found, this function returns
+nil
+.
+Get路Last路Parent ()
+鈿擄笌
+Entity
+GetLastParent ( )
+鈿擄笌
+Returns the last parent of this entity. This is useful for certain segmented enemies so you can go all the way to the top "head" entity in one method call.
+Return behavior
+If no parent is found, this function returns
+nil
+.
+Get路Sprite ()
+鈿擄笌
+Sprite
+GetSprite ( )
+鈿擄笌
+Return the sprite object of the entity.
+Has路Common路Parent路With路Entity ()
+鈿擄笌
+boolean HasCommonParentWithEntity (
+Entity
+Other )
+鈿擄笌
+Has路Entity路Flags ()
+鈿擄笌
+boolean HasEntityFlags ( int Flags )
+鈿擄笌
+Returns true if the entity has all named
+EntityFlags
+set.
+Example Code
+This code prints something in the console, if the entity has a specific
+EntityFlags
+.
+1
+2
+3
+if
+entity
+:
+HasEntityFlags
+(
+EntityFlag
+.
+FLAG_CONFUSION
+)
+then
+print
+(
+"This entity is confused!"
+)
+end
+Has路Full路Health ()
+鈿擄笌
+boolean HasFullHealth ( )
+鈿擄笌
+Has路Mortal路Damage ()
+鈿擄笌
+boolean HasMortalDamage ( )
+鈿擄笌
+Notes
+The game adds taken damage to a damage buffer, which gets applied in the next frame. HasMortalDamage() returns true if the buffered damage is enough to kill the entity.
+HasMortalDamage() will be updated additionally after TakeDamage() is called.
+Is路Active路Enemy ()
+鈿擄笌
+boolean IsActiveEnemy ( boolean includeDead )
+鈿擄笌
+return true for non background NPCs (ex: every enemy except fire and shopkeepers)
+Is路Boss ()
+鈿擄笌
+boolean IsBoss ( )
+鈿擄笌
+bosses display health bar
+Is路Dead ()
+鈿擄笌
+boolean IsDead ( )
+鈿擄笌
+Is路Enemy ()
+鈿擄笌
+boolean IsEnemy ( )
+鈿擄笌
+return true for NPCs that are not controlled by the player
+Is路Flying ()
+鈿擄笌
+boolean IsFlying ( )
+鈿擄笌
+Is路Frame ()
+鈿擄笌
+boolean IsFrame ( int Frame, int Offset )
+鈿擄笌
+true every X frames
+Is路Invincible ()
+鈿擄笌
+boolean IsInvincible ( )
+鈿擄笌
+Is路Visible ()
+鈿擄笌
+boolean IsVisible ( )
+鈿擄笌
+Is路Vulnerable路Enemy ()
+鈿擄笌
+boolean IsVulnerableEnemy ( )
+鈿擄笌
+return true for enemies that can be damaged
+Kill ()
+鈿擄笌
+void Kill ( )
+鈿擄笌
+Kills the entity and makes a blood splat or gibs.
+Kill路With路Source ()
+鈿擄笌
+void KillWithSource (
+EntityRef
+Source )
+鈿擄笌
+Multiply路Friction ()
+鈿擄笌
+void MultiplyFriction ( float Value )
+鈿擄笌
+Post路Render ()
+鈿擄笌
+void PostRender ( )
+鈿擄笌
+Remove ()
+鈿擄笌
+void Remove ( )
+鈿擄笌
+Remove the entity from the game instantly, without doing any additional effects/animations.
+Remove路Status路Effects ()
+鈿擄笌
+void RemoveStatusEffects ( )
+鈿擄笌
+Removes all Status Effects from the entity.
+Render ()
+鈿擄笌
+void Render (
+Vector
+Offset )
+鈿擄笌
+Render the current sprite of the Entity at the current entity position + offset.
+Render路Shadow路Layer ()
+鈿擄笌
+boolean RenderShadowLayer (
+Vector
+Offset )
+鈿擄笌
+Render the shadow / shadow layer again.
+Set路Color ()
+鈿擄笌
+void SetColor (
+Color
+Color, int Duration, int Priority, boolean Fadeout, boolean Share )
+鈿擄笌
+Set the colormask for the entity. This can be used to tint the sprites in different colors.
+Share
+boolean will apply color to child entitiy.
+Example Code
+This code changes the color of the sprite to a fully white sprite for 15 frames.
+1
+entity
+:
+SetColor
+(
+Color
+(
+1
+,
+1
+,
+1
+,
+1
+,
+255
+,
+255
+,
+255
+),
+15
+,
+1
+,
+false
+,
+false
+)
+Set路Size ()
+鈿擄笌
+void SetSize ( float Size,
+Vector
+SizeMulti, int NumGridCollisionPoints )
+鈿擄笌
+Set the size of the entity.
+Set路Sprite路Frame ()
+鈿擄笌
+void SetSpriteFrame ( string AnimationName, int FrameNum )
+鈿擄笌
+Set路Sprite路Overlay路Frame ()
+鈿擄笌
+void SetSpriteOverlayFrame ( string AnimationName, int FrameNum )
+鈿擄笌
+Take路Damage ()
+鈿擄笌
+boolean TakeDamage ( float Damage,
+DamageFlag
+Flags,
+EntityRef
+Source, int DamageCountdown )
+鈿擄笌
+Notes
+The game adds taken damage to a damage buffer, which gets applied in the next frame. Therefore, TakeDamage() will not decrement the entities HP immediately upon calling the function. Rather, it is only updated on the frame afterwards.
+To路Bomb ()
+鈿擄笌
+EntityBomb
+ToBomb ( )
+鈿擄笌
+Used to cast an
+Entity
+object to an
+EntityBomb
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Effect ()
+鈿擄笌
+EntityEffect
+ToEffect ( )
+鈿擄笌
+Used to cast an
+Entity
+object to an
+EntityEffect
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Familiar ()
+鈿擄笌
+EntityFamiliar
+ToFamiliar ( )
+鈿擄笌
+Used to cast an
+Entity
+object to an
+EntityFamiliar
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Knife ()
+鈿擄笌
+EntityKnife
+ToKnife ( )
+鈿擄笌
+Used to cast an
+Entity
+object to an
+EntityKnife
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Laser ()
+鈿擄笌
+EntityLaser
+ToLaser ( )
+鈿擄笌
+Used to cast an
+Entity
+object to an
+EntityLaser
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路NPC ()
+鈿擄笌
+EntityNPC
+ToNPC ( )
+鈿擄笌
+Used to cast an
+Entity
+object to an
+EntityNPC
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Pickup ()
+鈿擄笌
+EntityPickup
+ToPickup ( )
+鈿擄笌
+Used to cast an
+Entity
+object to an
+EntityPickup
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Player ()
+鈿擄笌
+EntityPlayer
+ToPlayer ( )
+鈿擄笌
+Used to cast an
+Entity
+object to an
+EntityPlayer
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Projectile ()
+鈿擄笌
+EntityProjectile
+ToProjectile ( )
+鈿擄笌
+Used to cast an
+Entity
+object to an
+EntityProjectile
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Tear ()
+鈿擄笌
+EntityTear
+ToTear ( )
+鈿擄笌
+Used to cast an
+Entity
+object to an
+EntityTear
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+Update ()
+鈿擄笌
+void Update ( )
+鈿擄笌
+Runs the post-update logic for the entity for a single frame, which will cause the associated callback to fire. Mods usually never need to call this function, as it can cause bugs when post-update logic is run more than once a frame.
+Variables
+鈿擄笌
+Child
+鈿擄笌
+Entity
+Child
+鈿擄笌
+Warning
+Sisters Vis bosses do have their counterpart entity as their Child. But none of them have a Parent entity set.
+Collision路Damage
+鈿擄笌
+float CollisionDamage
+鈿擄笌
+Color
+鈿擄笌
+Color
+Color
+鈿擄笌
+Depth路Offset
+鈿擄笌
+float DepthOffset
+鈿擄笌
+Get/Set the depth-offset of the entity. This value is added to the Y Position of the entity, which is then used to determine the rendering order of each entity. Default is 0 for all entities.
+Example Code
+This code explains how this variable works.
+1
+2
+3
+4
+5
+6
+7
+entity1
+.
+Position
+.
+Y
+-- => 50
+entity2
+.
+Position
+.
+Y
+-- => 45
+-- Entity1 is rendered in front of Entity2
+entity1
+.
+DepthOffset
+=
+-
+10
+-- new Entity1 renderYPosition => 40
+-- Entity2 is rendered in front of Entity1
+Drop路Seed
+鈿擄笌
+const int DropSeed
+鈿擄笌
+Get the Seed of the Drop RNG.
+Entity路Collision路Class
+鈿擄笌
+EntityCollisionClass
+EntityCollisionClass
+鈿擄笌
+FlipX
+鈿擄笌
+boolean FlipX
+鈿擄笌
+Frame路Count
+鈿擄笌
+const int FrameCount
+鈿擄笌
+Friction
+鈿擄笌
+float Friction
+鈿擄笌
+loaded from entity config
+Grid路Collision路Class
+鈿擄笌
+EntityGridCollisionClass
+GridCollisionClass
+鈿擄笌
+Notes
+EntityPlayers can only use GRIDCOLL_NONE, GRIDCOLL_WALLS, and GRIDCOLL_GROUND. All other enums will behave like GRIDCOLL_WALLS.
+Hit路Points
+鈿擄笌
+float HitPoints
+鈿擄笌
+Notes
+The HitPoints value is not decremented immediately upon taking damage like you would expect. Rather, it is only updated on the frame after the entity takes damage.
+Index
+鈿擄笌
+const int Index
+鈿擄笌
+Init路Seed
+鈿擄笌
+const int InitSeed
+鈿擄笌
+Mass
+鈿擄笌
+float Mass
+鈿擄笌
+Notes
+Stationary enemies have a Mass of 100. This does not apply to some stationary non-enemies, like slots.
+Max路Hit路Points
+鈿擄笌
+float MaxHitPoints
+鈿擄笌
+Parent
+鈿擄笌
+Entity
+Parent
+鈿擄笌
+This is a reference to the "parent" entity. For most entities, this field will be nil. This field is used in multi-segment entities to refer back to which segment is the "main" entity, like the head.
+Position
+鈿擄笌
+Vector
+Position
+鈿擄笌
+Position路Offset
+鈿擄笌
+const
+Vector
+PositionOffset
+鈿擄笌
+Render路ZOffset
+鈿擄笌
+int RenderZOffset
+鈿擄笌
+Bugs
+This variable doesn't seem to do anything useful. Use DepthOffset instead.
+Size
+鈿擄笌
+float Size
+鈿擄笌
+Returns the size of the hitbox of an entity.
+Size路Multi
+鈿擄笌
+Vector
+SizeMulti
+鈿擄笌
+"Hitboxes" in Isaac aren't boxes at all, but are actually capsules (circles). This determines the shape of the circle, with a higher X value making the circle wider, a higher Y value making the circle taller, and vice versa.
+Sorting路Layer
+鈿擄笌
+SortingLayer
+SortingLayer
+鈿擄笌
+Determines when the entity should render over other entities.
+Spawner路Entity
+鈿擄笌
+Entity
+SpawnerEntity
+鈿擄笌
+Spawner路Type
+鈿擄笌
+EntityType
+SpawnerType
+鈿擄笌
+Spawner路Variant
+鈿擄笌
+int SpawnerVariant
+鈿擄笌
+Spawn路Grid路Index
+鈿擄笌
+const int SpawnGridIndex
+鈿擄笌
+This is the grid index with which the entity spawned upon room generation.
+Rerolled item pedestals, or entities spawned after the initial room generation will have a value of -1
+Splat路Color
+鈿擄笌
+Color
+SplatColor
+鈿擄笌
+The color of the gibs when an entity dies.
+The Color of this property is read only, so if you want to change it, you have to replace the entire thing with a new Color object.
+Sprite路Offset
+鈿擄笌
+Vector
+SpriteOffset
+鈿擄笌
+Sprite路Rotation
+鈿擄笌
+float SpriteRotation
+鈿擄笌
+Sprite路Scale
+鈿擄笌
+Vector
+SpriteScale
+鈿擄笌
+Get/set the scale of the enemy sprite. This can be used to also scale the shadow of the entity.
+Also used as a Player stat - Change this in a callback to MC_EVALUATE_CACHE using the CacheFlag.CACHE_SIZE flag.
+This is equal to the Size stat.
+Most items that apply a Size Up (Magic Mushroom, Pill Larger...) do so by multiplying the SpriteScale by 1.2500623464584 (this is speculated to be 1.25 with a floating number error, you may choose to use 1.25 for future proofing instead).
+Most items that apply a Size Down (Mini Mushroom, Binky, Pill Smaller...) do so by multiplying the SpriteScale by 0.79996013641357 (this is speculated to be 0.8 with a floating number error, you may choose to use 0.8 for future proofing instead).
+Pluto uses its own multiplier of 0.5.
+Sub路Type
+鈿擄笌
+int SubType
+鈿擄笌
+Target
+鈿擄笌
+Entity
+Target
+鈿擄笌
+Target路Position
+鈿擄笌
+Vector
+TargetPosition
+鈿擄笌
+Type
+鈿擄笌
+const
+EntityType
+Type
+鈿擄笌
+Variant
+鈿擄笌
+int Variant
+鈿擄笌
+Velocity
+鈿擄笌
+Vector
+Velocity
+鈿擄笌
+Visible
+鈿擄笌
+boolean Visible
+鈿擄笌
+Last update:
+September 14, 2025
+Back to top
+Copyright © 2021 - 2026 Wofsauge (Discord: Wofsauge#6503)
+Made with
+Material for MkDocs

@@ -1,0 +1,1235 @@
+﻿Level - BoI: Lua API Docs
+Skip to content
+WARNING
+Due to the new DLC, some informations on this website can potentially be out-of-date.
+If you notice errors, please use the "Pencil"
+icon in the top right to edit the page.
+-->
+BoI: Lua API Docs
+Level
+Initializing search
+wofsauge/IsaacDocs
+Home
+Docs
+Entities
+Tutorials
+XMLs
+FAQ
+Tools
+Bugs
+Tags
+Lua 5.3 Docs
+BoI: Lua API Docs
+wofsauge/IsaacDocs
+Home
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+Level
+Table of contents
+Functions
+Add路Angel路Room路Chance ()
+Add路Curse ()
+Apply路Blue路Map路Effect ()
+Apply路Compass路Effect ()
+Apply路Map路Effect ()
+Can路Open路Challenge路Room ()
+Can路Spawn路Devil路Room ()
+Can路Stage路Have路Curse路Of路Labyrinth ()
+Change路Room ()
+Disable路Devil路Room ()
+Force路Horseman路Boss ()
+Get路Absolute路Stage ()
+Get路Angel路Room路Chance ()
+Get路Can路See路Everything ()
+Get路Current路Room ()
+Get路Current路Room路Desc ()
+Get路Current路Room路Index ()
+Get路Curse路Name ()
+Get路Curses ()
+Get路Devil路Angel路Room路RNG ()
+Get路Dungeon路Placement路Seed ()
+Get路Enter路Position ()
+Get路Heart路Picked ()
+Get路Last路Boss路Room路List路Index ()
+Get路Last路Room路Desc ()
+Get路Name ()
+Get路Non路Complete路Room路Index ()
+Get路Planetarium路Chance ()
+Get路Previous路Room路Index ()
+Get路Random路Room路Index ()
+Get路Room路By路Idx ()
+Get路Room路Count ()
+Get路Rooms ()
+Get路Stage ()
+Get路Stage路Type ()
+Get路Starting路Room路Index ()
+Get路State路Flag ()
+Has路Boss路Challenge ()
+Initialize路Devil路Angel路Room ()
+Is路Alt路Stage ()
+Is路Ascent ()
+Is路Devil路Room路Disabled ()
+Is路Next路Stage路Available ()
+Is路Pre路Ascent ()
+Make路Red路Room路Door ()
+Query路Room路Type路Index ()
+Remove路Compass路Effect ()
+Remove路Curses ()
+Set路Can路See路Everything ()
+Set路Heart路Picked ()
+Set路Next路Stage ()
+Set路Red路Heart路Damage ()
+Set路Stage ()
+Set路State路Flag ()
+Show路Map ()
+Show路Name ()
+Uncover路Hidden路Door ()
+Update ()
+Update路Visibility ()
+Variables
+Dungeon路Return路Position
+Dungeon路Return路Room路Index
+Enter路Door
+Greed路Mode路Wave
+Leave路Door
+ModCallbacks
+Enums
+Enums
+ActionTriggers
+ActiveSlot
+BabySubType
+BackdropType
+BatterySubType
+BedSubType
+BombSubType
+BombVariant
+ButtonAction
+CacheFlag
+CallbackPriority
+Card
+Challenge
+ChampionColor
+ChestSubType
+CoinSubType
+CollectibleType
+DamageFlag
+Difficulty
+Direction
+DoorSlot
+DoorState
+DoorVariant
+DrawStringAlignment
+EffectVariant
+EntityCollisionClass
+EntityFlag
+EntityGridCollisionClass
+EntityPartition
+EntityType
+FamiliarVariant
+GameStateFlag
+GridCollisionClass
+GridEntityType
+GridRooms
+HeartSubType
+InputHook
+ItemConfig
+ItemPoolType
+ItemType
+Keyboard
+KeySubType
+LaserOffset
+LaserSubType
+LaserVariant
+LevelCurse
+LevelStage
+LevelStateFlag
+LocustSubtypes
+ModCallbacks
+Mouse
+Music
+NpcState
+NullItemID
+PickupPrice
+PickupVariant
+PillColor
+PillEffect
+PlayerForm
+PlayerSpriteLayer
+PlayerType
+PoopPickupSubType
+PoopSpellType
+ProjectileFlags
+ProjectileVariant
+RenderMode
+RoomDescriptor
+RoomShape
+RoomTransitionAnim
+RoomType
+SackSubType
+SeedEffect
+SkinColor
+SortingLayer
+SoundEffect
+StageType
+TearFlags
+TearVariant
+TrinketType
+UseFlag
+WeaponType
+Globals
+Global Functions
+BitSet128
+Color
+CppContainer
+CppContainer
+ArrayProxy
+ArrayProxy
+RoomConfigEntries
+RoomConfigSpawns
+RoomDescriptor
+intValues
+EntityList
+Vector
+Vector
+CardConfigList
+CostumeConfigList
+EffectList
+ItemConfigList
+PillConfigList
+VectorList
+Entity
+Entity
+Entity
+EntityBomb
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPickup
+EntityPlayer
+EntityProjectile
+EntityTear
+EntityPtr
+EntityRef
+Font
+FontRenderSettings
+Game
+GridEntity
+GridEntity
+GridEntity
+GridEntityDoor
+GridEntityPit
+GridEntityPoop
+GridEntityPressurePlate
+GridEntityRock
+GridEntitySpikes
+GridEntityTNT
+GridEntityDesc
+HUD
+ItemConfig
+ItemConfig
+ItemConfig Functions
+ItemConfig - Card
+ItemConfig - Costume
+ItemConfig - Item
+ItemConfig - PillEffect
+Input
+Isaac
+ItemPool
+KColor
+Level
+Level
+Table of contents
+Functions
+Add路Angel路Room路Chance ()
+Add路Curse ()
+Apply路Blue路Map路Effect ()
+Apply路Compass路Effect ()
+Apply路Map路Effect ()
+Can路Open路Challenge路Room ()
+Can路Spawn路Devil路Room ()
+Can路Stage路Have路Curse路Of路Labyrinth ()
+Change路Room ()
+Disable路Devil路Room ()
+Force路Horseman路Boss ()
+Get路Absolute路Stage ()
+Get路Angel路Room路Chance ()
+Get路Can路See路Everything ()
+Get路Current路Room ()
+Get路Current路Room路Desc ()
+Get路Current路Room路Index ()
+Get路Curse路Name ()
+Get路Curses ()
+Get路Devil路Angel路Room路RNG ()
+Get路Dungeon路Placement路Seed ()
+Get路Enter路Position ()
+Get路Heart路Picked ()
+Get路Last路Boss路Room路List路Index ()
+Get路Last路Room路Desc ()
+Get路Name ()
+Get路Non路Complete路Room路Index ()
+Get路Planetarium路Chance ()
+Get路Previous路Room路Index ()
+Get路Random路Room路Index ()
+Get路Room路By路Idx ()
+Get路Room路Count ()
+Get路Rooms ()
+Get路Stage ()
+Get路Stage路Type ()
+Get路Starting路Room路Index ()
+Get路State路Flag ()
+Has路Boss路Challenge ()
+Initialize路Devil路Angel路Room ()
+Is路Alt路Stage ()
+Is路Ascent ()
+Is路Devil路Room路Disabled ()
+Is路Next路Stage路Available ()
+Is路Pre路Ascent ()
+Make路Red路Room路Door ()
+Query路Room路Type路Index ()
+Remove路Compass路Effect ()
+Remove路Curses ()
+Set路Can路See路Everything ()
+Set路Heart路Picked ()
+Set路Next路Stage ()
+Set路Red路Heart路Damage ()
+Set路Stage ()
+Set路State路Flag ()
+Show路Map ()
+Show路Name ()
+Uncover路Hidden路Door ()
+Update ()
+Update路Visibility ()
+Variables
+Dungeon路Return路Position
+Dungeon路Return路Room路Index
+Enter路Door
+Greed路Mode路Wave
+Leave路Door
+MusicManager
+Mod Reference
+Options
+PathFinder
+PlayerTypes
+PlayerTypes
+PlayerTypesActiveItemDesc
+PlayerTypesPosVel
+ProjectileParams
+QueueItemData
+Room
+RoomConfig
+RoomConfig
+Entry
+Room
+Spawn
+RoomDescriptor
+RNG
+Seeds
+Sprite
+SFXManager
+TearParams
+TemporaryEffect
+TemporaryEffects
+Vector
+Entities
+Entities
+Overview
+Boss Data
+Boss Data
+Chapter 1
+Chapter 1.5
+Chapter 2
+Chapter 2.5
+Chapter 3
+Chapter 3.5
+Chapter 4
+Chapter 4.5
+Final Bosses
+Entity Data
+Fissure Spawner
+Ball & Chain
+Tutorials
+Tutorials
+Example Project
+Functions in Lua
+Good Coding Practices
+Getting Coding Help
+Math and Lua Tips
+Adding Costumes to items without LUA
+Debugging with ZeroBrane Studio
+Debug Console
+Using additional .lua Files
+Using the standard library
+Writing screen shaders
+Render text
+Directories and save files
+Mod Organization
+Storing Data
+Custom Callbacks
+XMLs
+XMLs
+XML Overview
+achievements.xml
+ambush.xml
+ANM2 format
+babies.xml
+bombcostumes.xml
+backdrops.xml
+bosscolors.xml
+bossoverlays.xml
+bosspools.xml
+bossportraits.xml
+challenges.xml
+costumes2.xml
+curses.xml
+cutscenes.xml
+entities2.xml
+fortunes.txt
+fxlayers.xml
+giantbook.xml
+itempools.xml
+items.xml
+items_metadata.xml
+locusts.xml
+minibosses.xml
+music.xml
+nightmares.xml
+players.xml
+playerforms.xml
+pocketitems.xml
+preload.xml
+recipes.xml
+rules.txt
+seedmenu.xml
+seeds.txt
+sounds.xml
+stages.xml
+translations.xml
+wisps.xml
+FAQ
+FAQ
+FAQ
+Interactive FAQ
+Basic Information
+Getting Started
+Coding Help
+Lua Language
+Troubleshooting
+Launch Options
+Tools
+Tools
+Tools Overview
+XML Validator
+Animation Editor
+Itempool Editor
+Bugs
+Tags
+Lua 5.3 Docs
+Table of contents
+Functions
+Add路Angel路Room路Chance ()
+Add路Curse ()
+Apply路Blue路Map路Effect ()
+Apply路Compass路Effect ()
+Apply路Map路Effect ()
+Can路Open路Challenge路Room ()
+Can路Spawn路Devil路Room ()
+Can路Stage路Have路Curse路Of路Labyrinth ()
+Change路Room ()
+Disable路Devil路Room ()
+Force路Horseman路Boss ()
+Get路Absolute路Stage ()
+Get路Angel路Room路Chance ()
+Get路Can路See路Everything ()
+Get路Current路Room ()
+Get路Current路Room路Desc ()
+Get路Current路Room路Index ()
+Get路Curse路Name ()
+Get路Curses ()
+Get路Devil路Angel路Room路RNG ()
+Get路Dungeon路Placement路Seed ()
+Get路Enter路Position ()
+Get路Heart路Picked ()
+Get路Last路Boss路Room路List路Index ()
+Get路Last路Room路Desc ()
+Get路Name ()
+Get路Non路Complete路Room路Index ()
+Get路Planetarium路Chance ()
+Get路Previous路Room路Index ()
+Get路Random路Room路Index ()
+Get路Room路By路Idx ()
+Get路Room路Count ()
+Get路Rooms ()
+Get路Stage ()
+Get路Stage路Type ()
+Get路Starting路Room路Index ()
+Get路State路Flag ()
+Has路Boss路Challenge ()
+Initialize路Devil路Angel路Room ()
+Is路Alt路Stage ()
+Is路Ascent ()
+Is路Devil路Room路Disabled ()
+Is路Next路Stage路Available ()
+Is路Pre路Ascent ()
+Make路Red路Room路Door ()
+Query路Room路Type路Index ()
+Remove路Compass路Effect ()
+Remove路Curses ()
+Set路Can路See路Everything ()
+Set路Heart路Picked ()
+Set路Next路Stage ()
+Set路Red路Heart路Damage ()
+Set路Stage ()
+Set路State路Flag ()
+Show路Map ()
+Show路Name ()
+Uncover路Hidden路Door ()
+Update ()
+Update路Visibility ()
+Variables
+Dungeon路Return路Position
+Dungeon路Return路Room路Index
+Enter路Door
+Greed路Mode路Wave
+Leave路Door
+Class
+Class "Level"
+鈿擄笌
+Info
+You can get this class by using the following functions:
+Game:GetLevel()
+Example Code
+1
+local
+level
+=
+Game
+():
+GetLevel
+()
+Functions
+鈿擄笌
+Add路Angel路Room路Chance ()
+鈿擄笌
+void AddAngelRoomChance ( float Chance )
+鈿擄笌
+Adds
+Chance
+to the Angel deal modifier. See
+GetAngelRoomChance
+for more information.
+Add路Curse ()
+鈿擄笌
+void AddCurse (
+LevelCurse
+Curse, boolean ShowName )
+鈿擄笌
+Info
+As entries in curses.xml enumerate from 1 instead of 0, the LevelCurse bitmask value for a new curse must be acquired by doing 1 << (Isaac.GetCurseIdByName("...") - 1). This bitmask value is what's accepted by Level:AddCurse and the return value of MC_POST_CURSE_EVAL.
+Apply路Blue路Map路Effect ()
+鈿擄笌
+void ApplyBlueMapEffect ( )
+鈿擄笌
+Apply路Compass路Effect ()
+鈿擄笌
+void ApplyCompassEffect ( boolean Persistent )
+鈿擄笌
+Apply路Map路Effect ()
+鈿擄笌
+void ApplyMapEffect ( )
+鈿擄笌
+Can路Open路Challenge路Room ()
+鈿擄笌
+boolean CanOpenChallengeRoom ( int RoomIndex )
+鈿擄笌
+Returns whether or not a Challenge Room door will be open. You must pass this method a valid grid index on the floor. It does not matter if the grid index is actually attached to the Challenge Room or not. This method will always return
+false
+if an invalid or a negative grid index is passed.
+Can路Spawn路Devil路Room ()
+鈿擄笌
+boolean CanSpawnDevilRoom ( )
+鈿擄笌
+Can路Stage路Have路Curse路Of路Labyrinth ()
+鈿擄笌
+boolean CanStageHaveCurseOfLabyrinth (
+LevelStage
+Stage )
+鈿擄笌
+Change路Room ()
+鈿擄笌
+void ChangeRoom ( int RoomIndex, int Dimension = -1 )
+鈿擄笌
+Bugs
+This method does not update the fxlayers properly. Do not use this method and use
+Game.ChangeRoom
+instead.
+Disable路Devil路Room ()
+鈿擄笌
+void DisableDevilRoom ( )
+鈿擄笌
+Force路Horseman路Boss ()
+鈿擄笌
+boolean ForceHorsemanBoss ( int Seed )
+鈿擄笌
+Returns
+true
+on success.
+Get路Absolute路Stage ()
+鈿擄笌
+LevelStage
+GetAbsoluteStage ( )
+鈿擄笌
+In non-Greed Mode, returns the same thing as the
+GetStage()
+method. In Greed Mode, returns the adjusted stage similar to what it would be in non-Greed Mode.
+For example:
+On Greed Mode Basement,
+GetStage()
+returns 1, and
+GetAbsoluteStage()
+returns 1.
+On Greed Mode Caves,
+GetStage()
+returns 2, and
+GetAbsoluteStage()
+returns 3.
+On Greed mode Depths,
+GetStage()
+returns 3, and
+GetAbsoluteStage()
+returns 5.
+Get路Angel路Room路Chance ()
+鈿擄笌
+float GetAngelRoomChance ( )
+鈿擄笌
+Gets the modifier value of the chance for this floor's deal to be an Angel room. Specifically, the actual effective chance for a deal to be an Angel room is 50% plus this value.
+Info
+If this value is above
+0.0
+, deals can become Angel rooms even if a player has already taken a Devil deal item. If the chance is positive and a deal room has not spawned yet, the deal is guaranteed to be an Angel room.
+Under normal circumstances, setting this value to below
+0.0
+will
+not
+reduce the chance for an Angel room, as values below
+0.0
+are usually ignored. A negative value will only affect Angel room chance if the player has an item that enables visiting Angel rooms even if a Devil deal has already been taken, such as Book of Virtues or Act of Contrition.
+Get路Can路See路Everything ()
+鈿擄笌
+boolean GetCanSeeEverything ( )
+鈿擄笌
+Get路Current路Room ()
+鈿擄笌
+Room
+GetCurrentRoom ( )
+鈿擄笌
+Get路Current路Room路Desc ()
+鈿擄笌
+const
+RoomDescriptor
+GetCurrentRoomDesc ( )
+鈿擄笌
+This functions returns a read only version of the
+RoomDescriptor
+of the current room. If you want to edit the
+RoomDescriptor
+, use
+GetRoomByIdx()
+with
+GetCurrentRoomIndex()
+instead.
+Example Code
+This gets the current rooms
+RoomDescriptor
+class in read only and writeable versions.
+1
+2
+3
+local
+level
+=
+Game
+():
+GetLevel
+()
+local
+readOnlyRoomDesc
+=
+level
+:
+GetCurrentRoomDesc
+()
+local
+writeableRoomDesc
+=
+level
+:
+GetRoomByIdx
+(
+level
+:
+GetCurrentRoomIndex
+())
+Get路Current路Room路Index ()
+鈿擄笌
+int GetCurrentRoomIndex ( )
+鈿擄笌
+Notes
+This will always return the roomindex on the levelgrid, on which you entered the current room from. (see black entries in graphic below)
+Get路Curse路Name ()
+鈿擄笌
+string GetCurseName ( )
+鈿擄笌
+Get路Curses ()
+鈿擄笌
+LevelCurse
+GetCurses ( )
+鈿擄笌
+Get路Devil路Angel路Room路RNG ()
+鈿擄笌
+RNG
+GetDevilAngelRoomRNG ( )
+鈿擄笌
+Get路Dungeon路Placement路Seed ()
+鈿擄笌
+int GetDungeonPlacementSeed ( )
+鈿擄笌
+Get路Enter路Position ()
+鈿擄笌
+Vector
+GetEnterPosition ( )
+鈿擄笌
+Get路Heart路Picked ()
+鈿擄笌
+boolean GetHeartPicked ( )
+鈿擄笌
+Get路Last路Boss路Room路List路Index ()
+鈿擄笌
+int GetLastBossRoomListIndex ( )
+鈿擄笌
+Get路Last路Room路Desc ()
+鈿擄笌
+const
+RoomDescriptor
+GetLastRoomDesc ( )
+鈿擄笌
+Get路Name ()
+鈿擄笌
+string GetName ( )
+鈿擄笌
+Get路Non路Complete路Room路Index ()
+鈿擄笌
+int GetNonCompleteRoomIndex ( )
+鈿擄笌
+Get路Planetarium路Chance ()
+鈿擄笌
+float GetPlanetariumChance ( )
+鈿擄笌
+Returns the probability of getting a Planetarium (in the 0-1 range)
+Get路Previous路Room路Index ()
+鈿擄笌
+int GetPreviousRoomIndex ( )
+鈿擄笌
+Get路Random路Room路Index ()
+鈿擄笌
+int GetRandomRoomIndex ( boolean IAmErrorRoom, int Seed )
+鈿擄笌
+Get路Room路By路Idx ()
+鈿擄笌
+RoomDescriptor
+GetRoomByIdx ( int RoomIdx, int Dimension = -1 )
+鈿擄笌
+Example Code
+This gets the current rooms
+RoomDescriptor
+class.
+1
+2
+local
+level
+=
+Game
+():
+GetLevel
+()
+local
+curRoomDesc
+=
+level
+:
+GetRoomByIdx
+(
+level
+:
+GetCurrentRoomIndex
+())
+Dimension Info
+Dimension: ID of the dimension to get the room from
+1
+2
+3
+4
+* -1: Current dimension
+* 0: Main dimension
+* 1: Secondary dimension, used by Downpour mirror dimension and Mines escape sequence
+* 2: Death Certificate dimension
+Warning
+This function always returns a valid RoomDescriptor object, so error checking is recommended. The
+Data
+property of an invalid RoomDescriptor object is
+nil
+.
+Get路Room路Count ()
+鈿擄笌
+int GetRoomCount ( )
+鈿擄笌
+Get路Rooms ()
+鈿擄笌
+RoomDescriptor List
+GetRooms ( )
+鈿擄笌
+Example Code
+This code itterates over every room descriptor and prints the clear status of the room.
+1
+2
+3
+4
+5
+local
+rooms
+=
+Game
+():
+GetLevel
+():
+GetRooms
+()
+for
+i
+=
+0
+,
+rooms
+.
+Size
+-
+1
+do
+local
+room
+=
+rooms
+:
+Get
+(
+i
+)
+print
+(
+room
+.
+Clear
+)
+end
+Get路Stage ()
+鈿擄笌
+LevelStage
+GetStage ( )
+鈿擄笌
+Get路Stage路Type ()
+鈿擄笌
+StageType
+GetStageType ( )
+鈿擄笌
+The
+StageType
+describes the variant of the current stage.
+For example, the available stage variants of Stage 1 and 2 are: Basement (StageType=0), Cellar (StageType=1), Burning Basement (StageType=2), Downpour (StageType=4), Dross (StageType=5)
+Using this function in a stage without a variant (for example: The Void) will always return 0.
+Get路Starting路Room路Index ()
+鈿擄笌
+int GetStartingRoomIndex ( )
+鈿擄笌
+Returns the gridindex of the starting room of the current level.
+Get路State路Flag ()
+鈿擄笌
+boolean GetStateFlag (
+LevelStateFlag
+LevelStateFlag)
+鈿擄笌
+Has路Boss路Challenge ()
+鈿擄笌
+boolean HasBossChallenge ( )
+鈿擄笌
+Initialize路Devil路Angel路Room ()
+鈿擄笌
+void InitializeDevilAngelRoom ( boolean ForceAngel, boolean ForceDevil )
+鈿擄笌
+By calling this function, it "locks in" the choice between a Devil Room and an Angel Room for the current floor.
+Once the room is initialized, the appropriate door will spawn after killing the boss.
+This function still works to grant a Devil Room even if the player has the Eucharist.
+Calling this function twice will have no effect, because the room will already have been initialized. For example, this means that if you force an Angel Room, you can't change it back to a Devil Room later on.
+However, you can get around this restriction by calling
+level:GetRoomByIdx(GridRooms.ROOM_DEVIL_IDX).Data = nil
+, which will uninitialize the room.
+Is路Alt路Stage ()
+鈿擄笌
+boolean IsAltStage ( )
+鈿擄笌
+Returns
+true
+if the level's
+StageType
+is not
+StageType.STAGE_ORIGINAL
+.
+Is路Ascent ()
+鈿擄笌
+boolean IsAscent ( )
+鈿擄笌
+Returns
+true
+if the player is in the Ascent.
+Is路Devil路Room路Disabled ()
+鈿擄笌
+boolean IsDevilRoomDisabled ( )
+鈿擄笌
+Is路Next路Stage路Available ()
+鈿擄笌
+boolean IsNextStageAvailable ( )
+鈿擄笌
+Returns
+false
+if on a final floor (Chest/Dark Room, The Void, Home). Returns
+true
+otherwise, including cases where the next stage is technically not available such as not having the Polaroid or Negative when entering its respective Big Chest or beating Hush for the first time.
+Is路Pre路Ascent ()
+鈿擄笌
+boolean IsPreAscent ( )
+鈿擄笌
+Returns
+true
+if the player is in the version of Mausoleum/Gehenna II leading to the Ascent.
+Make路Red路Room路Door ()
+鈿擄笌
+boolean MakeRedRoomDoor ( int CurrentRoomIdx, DoorSlot Slot )
+鈿擄笌
+Attempts to create a red room door in the given room at the given door slot. Returns
+true
+on success.
+Notes
+This function can be used to create rooms not connected to any other room. For example, calling
+MakeRedRoomDoor(2, DoorSlot.DOOR_LEFT0)
+will create a room where
+Slot
+of
+CurrentRoomIdx
+would connect to, in this case grid index 1.
+Rooms can also be forced to be created by setting
+Challenge
+to Red Redemption (
+Challenge.CHALLENGE_RED_REDEMPTION
+). Note that creating a room connected to an otherwise invalid slot will cause the door to lead to an Error room!
+Query路Room路Type路Index ()
+鈿擄笌
+int QueryRoomTypeIndex (
+RoomType
+RoomType, boolean Visited,
+RNG
+rng, boolean IgnoreGroup = false )
+鈿擄笌
+IgnoreGroup: If set to
+true
+, includes rooms that do not have the same group ID as the current room (currently unused)
+Remove路Compass路Effect ()
+鈿擄笌
+void RemoveCompassEffect ( )
+鈿擄笌
+Remove路Curses ()
+鈿擄笌
+void RemoveCurses (
+LevelCurse
+Curses )
+鈿擄笌
+Curses: A bitmask of LevelCurse that indicates which curses will be removed
+Example Code
+This example removes curse of darkness and curse of the blind
+1
+Game
+():
+GetLevel
+():
+RemoveCurses
+(
+LevelCurse
+.
+CURSE_OF_DARKNESS
+|
+LevelCurse
+.
+CURSE_OF_BLIND
+)
+Set路Can路See路Everything ()
+鈿擄笌
+void SetCanSeeEverything ( boolean Value )
+鈿擄笌
+Set路Heart路Picked ()
+鈿擄笌
+void SetHeartPicked ( )
+鈿擄笌
+Set路Next路Stage ()
+鈿擄笌
+void SetNextStage ( )
+鈿擄笌
+This function puts you in the next stage without applying any of the floor changes. For the changes to fully apply, either use the
+reseed
+console command
+, or
+Game.StartStageTransition
+.
+Set路Red路Heart路Damage ()
+鈿擄笌
+void SetRedHeartDamage ( )
+鈿擄笌
+Set路Stage ()
+鈿擄笌
+void SetStage ( int StageOffset, int StageTypeOffset )
+鈿擄笌
+This function changes the current floor, and it's stage. For the changes to fully apply, either use the
+reseed
+console command
+, or
+Game.StartStageTransition
+.
+StageOffset acts as the new "floor":
+1 would be equally difficult to Basement I,
+2 would be equally difficult to Basement II,
+3 would be equally difficult to Caves I
+StageTypeOffset tells the game what "stage" to use, based on the listed IDs in
+stages.xml
+, however, the default stage of the floor's ID will be added on top of this
+StageOffset = 1 uses the stage at ID: StageTypeOffset + 1(Basement's stage ID),
+StageOffset = 2 uses the stage at ID: StageTypeOffset + 1(Same as StageOffset 1),
+StageOffset = 3 uses the stage at ID: StageTypeOffset + 4(Caves' stage ID)
+If you wish to directly use a stage ID, you can subtract the default stage for any given floor using a function like:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+local
+function
+defaultStageOfFloor
+(
+StageOffset
+)
+if
+(
+StageOffset
+==
+0
+)
+then
+print
+(
+"Attempting to get default stage of floor 0. This is not recommended"
+)
+Isaac
+.
+DebugString
+(
+"Attempting to get default stage of floor 0. This is not recommended"
+)
+return
+0
+elseif
+(
+StageOffset
+<=
+8
+)
+then
+return
+math.ceil
+(
+StageOffset
+/
+2
+)
+*
+3
+-
+2
+else
+return
+10
++
+(
+StageOffset
+-
+8
+)
+*
+2
+end
+end
+Notes
+If you pass StageOffset = 0, the function acts (seemingly) arbitrarily, though it is still possible to use
+StageOffset = -1 has an unusually small floor
+StageOffsets 9, 12, and 13 are all seemingly hardcoded in some ways. Blue Womb seems to have it's backdrop and layout forced, while The Void and Home seems to force their name and backdrop
+Set路State路Flag ()
+鈿擄笌
+void SetStateFlag (
+LevelStateFlag
+LevelStateFlag, boolean Val )
+鈿擄笌
+Show路Map ()
+鈿擄笌
+void ShowMap ( )
+鈿擄笌
+Show's all map (world/sun card effect) except the top secret room.
+Show路Name ()
+鈿擄笌
+void ShowName ( boolean Sticky )
+鈿擄笌
+Uncover路Hidden路Door ()
+鈿擄笌
+void UncoverHiddenDoor ( int CurrentRoomIdx,
+DoorSlot
+Slot )
+鈿擄笌
+Uncovers the door on both sides by modifying the saved grid entities for neighboring room.
+Update ()
+鈿擄笌
+void Update ( )
+鈿擄笌
+Update路Visibility ()
+鈿擄笌
+void UpdateVisibility ( )
+鈿擄笌
+Notes
+Whenever you update the visibility of a room on the minimap, it won't update the map automatically, since it is cached. You have to explicitly call  UpdateVisibility() afterwards to apply any changes.
+Example Code
+This code
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+-- Local variables
+local
+game
+=
+Game
+()
+local
+level
+=
+game
+:
+GetLevel
+()
+-- Give the player the Compass effect, which will display all of the floor's special rooms on the mini-map
+level
+:
+ApplyCompassEffect
+()
+-- Remove the icon for the Treasure Room specifically
+local
+treasureIndex
+=
+level
+:
+QueryRoomTypeIndex
+(
+RoomType
+.
+ROOM_TREASURE
+,
+false
+,
+RNG
+())
+local
+treasureRoom
+=
+level
+:
+GetRoomByIdx
+(
+treasureIndex
+)
+treasureRoom
+.
+DisplayFlags
+=
+0
+-- Since the mini-map is cached, changing display flags won't update it unless we explicitly call this function
+level
+:
+UpdateVisibility
+()
+Variables
+鈿擄笌
+Dungeon路Return路Position
+鈿擄笌
+Vector
+DungeonReturnPosition
+鈿擄笌
+Dungeon路Return路Room路Index
+鈿擄笌
+int DungeonReturnRoomIndex
+鈿擄笌
+Enter路Door
+鈿擄笌
+int EnterDoor
+鈿擄笌
+This value defines on which doorslot you entered the room.
+Bugs
+Changing this value has no impact on anything. the EnterDoor value is always determined by the LeaveDoor Value and the game itself.
+Greed路Mode路Wave
+鈿擄笌
+int GreedModeWave
+鈿擄笌
+Leave路Door
+鈿擄笌
+int LeaveDoor
+鈿擄笌
+This value defines on which doorslot you are positioned after the transition. You will always end up at the oposite side of the door specified. Example: LeaveDoor=1 (Up0) will position you at Doorslot Down0 (Logic: Doorslot+2)
+Notes
+if level.LeaveDoor is set to anything other than -1, the function will transition based on the room you are currently in.
+Last update:
+May 1, 2025
+Back to top
+Copyright © 2021 - 2026 Wofsauge (Discord: Wofsauge#6503)
+Made with
+Material for MkDocs

@@ -1,0 +1,1167 @@
+﻿Level - BoI: REPENTOGON
+Skip to content
+BoI: REPENTOGON
+Level
+Search
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Changes
+XML
+Example Mods
+Lua 5.4 Docs
+BoI: REPENTOGON
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+Achievement
+AddHealthType
+AnimRenderFlags
+AnnouncerVoiceMode
+AutocompleteType
+BagOfCraftingPickup
+BlendFactor
+BlendType
+BlendEquation
+BombCostumeLayer
+BossType
+ButtonActionBitwise
+CameraStyle
+CharacterMenuStatus
+ChargeType
+CompletionType
+CompletionStatus
+ConceptionFamiliarFlag
+ConsoleFont
+CustomCacheTag
+DebugFlag
+DeliriumCallbacks
+DialogButtons
+DialogIcons
+DialogReturn
+Dimension
+DipSubType
+DoorMask
+DwmWindowAttribute
+Ending
+EnemyTargetFlags
+EntityPoopVariant
+EntityTag
+EvaluateStatStage
+EventCounter
+ExtraHudStyle
+FadeoutTarget
+FollowerPriority
+GetCollectibleFlag
+GLSLType
+Giantbook
+GibFlag
+GridPoopVariant
+HealthType
+ImGuiCallback
+ImGuiColor
+ImGuiChildFlags
+ImGuiData
+ImGuiElement
+ImGuiNotificationType
+ImGuiWindowFlags
+ItemAnim
+KnifeSubType
+KnifeVariant
+Language
+LineCheckMode
+MainMenuType
+MinimapState
+ModCallbacks
+MouseButton
+NullPickupSubType
+PauseMenuStates
+PedestalType
+PillCardSlot
+PillEffectSubClass
+PlayerHUDLayout
+PlayerVariant
+PocketItemType
+PressurePlateVariant
+ProceduralEffectActionType
+ProceduralEffectConditionType
+ProjectileMode
+PurityState
+RetractingSpikesVariant
+RoomEventOutput
+RoomSubType
+ShaderType
+SlotVariant
+SpecialQuest
+SplitTearType
+StatusEffect
+StbGridType
+StbPoopSubType
+StbRailVariant
+StbRockSubType
+StbTeleporterSubType
+StbType
+TaintedMarksGroup
+TeleporterVariant
+TrinketSlot
+UseActiveItemResultFlag
+VertexAttributeFormat
+WaterClipFlag
+WeaponModifier
+WispSubType
+XMLNode
+Ambush
+Backdrop
+BossPool
+BossPool
+BossPool
+BossPoolManager
+Camera
+Capsule
+CcpContainer
+CcpContainer
+RoomConfigSet
+ChallengeParam
+Color
+ColorModifier
+ColorParams
+Console
+CostumeSpriteDesc
+DailyChallenge
+Debug
+Entity
+Entity
+Entity
+EntityBomb
+EntityDelirium
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPlayer
+EntityPickup
+EntityProjectile
+EntitySlot
+EntityTear
+EntityConfig
+EntityConfig
+EntityConfig
+EntityConfigBaby
+EntityConfigEntity
+EntityConfigPlayer
+EntityDesc
+EntitySaveStateManager
+Font
+FXLayers
+FXParams
+Game
+GenericPrompt
+GridEntity
+GridEntity
+GridEntity
+GridEntityDecoration
+GridEntityDoor
+GridEntityFire
+GridEntityGravity
+GridEntityLock
+GridEntityPressurePlate
+GridEntityRock
+GridEntityStairs
+GridEntityStatue
+GridEntityTeleporter
+GridEntityTrapDoor
+GridEntityWall
+GridEntityWeb
+History
+History
+History
+HistoryItem
+HUDs
+HUDs
+DebugRenderer
+HUD
+Minimap
+PlayerHUD
+PlayerHUDHeart
+ScoreSheet
+ImGui
+Isaac
+ItemConfig
+ItemConfig
+ItemConfig
+ItemConfig - Item
+ItemConfig - PillEffect
+ItemConfig - Card
+ItemConfig - Costume
+ItemOverlay
+ItemPool
+Input
+Level
+Level
+On this page
+Functions
+CanPlaceRoom ()
+CanPlaceRoomAtDoor ()
+CanSpawnDoorOutline ()
+FindValidRoomPlacementLocations ()
+GetDimension ()
+GetForceSpecialQuest ()
+GetGenerationRNG ()
+GetGreedWavesClearedWithoutRedHeartDamage ()
+GetMyosotisPickups ()
+GetNeighboringRooms ()
+HasAbandonedMineshaft ()
+HasMirrorDimension ()
+HasPhotoDoor ()
+IsStageAvailable ()
+PlaceRoom ()
+SetForceSpecialQuest ()
+SetGreedWavesClearedWithoutRedHeartDamage ()
+SetName ()
+TryPlaceRoom ()
+TryPlaceRoomAtDoor ()
+LevelGenerator
+LevelGenerator
+LevelGenerator
+LevelGeneratorEntry
+LevelGeneratorRoom
+LootList
+LootList
+LootList
+LootListEntry
+LRoomAreaDesc
+LRoomTileDesc
+Menus
+Menus
+MenuManager
+BestiaryMenu
+ChallengeMenu
+CharacterMenu
+CollectionMenu
+ControllerSelectMenu
+CustomChallengeMenu
+CutscenesMenu
+DailyChallengeMenu
+KeyConfigMenu
+MainMenu
+ModsMenu
+OptionsMenu
+PauseMenu
+SaveMenu
+SpecialSeedsMenu
+StatsMenu
+TitleMenu
+MultiShotParams
+MusicManager
+NightmareScene
+Options
+Pathfinder
+PersistentGameData
+PlayerManager
+Procedural Items
+Procedural Items
+ProceduralItemManager
+ProceduralEffect
+ProceduralItem
+PocketItem
+ProjectileParams
+RailManager
+Rendering
+Rendering
+Beam
+BlendMode
+DestinationQuad
+GLSLValue
+Image
+Pipeline
+Point
+Renderer
+RenderSet
+Shader
+SourceQuad
+Shape
+SurfaceRenderController
+Transformer
+Vertex
+VertexBuffer
+VertexDescriptor
+REPENTOGON
+RNG
+Room
+RoomConfig
+RoomConfig
+RoomConfig
+RoomConfigStage
+GridEntitiesSaveStateVector
+RoomConfigRoom
+RoomDescriptor
+EntitiesSaveState
+EntitiesSaveStateVector
+RoomTransition
+Seeds
+Sprite
+Sprite
+AnimationData
+AnimationFrame
+AnimationLayer
+LayerState
+NullFrame
+Sprite
+StageTransition
+TearParams
+Vector
+Weapon
+WeightedOutcomePicker
+XMLData
+Changes
+Changes
+General
+Debugging
+UI
+XML
+XML
+XML Overview
+XMLData
+achievements.xml
+ambush.xml
+backdrops.xml
+bosscolors.xml
+costumes.xml
+cutscenes.xml
+challenges.xml
+entities2.xml
+giantbook.xml
+items.xml
+itempools.xml
+pocketitems.xml
+players.xml
+stringtable.sta
+Example Mods
+Example Mods
+Capsules
+Deal Chance
+ImGui Menu
+Weighted Outcomes
+Beams
+Color Modifiers
+Lua 5.4 Docs
+On this page
+Functions
+CanPlaceRoom ()
+CanPlaceRoomAtDoor ()
+CanSpawnDoorOutline ()
+FindValidRoomPlacementLocations ()
+GetDimension ()
+GetForceSpecialQuest ()
+GetGenerationRNG ()
+GetGreedWavesClearedWithoutRedHeartDamage ()
+GetMyosotisPickups ()
+GetNeighboringRooms ()
+HasAbandonedMineshaft ()
+HasMirrorDimension ()
+HasPhotoDoor ()
+IsStageAvailable ()
+PlaceRoom ()
+SetForceSpecialQuest ()
+SetGreedWavesClearedWithoutRedHeartDamage ()
+SetName ()
+TryPlaceRoom ()
+TryPlaceRoomAtDoor ()
+Class "Level"
+鈿擄笌
+Functions
+鈿擄笌
+CanPlaceRoom ()
+鈿擄笌
+boolean CanPlaceRoom (
+RoomConfigRoom
+RoomConfigToPlace, int GridIndex,
+Dimension
+Dimension = -1, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false, boolean AllowNoNeighbors = false )
+鈿擄笌
+boolean CanPlaceRoom (
+RoomShape
+RoomShape,
+DoorMask
+DoorMask, int GridIndex,
+Dimension
+Dimension = -1, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false, boolean AllowNoNeighbors = false )
+鈿擄笌
+Returns true if the provided room could be successfully placed at this location using
+TryPlaceRoom
+.
+See documentation for
+TryPlaceRoom
+for more information.
+CanPlaceRoomAtDoor ()
+鈿擄笌
+boolean CanPlaceRoomAtDoor (
+RoomConfigRoom
+RoomConfigToPlace,
+RoomDescriptor
+NeighborRoomDescriptor,
+DoorSlot
+DoorSlot, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false )
+鈿擄笌
+boolean CanPlaceRoomAtDoor (
+RoomShape
+RoomShape,
+DoorMask
+DoorMask,
+RoomDescriptor
+NeighborRoomDescriptor,
+DoorSlot
+DoorSlot, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false )
+鈿擄笌
+Returns true if the provided room (represented by the
+RoomConfigRoom
+OR
+RoomShape
++
+DoorMask
+) could be successfully placed as a neighbor of an existing room (represented by the
+RoomDescriptor
+) at the specified
+DoorSlot
+, using
+TryPlaceRoomAtDoor
+.
+See documentation for
+TryPlaceRoomAtDoor
+and
+TryPlaceRoom
+for more information.
+CanSpawnDoorOutline ()
+鈿擄笌
+boolean CanSpawnDoorOutline ( int RoomIdx,
+DoorSlot
+DoorSlot )
+鈿擄笌
+FindValidRoomPlacementLocations ()
+鈿擄笌
+int[] FindValidRoomPlacementLocations (
+RoomConfigRoom
+RoomConfig,
+Dimension
+Dimension = -1, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false )
+鈿擄笌
+int[] FindValidRoomPlacementLocations (
+RoomShape
+RoomShape = 1,
+DoorMask
+DoorMask = -1,
+Dimension
+Dimension = -1, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false )
+鈿擄笌
+Returns a table of room grid indices that would be valid locations to place the specified room using
+TryPlaceRoom
+.
+Note that if you set
+AllowSpecialNeighbors
+to
+true
+, you can get weird placements next to the ultra secret room. You can use
+GetNeighboringRooms
+to confirm that potential neighbors are desired before placing your room.
+See
+TryPlaceRoom
+for more information on room placement and example code.
+GetDimension ()
+鈿擄笌
+Dimension
+GetDimension ( )
+鈿擄笌
+Get's the current
+Dimension
+the player is in.
+GetForceSpecialQuest ()
+鈿擄笌
+SpecialQuest
+GetForceSpecialQuest ( )
+鈿擄笌
+If set, the level will automatically attempt to place the Knife Piece puzzle door for this
+LevelStage
+.
+Info
+This is set to
+SpecialQuest.DEFAULT
+immediately before calling
+MC_PRE_LEVEL_INIT
+.
+GetGenerationRNG ()
+鈿擄笌
+RNG
+GetGenerationRNG ( )
+鈿擄笌
+GetGreedWavesClearedWithoutRedHeartDamage ()
+鈿擄笌
+int GetGreedWavesClearedWithoutRedHeartDamage ( )
+鈿擄笌
+GetMyosotisPickups ()
+鈿擄笌
+EntitiesSaveStateVector
+GetMyosotisPickups ( )
+鈿擄笌
+Returns the pickups that will be transferred to the next floor by the Myosotis trinket effect.
+GetNeighboringRooms ()
+鈿擄笌
+table GetNeighboringRooms ( int GridIndex,
+RoomShape
+RoomShape,
+Dimension
+Dimension = -1 )
+鈿擄笌
+Returns a table that maps
+DoorSlot
+to
+RoomDescriptor
+for all of the neighbors that a room of the specified shape would have if placed at this location.
+Don't use
+ipairs
+to iterate over this, use
+pairs
+!
+Note that this does not give you any information on if a room would actually fit here, or if the neighbors would even allow the connection.
+If you want to get the neighbors of an existing room, you can simply use
+RoomDescriptor:GetNeighboringRooms()
+instead.
+Example Code
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+-- Returns true if a room placed at this GridIndex with this RoomShape would have a neighboring secret room.
+local
+function
+WouldHaveSecretRoomNeighbor
+(
+gridIndex
+,
+roomShape
+)
+for
+doorSlot
+,
+neighborDesc
+in
+pairs
+(
+Game
+():
+GetLevel
+():
+GetNeighboringRooms
+(
+gridIndex
+,
+roomShape
+))
+do
+local
+roomType
+=
+neighborDesc
+.
+Data
+.
+Type
+if
+roomType
+==
+RoomType
+.
+ROOM_SECRET
+or
+roomType
+==
+RoomType
+.
+ROOM_SUPERSECRET
+or
+roomType
+==
+RoomType
+.
+ROOM_ULTRASECRET
+then
+return
+true
+end
+end
+return
+false
+end
+HasAbandonedMineshaft ()
+鈿擄笌
+boolean HasAbandonedMineshaft ( )
+鈿擄笌
+Returns
+true
+if the floor has the mineshaft room used for the second Knife Piece puzzle.
+HasMirrorDimension ()
+鈿擄笌
+boolean HasMirrorDimension ( )
+鈿擄笌
+Returns
+true
+if the floor has the mirror dimension used for the first Knife Piece puzzle.
+HasPhotoDoor ()
+鈿擄笌
+boolean HasPhotoDoor ( )
+鈿擄笌
+Returns
+true
+if the floor has the photo door used to enter Mausoleum/Gehenna leading to the Ascent sequence.
+IsStageAvailable ()
+鈿擄笌
+void IsStageAvailable (
+LevelStage
+Level,
+StageType
+Stage )
+鈿擄笌
+Returns
+true
+if the provided
+Level
+and
+Stage
+combination is available to be generated in any given run. Returns
+false
+if locked behind an achievement.
+PlaceRoom ()
+鈿擄笌
+boolean PlaceRoom (
+LevelGeneratorEntry
+Room,
+RoomConfigRoom
+RoomConfig, int Seed )
+鈿擄笌
+Places a room into the game. Returns
+true
+if successful.
+Note that this function does not really check if a room placement would be considered valid, nor does it create the doors necessary to connect the new room to its neighbors.
+See
+TryPlaceRoom
+and related functions if you want to properly add new rooms to the floor after level generation, similarly to what Red Key does.
+SetForceSpecialQuest ()
+鈿擄笌
+void SetForceSpecialQuest (
+SpecialQuest
+Quest )
+鈿擄笌
+Sets whether the level should attempt to place the Knife Piece puzzle door for this
+LevelStage
+.
+Info
+This is set to
+SpecialQuest.DEFAULT
+immediately before calling
+MC_PRE_LEVEL_INIT
+.
+SetGreedWavesClearedWithoutRedHeartDamage ()
+鈿擄笌
+void SetGreedWavesClearedWithoutRedHeartDamage ( int WavesCleared )
+鈿擄笌
+SetName ()
+鈿擄笌
+void SetName ( string Name )
+鈿擄笌
+TryPlaceRoom ()
+鈿擄笌
+RoomDescriptor
+TryPlaceRoom (
+RoomConfigRoom
+RoomConfigToPlace, int GridIndex,
+Dimension
+Dimension = -1, int Seed = 0, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false, boolean AllowNoNeighbors = false )
+鈿擄笌
+Attempts to place the provided room at the specified location.
+If successful, returns the newly initialized
+RoomDescriptor
+. Otherwise, returns nil.
+This function will ONLY place the room if it fits (does not overlap any other existing rooms, and can mutually connect to all neighboring room with doors).
+If a seed of 0 or nil is provided, a deterministic seed with be auto-generated based on the location, room shape, and level seed.
+The boolean parameters enable or disable additional restrictions/safeties for room placement:
+AllowMultipleDoors: Set to
+false
+to only allow placement if the room would only have one door (useful for placing special rooms). Secret rooms don't count as a door.
+AllowSpecialNeighbors: Set to
+true
+to allow connections to existing special rooms (note that secret rooms are always permitted, but boss rooms never are).
+AllowNoNeighbors: Set to
+true
+to permit room placements out in the void with no neighbors at all.
+Example Code
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+-- Adds another treasure room to the floor at a random valid location.
+local
+function
+AddAnotherTreasureRoomToTheFloorAtARandomValidLocation
+()
+local
+level
+=
+game
+:
+GetLevel
+()
+local
+dimension
+=
+-
+1
+-- current dimension
+local
+seed
+=
+level
+:
+GetDungeonPlacementSeed
+()
+-- Fetch a random RoomConfig for a new treasure room.
+local
+roomConfig
+=
+RoomConfig
+.
+GetRandomRoom
+(
+seed
+,
+true
+,
+StbType
+.
+SPECIAL_ROOMS
+,
+RoomType
+.
+ROOM_TREASURE
+,
+RoomShape
+.
+ROOMSHAPE_1x1
+)
+-- Disallow placements with multiple doors, or placements that connect to other special rooms.
+local
+allowMultipleDoors
+=
+false
+local
+allowSpecialNeighbors
+=
+false
+-- Fetch all valid locations.
+local
+options
+=
+level
+:
+FindValidRoomPlacementLocations
+(
+roomConfig
+,
+dimension
+,
+allowMultipleDoors
+,
+allowSpecialNeighbors
+)
+for
+_
+,
+gridIndex
+in
+pairs
+(
+options
+)
+do
+-- You may have additional conditions or priorities when it comes to where you would prefer to place your room.
+-- For the purposes of this example we arbitarily forbid the new room from being connected to the starting room,
+-- and otherwise just place the room at the first place we check.
+-- Get the RoomDescriptors of all rooms that would be neighboring the room if placed here.
+local
+neighbors
+=
+level
+:
+GetNeighboringRooms
+(
+gridIndex
+,
+roomConfig
+.
+Shape
+)
+local
+connectsToStartingRoom
+=
+false
+for
+doorSlot
+,
+neighborDesc
+in
+pairs
+(
+neighbors
+)
+do
+if
+neighborDesc
+.
+GridIndex
+==
+level
+:
+GetStartingRoomIndex
+()
+then
+connectsToStartingRoom
+=
+true
+end
+end
+if
+not
+connectsToStartingRoom
+then
+-- Try to place the room.
+local
+room
+=
+level
+:
+TryPlaceRoom
+(
+roomConfig
+,
+gridIndex
+,
+dimension
+,
+seed
+,
+allowMultipleDoors
+,
+allowSpecialNeighbors
+)
+if
+room
+then
+-- The room was placed successfully!
+return
+end
+end
+end
+end
+TryPlaceRoomAtDoor ()
+鈿擄笌
+RoomDescriptor
+TryPlaceRoomAtDoor (
+RoomConfigRoom
+RoomConfigToPlace,
+RoomDescriptor
+NeighborRoomDescriptor,
+DoorSlot
+DoorSlot, int Seed = 0, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false )
+鈿擄笌
+Similar to
+TryPlaceRoom
+, but attempts to place the provided room (the
+RoomConfigRoom
+) as a neighbor of an existing room (the
+RoomDescriptor
+) at the specified
+DoorSlot
+.
+Otherwise, the details are the same as for
+TryPlaceRoom
+.
+Example Code
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+-- Example code for an active item that creates a new 1x1 room at every doorslot available in the current room.
+mod
+:
+AddCallback
+(
+ModCallbacks
+.
+MC_USE_ITEM
+,
+function
+(
+_
+,
+id
+,
+rng
+,
+player
+,
+flags
+,
+slot
+)
+local
+level
+=
+game
+:
+GetLevel
+()
+local
+room
+=
+game
+:
+GetRoom
+()
+local
+roomDesc
+=
+level
+:
+GetCurrentRoomDesc
+()
+local
+success
+=
+false
+for
+doorSlot
+=
+0
+,
+7
+do
+-- Bitmask check to identify if the current room would even allow a door to be placed here.
+local
+doorSlotAllowed
+=
+roomDesc
+.
+Data
+.
+Doors
+&
+(
+1
+<<
+doorSlot
+)
+~=
+0
+if
+doorSlotAllowed
+and
+not
+room
+:
+GetDoor
+(
+doorSlot
+)
+then
+local
+seed
+=
+rng
+:
+Next
+()
+local
+requiredDoors
+=
+15
+-- Bitmask value that requires the new 1x1 room to have all 4 doorslots available, just so we're sure it fits.
+local
+roomConfig
+=
+RoomConfig
+.
+GetRandomRoom
+(
+seed
+,
+true
+,
+Isaac
+.
+GetCurrentStageConfigId
+(),
+RoomType
+.
+ROOM_DEFAULT
+,
+RoomShape
+.
+ROOMSHAPE_1x1
+,
+nil
+,
+nil
+,
+nil
+,
+nil
+,
+requiredDoors
+)
+if
+roomConfig
+then
+local
+newRoom
+=
+level
+:
+TryPlaceRoomAtDoor
+(
+roomConfig
+,
+roomDesc
+,
+doorSlot
+,
+seed
+,
+true
+,
+false
+)
+if
+newRoom
+then
+success
+=
+true
+end
+end
+end
+end
+if
+success
+then
+return
+{
+ShowAnim
+=
+true
+}
+else
+return
+{
+Discharge
+=
+false
+}
+end
+end
+,
+MY_ACTIVE_ITEM_ID
+)
+Class
+Back to top
+Copyright © 2026 REPENTOGON developers
+Made with
+Zensical

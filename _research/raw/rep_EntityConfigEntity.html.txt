@@ -1,0 +1,646 @@
+﻿EntityConfigEntity - BoI: REPENTOGON
+Skip to content
+BoI: REPENTOGON
+EntityConfigEntity
+Search
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Changes
+XML
+Example Mods
+Lua 5.4 Docs
+BoI: REPENTOGON
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+Achievement
+AddHealthType
+AnimRenderFlags
+AnnouncerVoiceMode
+AutocompleteType
+BagOfCraftingPickup
+BlendFactor
+BlendType
+BlendEquation
+BombCostumeLayer
+BossType
+ButtonActionBitwise
+CameraStyle
+CharacterMenuStatus
+ChargeType
+CompletionType
+CompletionStatus
+ConceptionFamiliarFlag
+ConsoleFont
+CustomCacheTag
+DebugFlag
+DeliriumCallbacks
+DialogButtons
+DialogIcons
+DialogReturn
+Dimension
+DipSubType
+DoorMask
+DwmWindowAttribute
+Ending
+EnemyTargetFlags
+EntityPoopVariant
+EntityTag
+EvaluateStatStage
+EventCounter
+ExtraHudStyle
+FadeoutTarget
+FollowerPriority
+GetCollectibleFlag
+GLSLType
+Giantbook
+GibFlag
+GridPoopVariant
+HealthType
+ImGuiCallback
+ImGuiColor
+ImGuiChildFlags
+ImGuiData
+ImGuiElement
+ImGuiNotificationType
+ImGuiWindowFlags
+ItemAnim
+KnifeSubType
+KnifeVariant
+Language
+LineCheckMode
+MainMenuType
+MinimapState
+ModCallbacks
+MouseButton
+NullPickupSubType
+PauseMenuStates
+PedestalType
+PillCardSlot
+PillEffectSubClass
+PlayerHUDLayout
+PlayerVariant
+PocketItemType
+PressurePlateVariant
+ProceduralEffectActionType
+ProceduralEffectConditionType
+ProjectileMode
+PurityState
+RetractingSpikesVariant
+RoomEventOutput
+RoomSubType
+ShaderType
+SlotVariant
+SpecialQuest
+SplitTearType
+StatusEffect
+StbGridType
+StbPoopSubType
+StbRailVariant
+StbRockSubType
+StbTeleporterSubType
+StbType
+TaintedMarksGroup
+TeleporterVariant
+TrinketSlot
+UseActiveItemResultFlag
+VertexAttributeFormat
+WaterClipFlag
+WeaponModifier
+WispSubType
+XMLNode
+Ambush
+Backdrop
+BossPool
+BossPool
+BossPool
+BossPoolManager
+Camera
+Capsule
+CcpContainer
+CcpContainer
+RoomConfigSet
+ChallengeParam
+Color
+ColorModifier
+ColorParams
+Console
+CostumeSpriteDesc
+DailyChallenge
+Debug
+Entity
+Entity
+Entity
+EntityBomb
+EntityDelirium
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPlayer
+EntityPickup
+EntityProjectile
+EntitySlot
+EntityTear
+EntityConfig
+EntityConfig
+EntityConfig
+EntityConfigBaby
+EntityConfigEntity
+EntityConfigEntity
+On this page
+Functions
+CanBeChampion ()
+CanBeRerolledInto ()
+CanShutDoors ()
+GetAnm2Path ()
+GetBaseHP ()
+GetBestiaryAnimation ()
+GetBestiaryAnm2Path ()
+GetBestiaryFloorAlt ()
+GetBestiaryOffset ()
+GetBestiaryOverlay ()
+GetBestiaryScale ()
+GetBossID ()
+GetCollisionDamage ()
+GetCollisionInterval ()
+GetCollisionRadius ()
+GetCollisionRadiusMultiplier ()
+GetCustomTags ()
+GetDevolvedEntity ()
+GetEntityTags ()
+GetFriction ()
+GetGibFlags ()
+GetGibsAmount ()
+GetGridCollisionPoints ()
+GetMass ()
+GetModName ()
+GetName ()
+GetPortraitID ()
+GetShadowSize ()
+GetShieldStrength ()
+GetStageHP ()
+GetSubType ()
+GetType ()
+GetVariant ()
+HasCustomTag ()
+HasEntityTags ()
+HasFloorAlts ()
+HasGibFlags ()
+IsBoss ()
+EntityConfigPlayer
+EntityDesc
+EntitySaveStateManager
+Font
+FXLayers
+FXParams
+Game
+GenericPrompt
+GridEntity
+GridEntity
+GridEntity
+GridEntityDecoration
+GridEntityDoor
+GridEntityFire
+GridEntityGravity
+GridEntityLock
+GridEntityPressurePlate
+GridEntityRock
+GridEntityStairs
+GridEntityStatue
+GridEntityTeleporter
+GridEntityTrapDoor
+GridEntityWall
+GridEntityWeb
+History
+History
+History
+HistoryItem
+HUDs
+HUDs
+DebugRenderer
+HUD
+Minimap
+PlayerHUD
+PlayerHUDHeart
+ScoreSheet
+ImGui
+Isaac
+ItemConfig
+ItemConfig
+ItemConfig
+ItemConfig - Item
+ItemConfig - PillEffect
+ItemConfig - Card
+ItemConfig - Costume
+ItemOverlay
+ItemPool
+Input
+Level
+LevelGenerator
+LevelGenerator
+LevelGenerator
+LevelGeneratorEntry
+LevelGeneratorRoom
+LootList
+LootList
+LootList
+LootListEntry
+LRoomAreaDesc
+LRoomTileDesc
+Menus
+Menus
+MenuManager
+BestiaryMenu
+ChallengeMenu
+CharacterMenu
+CollectionMenu
+ControllerSelectMenu
+CustomChallengeMenu
+CutscenesMenu
+DailyChallengeMenu
+KeyConfigMenu
+MainMenu
+ModsMenu
+OptionsMenu
+PauseMenu
+SaveMenu
+SpecialSeedsMenu
+StatsMenu
+TitleMenu
+MultiShotParams
+MusicManager
+NightmareScene
+Options
+Pathfinder
+PersistentGameData
+PlayerManager
+Procedural Items
+Procedural Items
+ProceduralItemManager
+ProceduralEffect
+ProceduralItem
+PocketItem
+ProjectileParams
+RailManager
+Rendering
+Rendering
+Beam
+BlendMode
+DestinationQuad
+GLSLValue
+Image
+Pipeline
+Point
+Renderer
+RenderSet
+Shader
+SourceQuad
+Shape
+SurfaceRenderController
+Transformer
+Vertex
+VertexBuffer
+VertexDescriptor
+REPENTOGON
+RNG
+Room
+RoomConfig
+RoomConfig
+RoomConfig
+RoomConfigStage
+GridEntitiesSaveStateVector
+RoomConfigRoom
+RoomDescriptor
+EntitiesSaveState
+EntitiesSaveStateVector
+RoomTransition
+Seeds
+Sprite
+Sprite
+AnimationData
+AnimationFrame
+AnimationLayer
+LayerState
+NullFrame
+Sprite
+StageTransition
+TearParams
+Vector
+Weapon
+WeightedOutcomePicker
+XMLData
+Changes
+Changes
+General
+Debugging
+UI
+XML
+XML
+XML Overview
+XMLData
+achievements.xml
+ambush.xml
+backdrops.xml
+bosscolors.xml
+costumes.xml
+cutscenes.xml
+challenges.xml
+entities2.xml
+giantbook.xml
+items.xml
+itempools.xml
+pocketitems.xml
+players.xml
+stringtable.sta
+Example Mods
+Example Mods
+Capsules
+Deal Chance
+ImGui Menu
+Weighted Outcomes
+Beams
+Color Modifiers
+Lua 5.4 Docs
+On this page
+Functions
+CanBeChampion ()
+CanBeRerolledInto ()
+CanShutDoors ()
+GetAnm2Path ()
+GetBaseHP ()
+GetBestiaryAnimation ()
+GetBestiaryAnm2Path ()
+GetBestiaryFloorAlt ()
+GetBestiaryOffset ()
+GetBestiaryOverlay ()
+GetBestiaryScale ()
+GetBossID ()
+GetCollisionDamage ()
+GetCollisionInterval ()
+GetCollisionRadius ()
+GetCollisionRadiusMultiplier ()
+GetCustomTags ()
+GetDevolvedEntity ()
+GetEntityTags ()
+GetFriction ()
+GetGibFlags ()
+GetGibsAmount ()
+GetGridCollisionPoints ()
+GetMass ()
+GetModName ()
+GetName ()
+GetPortraitID ()
+GetShadowSize ()
+GetShieldStrength ()
+GetStageHP ()
+GetSubType ()
+GetType ()
+GetVariant ()
+HasCustomTag ()
+HasEntityTags ()
+HasFloorAlts ()
+HasGibFlags ()
+IsBoss ()
+Class "EntityConfigEntity"
+鈿擄笌
+Info
+You can get this class by using the following functions:
+EntityConfig.GetEntity()
+Example Code
+1
+local
+gaperConfig
+=
+EntityConfig
+.
+GetEntity
+(
+EntityType
+.
+ENTITY_GAPER
+)
+Functions
+鈿擄笌
+CanBeChampion ()
+鈿擄笌
+boolean CanBeChampion ( )
+鈿擄笌
+CanBeRerolledInto ()
+鈿擄笌
+boolean CanBeRerolledInto ( )
+鈿擄笌
+CanShutDoors ()
+鈿擄笌
+boolean CanShutDoors ( )
+鈿擄笌
+GetAnm2Path ()
+鈿擄笌
+string GetAnm2Path ( )
+鈿擄笌
+GetBaseHP ()
+鈿擄笌
+float GetBaseHP ( )
+鈿擄笌
+GetBestiaryAnimation ()
+鈿擄笌
+string GetBestiaryAnimation ( )
+鈿擄笌
+GetBestiaryAnm2Path ()
+鈿擄笌
+string GetBestiaryAnm2Path ( )
+鈿擄笌
+GetBestiaryFloorAlt ()
+鈿擄笌
+string GetBestiaryFloorAlt ( )
+鈿擄笌
+GetBestiaryOffset ()
+鈿擄笌
+const Vector
+GetBestiaryOffset ( )
+鈿擄笌
+GetBestiaryOverlay ()
+鈿擄笌
+string GetBestiaryOverlay ( )
+鈿擄笌
+GetBestiaryScale ()
+鈿擄笌
+float GetBestiaryScale ( )
+鈿擄笌
+GetBossID ()
+鈿擄笌
+BossType
+GetBossID ( )
+鈿擄笌
+GetCollisionDamage ()
+鈿擄笌
+float GetCollisionDamage ( )
+鈿擄笌
+GetCollisionInterval ()
+鈿擄笌
+int GetCollisionInterval ( )
+鈿擄笌
+GetCollisionRadius ()
+鈿擄笌
+float GetCollisionRadius ( )
+鈿擄笌
+Also known as "Size".
+GetCollisionRadiusMultiplier ()
+鈿擄笌
+const Vector
+GetCollisionRadiusMultiplier ( )
+鈿擄笌
+Also known as "SizeMulti".
+GetCustomTags ()
+鈿擄笌
+table GetCustomTags ( )
+鈿擄笌
+Returns a table containing all the strings specified in the entity's
+customtags
+attribute in
+entities2.xml
+. Tags are always provided in all lowercase. See
+entities2.xml
+for more information on
+customtags
+.
+GetDevolvedEntity ()
+鈿擄笌
+EntityConfigEntity
+GetDevolvedEntity ( )
+鈿擄笌
+Returns the
+EntityConfigEntity
+that this entity would "devolve" into when D10 is used.
+Returns nil if the entity has no devolution and would die instead.
+GetEntityTags ()
+鈿擄笌
+int GetEntityTags ( )
+鈿擄笌
+Returns the bitmask of
+EntityTag
+s for this entity.
+GetFriction ()
+鈿擄笌
+float GetFriction ( )
+鈿擄笌
+GetGibFlags ()
+鈿擄笌
+int GetGibFlags ( )
+鈿擄笌
+Returns the bitmask of
+GibFlag
+s for this entity.
+GetGibsAmount ()
+鈿擄笌
+int GetGibsAmount ( )
+鈿擄笌
+GetGridCollisionPoints ()
+鈿擄笌
+int GetGridCollisionPoints ( )
+鈿擄笌
+GetMass ()
+鈿擄笌
+float GetMass ( )
+鈿擄笌
+GetModName ()
+鈿擄笌
+string GetModName ( )
+鈿擄笌
+Name string of the mod that entity is from.
+Returns nil for vanilla entities.
+GetName ()
+鈿擄笌
+string GetName ( )
+鈿擄笌
+GetPortraitID ()
+鈿擄笌
+int GetPortraitID ( )
+鈿擄笌
+GetShadowSize ()
+鈿擄笌
+float GetShadowSize ( )
+鈿擄笌
+Note that this value is the "shadowSize" specified in the XML divided by 100.
+GetShieldStrength ()
+鈿擄笌
+float GetShieldStrength ( )
+鈿擄笌
+The amount of armor the entity has.
+GetStageHP ()
+鈿擄笌
+float GetStageHP ( )
+鈿擄笌
+GetSubType ()
+鈿擄笌
+int GetSubType ( )
+鈿擄笌
+GetType ()
+鈿擄笌
+int GetType ( )
+鈿擄笌
+GetVariant ()
+鈿擄笌
+int GetVariant ( )
+鈿擄笌
+HasCustomTag ()
+鈿擄笌
+boolean HasCustomTag ( string tag )
+鈿擄笌
+Returns true if the entity has the provided string specified in its
+customtags
+attribute in
+entities2.xml
+. Capitalization does not matter. See
+entities2.xml
+for more information on
+customtags
+.
+HasEntityTags ()
+鈿擄笌
+boolean HasEntityTags ( int Tags )
+鈿擄笌
+Returns true if the entity has all
+EntityTag
+s specified in the provided bitset.
+HasFloorAlts ()
+鈿擄笌
+boolean HasFloorAlts ( )
+鈿擄笌
+HasGibFlags ()
+鈿擄笌
+boolean HasGibFlags ( int Flags )
+鈿擄笌
+Returns true if the entity has all
+GibFlag
+s specified in the provided bitset.
+IsBoss ()
+鈿擄笌
+boolean IsBoss ( )
+鈿擄笌
+Class
+Back to top
+Copyright © 2026 REPENTOGON developers
+Made with
+Zensical

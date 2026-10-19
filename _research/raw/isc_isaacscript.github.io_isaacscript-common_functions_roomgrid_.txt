@@ -1,0 +1,899 @@
+﻿Room Grid | IsaacScript
+Skip to content
+IsaacScript
+Search
+Ctrl
+K
+Cancel
+Discord
+GitHub
+Select theme
+Dark
+Light
+Auto
+Menu
+Overview
+Features
+Is IsaacScript Right for Me?
+Getting Started
+Basic Info
+Discord
+What Is IsaacScript Doing?
+Directory Structure
+Tutorials
+JavaScript Tutorial
+Example Mod
+Next Steps
+Using getData
+Enums and Objects
+ModFeature
+Other Info
+Converting Lua Code
+Updating IsaacScript
+Custom Stages
+Publishing to the Workshop
+Gotchas
+IsaacScript in Lua
+Change Log
+isaac-typescript-definitions
+Introduction
+Enums
+ActionTrigger
+ActiveSlot
+AngelicBabySubType
+AngelRoomSubType
+AngelVariant
+AnnouncerVoiceMode
+BabyLongLegsVariant
+BabySubType
+BabyVariant
+BackdropType
+BackwardsRoomSubType
+BatterySubType
+BeastVariant
+BedSubType
+BegottenVariant
+BigBonyVariant
+BigHornState
+BigHornVariant
+BloatSubType
+BloodClotSubType
+BloodExplosionSubType
+BloodPuppyVariant
+BlueFlySubType
+BoilVariant
+BombSubType
+BombVariant
+BonyVariant
+BoomFlyVariant
+BossID
+BrokenWatchState
+BrownieSubType
+BucketVariant
+ButtonAction
+CacheFlag
+CageSubType
+CallbackPriority
+CameraStyle
+CanaryVariant
+CardType
+CarpetSubType
+CarrionQueenSubType
+Challenge
+ChallengeRoomSubType
+ChampionColor
+Charger2Variant
+ChargerSubType
+ChargerVariant
+ChestSubType
+ChimeraVariant
+ChubSubType
+ChubVariant
+ClottyVariant
+ClutchVariant
+CoinSubType
+CollectibleAnimation
+CollectiblePedestalType
+CollectibleSpriteLayer
+CollectibleType
+ColostomiaState
+ConjoinedFattyVariant
+ConquestState
+ConsoleFont
+ConstantStoneShooterSubType
+ConstantStoneShooterVariant
+Controller
+ControllerIndex
+CopyableIsaacAPIClassType
+CrawlSpaceState
+CrawlSpaceVariant
+CrazyLongLegsVariant
+CultistVariant
+CurseID
+CurseRoomSubType
+Cutscene
+DaddyLongLegsState
+DaddyLongLegsVariant
+DamageFlag
+DannyVariant
+DarkEsauSubType
+DarkEsauVariant
+DeathsHeadVariant
+DeathState
+DeathSubType
+DeathVariant
+DebugCommand
+DeepGaperSubType
+DevilRoomSubType
+DiceFloorSubType
+Difficulty
+Dimension
+DingleSubType
+DingleVariant
+DipFamiliarSubType
+DipVariant
+Direction
+DisplayFlag
+DogmaVariant
+DoorSlot
+DoorSlotFlag
+DoorState
+DoorVariant
+DopleVariant
+DownpourRoomSubType
+DragonFlySubType
+DrawStringAlignment
+DukeOfFliesSubType
+DukeOfFliesVariant
+DumpVariant
+DungeonSubType
+EffectVariant
+EncyclopediaItemPoolType
+EntityCollisionClass
+EntityFlag
+EntityGridCollisionClass
+EntityPartition
+EntityType
+EnvyVariant
+EvisVariant
+ExorcistVariant
+ExtraHudStyle
+EyeVariant
+FacelessVariant
+FadeoutTarget
+FallenVariant
+FamiliarVariant
+FamineState
+FamineSubType
+FattyVariant
+FireplaceGridEntityVariant
+FireplaceVariant
+FistulaSubType
+FistulaVariant
+FlyBombVariant
+ForsakenSubType
+FrailSubType
+GameStateFlag
+Gaper2Variant
+GaperVariant
+GateSubType
+GeminiSubType
+GeminiVariant
+GenericPropVariant
+GibSubType
+GlobinVariant
+GluttonyVariant
+GoatVariant
+GreedVariant
+GridCollisionClass
+GridEntityType
+GridEntityXMLType
+GridPath
+GridRoom
+GrimaceVariant
+GrubVariant
+GurdyJrSubType
+GurdySubType
+GurgleVariant
+GurglingSubType
+GurglingVariant
+GusherVariant
+GutsVariant
+GuttyFattyVariant
+GyroVariant
+HauntSubType
+HauntVariant
+HeartSubType
+HeartVariant
+HeavenLightDoorSubType
+HiveVariant
+HollowSubType
+HomeRoomSubType
+HomunculusVariant
+HopperVariant
+HostVariant
+HuskSubType
+InputHook
+IsaacsRoomSubType
+IsaacVariant
+ItemConfigCardType
+ItemConfigChargeType
+ItemConfigPillEffectClass
+ItemConfigPillEffectType
+ItemConfigTag
+ItemPoolType
+ItemType
+JacobEsauControls
+Keyboard
+KeySubType
+KnifeVariant
+KnightVariant
+LambVariant
+LanguageAbbreviation
+LarryJrSubType
+LarryJrVariant
+LaserOffset
+LaserSubType
+LaserVariant
+LeaperVariant
+LeechVariant
+LeperSubType
+LeperVariant
+LevelStage
+LevelStateFlag
+LibrarySubType
+LineCheckMode
+LittleHornSubType
+LittleHornVariant
+LockState
+LokiVariant
+LostSoulState
+LustVariant
+MamaGurdyVariant
+MaskVariant
+MawVariant
+MazeRoamerSubType
+MegaFattySubType
+MegaMawSubType
+MegaSatanVariant
+MemBrainVariant
+MinesRoomSubType
+MinibossID
+ModCallback
+ModConfigMenuOptionType
+MoleVariant
+MomsHeartVariant
+MomSubType
+MomVariant
+Monstro2SubType
+Monstro2Variant
+MonstroSubType
+MorningStarSubType
+MotherBallSubType
+MotherSubType
+MotherVariant
+Mouse
+MoveableTNTVariant
+MrMawVariant
+MrMineVariant
+MulliganVariant
+MushroomVariant
+Music
+NeedleVariant
+NerveEndingVariant
+NPCID
+NPCState
+NullItemID
+ParaBiteVariant
+PeeperFattyVariant
+PeepSubType
+PeepVariant
+PestilenceState
+PestilenceSubType
+PickupNullSubType
+PickupPrice
+PickupVariant
+PillColor
+PillEffect
+PinSubType
+PinVariant
+PitfallVariant
+PitState
+PitVariant
+PlayerForm
+PlayerItemAnimation
+PlayerSpriteLayer
+PlayerType
+PlayerVariant
+PocketItemSlot
+PokyVariant
+PoltyVariant
+PolycephalusSubType
+PolycephalusVariant
+PolypVariant
+Poof2SubType
+PoofSubType
+PoopEntityVariant
+PoopGridEntityVariant
+PoopPickupSubType
+PoopSpellType
+PoopState
+PooterVariant
+PortalTeleportSubType
+PortalVariant
+PressurePlateState
+PressurePlateVariant
+PreyVariant
+PrideVariant
+ProjectileFlag
+ProjectilesMode
+ProjectileVariant
+PurgatorySubType
+QuakeGrimaceSubType
+RageCreepVariant
+RaglichVariant
+RaglingVariant
+RagManSubType
+RagManVariant
+RagMegaVariant
+ReapCreepState
+RenderMode
+RevenantVariant
+RockSpiderVariant
+RockState
+RockVariant
+RoomDescriptorDisplayType
+RoomDescriptorFlag
+RoomDifficulty
+RoomShape
+RoomTransitionAnim
+RoomType
+RotgutVariant
+RottenGaperSubType
+RoundWormVariant
+SackSubType
+SatanVariant
+ScourgeVariant
+SecretExitSubType
+SeedEffect
+ShopkeeperVariant
+ShopSubType
+SingeVariant
+SirenVariant
+SkinColor
+SkinnyVariant
+SkullVariant
+SlothVariant
+SlotVariant
+SortingLayer
+SoundEffect
+SpiderWebState
+SpikesOnOffState
+SpittyVariant
+SquirtVariant
+StageAPICallback
+StageAPILayoutButtonVariant
+StageAPILayoutCornyPoopSubtype
+StageAPILayoutGridType
+StageAPILayoutPitfallVariant
+StageAPILayoutPoopSubtype
+StageAPILayoutRockSubtype
+StageAPILayoutSpikesOnOffVariant
+StageAPIPickupRandomGroupVariant
+StageID
+StageTransitionType
+StageType
+StainSubType
+StatueVariant
+StoneyVariant
+SubHorfVariant
+SuckerVariant
+SwingerVariant
+TallLadderSubType
+TargetFlag
+TearVariant
+TeleporterState
+TNTState
+TrapdoorState
+TrapdoorVariant
+TreasureRoomSubType
+TrinketSlot
+TrinketType
+TumorVariant
+UltraCoinVariant
+UltraGreedierState
+UltraGreedState
+UltraGreedVariant
+UrnVariant
+UseFlag
+VisageVariant
+VisFattyVariant
+VisVariant
+WalkingBoilVariant
+WallCreepVariant
+WarState
+WarSubType
+WarVariant
+WarWithoutHorseState
+WeaponType
+WhipperVariant
+WidowSubType
+WidowVariant
+WrathVariant
+isaacscript-common
+Introduction
+Core
+Cached Classes
+Constants (Miscellaneous)
+Constants (First & Last)
+Constants (Vanilla Collections)
+Upgrading Your Mod
+Helper Functions by Category
+Ambush
+Array
+Array (in Lua)
+Benchmark
+BitSet128
+Bitwise
+Bombs
+Bosses
+Cards
+Challenges
+Characters
+Charge
+Charge Bar
+Collectibles
+Collectible Tag
+Color
+Console
+Curses
+Debug Functions
+Decorators
+Deep Copy
+Deep Copy Tests
+Dimensions
+Direction
+Doors
+Easing
+Effects
+Empty Room
+Entities
+Entities Specific
+Entity Types
+Enums
+External
+Familiars
+Flag
+Frames
+Globals
+Grid Entities
+Grid Entities Specific
+Grid Index
+Hash
+Hex
+Input
+Isaac API Class
+Item Pool
+JSON
+JSON Room
+KColor
+Language
+Level
+Level Grid
+Log
+Log Entities
+Log Misc
+Map
+Math
+Merge
+Merge Tests
+Minimap
+Mod Features
+New Array
+Next Stage
+Npc Data Structures
+NPCs
+Pickups
+Pickups Specific
+Pickup Variants
+Pills
+Player Center
+Player Collectibles
+Player Data Structures
+Player Effects
+Player Health
+Player Index
+Players
+Player Trinkets
+Pocket Items
+Position Velocity
+Pressure Plate
+Projectiles
+Random
+Read Only
+Render
+Revive
+RNG
+Rock Alt
+Room Data
+Room Grid
+Rooms
+Room Shape
+Room Shape Walls
+Room Transition
+Run
+Seeds
+Serialization
+Set
+Slots
+Sort
+Sound
+Spawn Collectible
+Sprites
+Stage
+Stats
+Story Bosses
+String
+Table
+Tears
+Transformations
+Trinket Give
+Trinkets
+TSTL Class
+Types
+UI
+Utils
+Vector
+Versus Screen
+Weighted
+Extra Callbacks
+Extra Features
+Character Health Conversion
+Character Stats
+Collectible Item Pool Type
+Custom Hotkeys
+Custom Item Pools
+Custom Pickups
+Custom Stages
+Custom Trapdoors
+Debug Display
+Deploy JSON Room
+Disable All Sound
+Disable Inputs
+Eden Starting Stats Health
+Extra Console Commands
+Extra Console Commands (List)
+Fade In Remover
+Fast Reset
+Flying Detection
+Forgotten Switch
+Item Pool Detection
+Modded Element Detection
+Modded Element Sets
+No Siren Steal
+Pause
+Persistent Entities
+Pickup Index Creation
+Player Collectible Tracking
+Pony Detection
+Press Input
+Prevent Child Entities
+Prevent Grid Entity Respawn
+Rerun Detection
+Room Clear Frame
+Room History
+Run In N Frames
+Run Next Room
+Run Next Run
+Save Data Manager
+Spawn Rock Alt Rewards
+Stage History
+Start Ambush
+Tainted Lazarus Players
+Unlock Achievements Detection
+Other Miscellaneous Exports
+Classes
+DefaultMap
+ModFeature
+ModUpgraded
+Enums
+AmbushType
+CornerType
+HealthType
+ISCFeature
+LadderSubTypeCustom
+ModCallbackCustom
+MysteriousPaperEffect
+PlayerStat
+PocketItemType
+RockAltType
+SaveDataKey
+SerializationType
+SlotDestructionType
+Interfaces
+ChargeBarSprites
+Corner
+CustomStageTSConfig
+GridEntityCustomData
+JSONRoomsFile
+PlayerHealth
+PlayerStats
+PocketItemDescription
+RoomDescription
+SaveData
+StageHistoryEntry
+TrinketSituation
+TSTLClassMetatable
+Maps
+CardNameToTypeMap
+CharacterNameToTypeMap
+CollectibleNameToTypeMap
+PillNameToEffectMap
+RoomNameToTypeMap
+TransformationNameToPlayerFormMap
+TrinketNameToTypeMap
+Objects
+Colors
+KColors
+Types
+AddSubtract
+AllButFirst
+AllButLast
+AnyClass
+AnyEntity
+AnyFunction
+AnyGridEntity
+CompositionTypeSatisfiesEnum
+ConversionHeartSubType
+Decrement
+EntityID
+ERange
+FunctionTuple
+GridEntityID
+HasFunction
+Immutable
+Increment
+IRange
+LowercaseKeys
+NaturalNumbersLessThan
+NaturalNumbersLessThanOrEqualTo
+ObjectValues
+PickingUpItem
+PickupIndex
+PlayerIndex
+PossibleStatType
+PublicInterface
+ReadonlyMap
+ReadonlyRecord
+ReadonlySet
+StartsWithLowercase
+StartsWithUppercase
+TSTLClass
+Tuple
+TupleKeys
+TupleToIntersection
+TupleToUnion
+TupleWithLengthBetween
+TupleWithMaxLength
+UnionToIntersection
+UppercaseKeys
+WeightedArray
+WidenLiteral
+Writable
+Discord
+GitHub
+Select theme
+Dark
+Light
+Auto
+On this page
+Overview
+Functions
+gridCoordinatesToWorldPosition()
+gridIndexToGridPosition()
+gridPositionToWorldPosition()
+isValidGridPosition()
+worldPositionToGridPosition()
+worldPositionToGridPositionFast()
+On this page
+Overview
+Functions
+gridCoordinatesToWorldPosition()
+gridIndexToGridPosition()
+gridPositionToWorldPosition()
+isValidGridPosition()
+worldPositionToGridPosition()
+worldPositionToGridPositionFast()
+Room Grid
+These functions have to do with the grid index inside of a room (i.e. the grid index that grid
+entities use).
+For functions having to do with the room grid index of the level, see the 鈥淟evel Grid鈥?functions.
+Functions
+Section titled 鈥淔unctions鈥?/span>
+gridCoordinatesToWorldPosition()
+Section titled 鈥済ridCoordinatesToWorldPosition()鈥?/span>
+gridCoordinatesToWorldPosition
+(
+x
+,
+y
+):
+Readonly
+<
+Vector
+>
+Defined in:
+packages/isaacscript-common/src/functions/roomGrid.ts:25
+Helper function to convert grid coordinates to a world position
+Vector
+.
+For example, the coordinates of (0, 0) are equal to
+Vector(80, 160)
+.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+x
+Section titled 鈥渪鈥?/span>
+int
+y
+Section titled 鈥測鈥?/span>
+int
+Returns
+Section titled 鈥淩eturns鈥?/span>
+Readonly
+<
+Vector
+>
+gridIndexToGridPosition()
+Section titled 鈥済ridIndexToGridPosition()鈥?/span>
+gridIndexToGridPosition
+(
+gridIndex
+,
+roomShape
+):
+Readonly
+<
+Vector
+>
+Defined in:
+packages/isaacscript-common/src/functions/roomGrid.ts:39
+Helper function to convert a grid index to a grid position.
+For example, in a 1x1 room, grid index 0 is equal to 鈥淰ector(-1, -1) and grid index 16 is equal
+to 鈥淰ector(0, 0)鈥?
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+gridIndex
+Section titled 鈥済ridIndex鈥?/span>
+int
+roomShape
+Section titled 鈥渞oomShape鈥?/span>
+RoomShape
+Returns
+Section titled 鈥淩eturns鈥?/span>
+Readonly
+<
+Vector
+>
+gridPositionToWorldPosition()
+Section titled 鈥済ridPositionToWorldPosition()鈥?/span>
+gridPositionToWorldPosition
+(
+gridPosition
+):
+Readonly
+<
+Vector
+>
+Defined in:
+packages/isaacscript-common/src/functions/roomGrid.ts:55
+Helper function to convert a grid position
+Vector
+to a world position
+Vector
+.
+For example, the coordinates of (0, 0) are equal to
+Vector(80, 160)
+.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+gridPosition
+Section titled 鈥済ridPosition鈥?/span>
+Vector
+Returns
+Section titled 鈥淩eturns鈥?/span>
+Readonly
+<
+Vector
+>
+isValidGridPosition()
+Section titled 鈥渋sValidGridPosition()鈥?/span>
+isValidGridPosition
+(
+gridPosition
+,
+roomShape
+):
+boolean
+Defined in:
+packages/isaacscript-common/src/functions/roomGrid.ts:69
+Test if a grid position is actually in the given
+RoomShape
+.
+In this context, the grid position of the top-left wall is 鈥淰ector(-1, -1)鈥?
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+gridPosition
+Section titled 鈥済ridPosition鈥?/span>
+Vector
+roomShape
+Section titled 鈥渞oomShape鈥?/span>
+RoomShape
+Returns
+Section titled 鈥淩eturns鈥?/span>
+boolean
+worldPositionToGridPosition()
+Section titled 鈥渨orldPositionToGridPosition()鈥?/span>
+worldPositionToGridPosition
+(
+worldPos
+):
+Readonly
+<
+Vector
+>
+Defined in:
+packages/isaacscript-common/src/functions/roomGrid.ts:83
+Helper function to convert a world position
+Vector
+to a grid position
+Vector
+.
+In this context, the grid position of the top-left wall is 鈥淰ector(-1, -1)鈥?
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+worldPos
+Section titled 鈥渨orldPos鈥?/span>
+Vector
+Returns
+Section titled 鈥淩eturns鈥?/span>
+Readonly
+<
+Vector
+>
+worldPositionToGridPositionFast()
+Section titled 鈥渨orldPositionToGridPositionFast()鈥?/span>
+worldPositionToGridPositionFast
+(
+worldPos
+):
+Readonly
+<
+Vector
+>
+Defined in:
+packages/isaacscript-common/src/functions/roomGrid.ts:98
+Helper function to convert a world position
+Vector
+to a grid position
+Vector
+.
+In this context, the grid position of the top-left wall is 鈥淰ector(-1, -1)鈥?
+This is similar to the
+worldPositionToGridPosition
+function, but the values are not rounded.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+worldPos
+Section titled 鈥渨orldPos鈥?/span>
+Vector
+Returns
+Section titled 鈥淩eturns鈥?/span>
+Readonly
+<
+Vector
+>
+Previous
+Room Data
+Next
+Rooms

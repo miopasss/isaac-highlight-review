@@ -1,0 +1,615 @@
+﻿EntityFamiliar - BoI: REPENTOGON
+Skip to content
+BoI: REPENTOGON
+EntityFamiliar
+Search
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Changes
+XML
+Example Mods
+Lua 5.4 Docs
+BoI: REPENTOGON
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+Achievement
+AddHealthType
+AnimRenderFlags
+AnnouncerVoiceMode
+AutocompleteType
+BagOfCraftingPickup
+BlendFactor
+BlendType
+BlendEquation
+BombCostumeLayer
+BossType
+ButtonActionBitwise
+CameraStyle
+CharacterMenuStatus
+ChargeType
+CompletionType
+CompletionStatus
+ConceptionFamiliarFlag
+ConsoleFont
+CustomCacheTag
+DebugFlag
+DeliriumCallbacks
+DialogButtons
+DialogIcons
+DialogReturn
+Dimension
+DipSubType
+DoorMask
+DwmWindowAttribute
+Ending
+EnemyTargetFlags
+EntityPoopVariant
+EntityTag
+EvaluateStatStage
+EventCounter
+ExtraHudStyle
+FadeoutTarget
+FollowerPriority
+GetCollectibleFlag
+GLSLType
+Giantbook
+GibFlag
+GridPoopVariant
+HealthType
+ImGuiCallback
+ImGuiColor
+ImGuiChildFlags
+ImGuiData
+ImGuiElement
+ImGuiNotificationType
+ImGuiWindowFlags
+ItemAnim
+KnifeSubType
+KnifeVariant
+Language
+LineCheckMode
+MainMenuType
+MinimapState
+ModCallbacks
+MouseButton
+NullPickupSubType
+PauseMenuStates
+PedestalType
+PillCardSlot
+PillEffectSubClass
+PlayerHUDLayout
+PlayerVariant
+PocketItemType
+PressurePlateVariant
+ProceduralEffectActionType
+ProceduralEffectConditionType
+ProjectileMode
+PurityState
+RetractingSpikesVariant
+RoomEventOutput
+RoomSubType
+ShaderType
+SlotVariant
+SpecialQuest
+SplitTearType
+StatusEffect
+StbGridType
+StbPoopSubType
+StbRailVariant
+StbRockSubType
+StbTeleporterSubType
+StbType
+TaintedMarksGroup
+TeleporterVariant
+TrinketSlot
+UseActiveItemResultFlag
+VertexAttributeFormat
+WaterClipFlag
+WeaponModifier
+WispSubType
+XMLNode
+Ambush
+Backdrop
+BossPool
+BossPool
+BossPool
+BossPoolManager
+Camera
+Capsule
+CcpContainer
+CcpContainer
+RoomConfigSet
+ChallengeParam
+Color
+ColorModifier
+ColorParams
+Console
+CostumeSpriteDesc
+DailyChallenge
+Debug
+Entity
+Entity
+Entity
+EntityBomb
+EntityDelirium
+EntityEffect
+EntityFamiliar
+EntityFamiliar
+On this page
+Class Diagram
+Functions
+CanBeDamagedByEnemies ()
+CanBeDamagedByLasers ()
+CanBeDamagedByProjectiles ()
+CanBlockProjectiles ()
+CanCharm ()
+GetActiveWeaponEntity ()
+GetActiveWeaponNumFired ()
+GetDirtColor ()
+GetFollowerPriority ()
+GetItemConfig ()
+GetMoveDelayNum ()
+GetMultiplier ()
+GetPathfinder ()
+GetRandomWisp ()
+GetWeapon ()
+InvalidateCachedMultiplier ()
+IsCharmed ()
+IsLilDelirium ()
+RemoveFromPlayer ()
+SetLilDelirium ()
+SetMoveDelayNum ()
+TriggerRoomClear ()
+TryAimAtMarkedTarget ()
+UpdateDirtColor ()
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPlayer
+EntityPickup
+EntityProjectile
+EntitySlot
+EntityTear
+EntityConfig
+EntityConfig
+EntityConfig
+EntityConfigBaby
+EntityConfigEntity
+EntityConfigPlayer
+EntityDesc
+EntitySaveStateManager
+Font
+FXLayers
+FXParams
+Game
+GenericPrompt
+GridEntity
+GridEntity
+GridEntity
+GridEntityDecoration
+GridEntityDoor
+GridEntityFire
+GridEntityGravity
+GridEntityLock
+GridEntityPressurePlate
+GridEntityRock
+GridEntityStairs
+GridEntityStatue
+GridEntityTeleporter
+GridEntityTrapDoor
+GridEntityWall
+GridEntityWeb
+History
+History
+History
+HistoryItem
+HUDs
+HUDs
+DebugRenderer
+HUD
+Minimap
+PlayerHUD
+PlayerHUDHeart
+ScoreSheet
+ImGui
+Isaac
+ItemConfig
+ItemConfig
+ItemConfig
+ItemConfig - Item
+ItemConfig - PillEffect
+ItemConfig - Card
+ItemConfig - Costume
+ItemOverlay
+ItemPool
+Input
+Level
+LevelGenerator
+LevelGenerator
+LevelGenerator
+LevelGeneratorEntry
+LevelGeneratorRoom
+LootList
+LootList
+LootList
+LootListEntry
+LRoomAreaDesc
+LRoomTileDesc
+Menus
+Menus
+MenuManager
+BestiaryMenu
+ChallengeMenu
+CharacterMenu
+CollectionMenu
+ControllerSelectMenu
+CustomChallengeMenu
+CutscenesMenu
+DailyChallengeMenu
+KeyConfigMenu
+MainMenu
+ModsMenu
+OptionsMenu
+PauseMenu
+SaveMenu
+SpecialSeedsMenu
+StatsMenu
+TitleMenu
+MultiShotParams
+MusicManager
+NightmareScene
+Options
+Pathfinder
+PersistentGameData
+PlayerManager
+Procedural Items
+Procedural Items
+ProceduralItemManager
+ProceduralEffect
+ProceduralItem
+PocketItem
+ProjectileParams
+RailManager
+Rendering
+Rendering
+Beam
+BlendMode
+DestinationQuad
+GLSLValue
+Image
+Pipeline
+Point
+Renderer
+RenderSet
+Shader
+SourceQuad
+Shape
+SurfaceRenderController
+Transformer
+Vertex
+VertexBuffer
+VertexDescriptor
+REPENTOGON
+RNG
+Room
+RoomConfig
+RoomConfig
+RoomConfig
+RoomConfigStage
+GridEntitiesSaveStateVector
+RoomConfigRoom
+RoomDescriptor
+EntitiesSaveState
+EntitiesSaveStateVector
+RoomTransition
+Seeds
+Sprite
+Sprite
+AnimationData
+AnimationFrame
+AnimationLayer
+LayerState
+NullFrame
+Sprite
+StageTransition
+TearParams
+Vector
+Weapon
+WeightedOutcomePicker
+XMLData
+Changes
+Changes
+General
+Debugging
+UI
+XML
+XML
+XML Overview
+XMLData
+achievements.xml
+ambush.xml
+backdrops.xml
+bosscolors.xml
+costumes.xml
+cutscenes.xml
+challenges.xml
+entities2.xml
+giantbook.xml
+items.xml
+itempools.xml
+pocketitems.xml
+players.xml
+stringtable.sta
+Example Mods
+Example Mods
+Capsules
+Deal Chance
+ImGui Menu
+Weighted Outcomes
+Beams
+Color Modifiers
+Lua 5.4 Docs
+On this page
+Class Diagram
+Functions
+CanBeDamagedByEnemies ()
+CanBeDamagedByLasers ()
+CanBeDamagedByProjectiles ()
+CanBlockProjectiles ()
+CanCharm ()
+GetActiveWeaponEntity ()
+GetActiveWeaponNumFired ()
+GetDirtColor ()
+GetFollowerPriority ()
+GetItemConfig ()
+GetMoveDelayNum ()
+GetMultiplier ()
+GetPathfinder ()
+GetRandomWisp ()
+GetWeapon ()
+InvalidateCachedMultiplier ()
+IsCharmed ()
+IsLilDelirium ()
+RemoveFromPlayer ()
+SetLilDelirium ()
+SetMoveDelayNum ()
+TriggerRoomClear ()
+TryAimAtMarkedTarget ()
+UpdateDirtColor ()
+Class "EntityFamiliar"
+鈿擄笌
+Class Diagram
+鈿擄笌
+classDiagram
+class Entity:::diagramCurrentPage
+class EntityBomb
+class EntityEffect
+class EntityFamiliar
+class EntityKnife
+class EntityLaser
+class EntityNPC
+class EntityPickup
+class EntityPlayer
+class EntityProjectile
+class EntitySlot
+class EntityTear
+Entity <|-- EntityBomb
+Entity <|-- EntityEffect
+Entity <|-- EntityFamiliar
+Entity <|-- EntityKnife
+Entity <|-- EntityLaser
+Entity <|-- EntityNPC
+Entity <|-- EntityPickup
+Entity <|-- EntityPlayer
+Entity <|-- EntityProjectile
+Entity <|-- EntitySlot
+Entity <|-- EntityTear
+link Entity "https://wofsauge.github.io/IsaacDocs/rep/Entity.html" "Go to page for 'Entity' class"
+link EntityBomb "https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html" "Go to page for 'EntityBomb' class"
+link EntityEffect "https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html" "Go to page for 'EntityEffect' class"
+link EntityFamiliar "https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html" "Go to page for 'EntityFamiliar' class"
+link EntityKnife "https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html" "Go to page for 'EntityKnife' class"
+link EntityLaser "EntityLaser.html" "Go to page for 'EntityLaser' class"
+link EntityNPC "EntityNPC.html" "Go to page for 'EntityNPC' class"
+link EntityPickup "EntityPickup.html" "Go to page for 'EntityPickup' class"
+link EntityPlayer "EntityPlayer.html" "Go to page for 'EntityPlayer' class"
+link EntityProjectile "https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html" "Go to page for 'EntityProjectile' class"
+link EntitySlot "EntitySlot.html" "Go to page for 'EntitySlot' class"
+link EntityTear "https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html" "Go to page for 'EntityTear' class"
+Functions
+鈿擄笌
+CanBeDamagedByEnemies ()
+鈿擄笌
+boolean CanBeDamagedByEnemies ( )
+鈿擄笌
+CanBeDamagedByLasers ()
+鈿擄笌
+boolean CanBeDamagedByLasers ( )
+鈿擄笌
+CanBeDamagedByProjectiles ()
+鈿擄笌
+boolean CanBeDamagedByProjectiles ( )
+鈿擄笌
+CanBlockProjectiles ()
+鈿擄笌
+boolean CanBlockProjectiles ( )
+鈿擄笌
+CanCharm ()
+鈿擄笌
+boolean CanCharm ( )
+鈿擄笌
+Returns
+true
+if the familiar can be charmed by the Siren boss.
+GetActiveWeaponEntity ()
+鈿擄笌
+Entity
+GetActiveWeaponEntity ( )
+鈿擄笌
+Returns the Entity associated with the familiar's active
+Weapon
+.
+Returns
+nil
+if it cannot be found.
+GetActiveWeaponNumFired ()
+鈿擄笌
+int GetActiveWeaponNumFired ( )
+鈿擄笌
+Returns the amount of times the familiar's active
+Weapon
+has been fired.
+GetDirtColor ()
+鈿擄笌
+Color
+GetDirtColor ( )
+鈿擄笌
+GetFollowerPriority ()
+鈿擄笌
+FollowerPriority
+GetFollowerPriority ( )
+鈿擄笌
+GetItemConfig ()
+鈿擄笌
+ItemConfigItem
+GetItemConfig ( )
+鈿擄笌
+Returns the ItemConfigItem corresponding to the item that granted this familiar.
+Returns nil if the familiar was not spawned by an item.
+GetMoveDelayNum ()
+鈿擄笌
+int GetMoveDelayNum ( )
+鈿擄笌
+Returns the amount in frames that the familiar's movements are delayed from the player's. 30 frames = 1 second.
+GetMultiplier ()
+鈿擄笌
+float GetMultiplier ( )
+鈿擄笌
+Returns the "multiplier" for the familiar, from effects such as
+BFFS!
+or
+Hive Mind
+. Typically used to multiply things such as familiar damage.
+Multipliers
+BFFS!
+and
+Hive Mind
+: x2.0
+Tainted Bethany
+: x0.75
+Tainted Lazarus Birthright
+: x0.25
+GetPathfinder ()
+鈿擄笌
+PathFinder
+GetPathfinder ( )
+鈿擄笌
+GetRandomWisp ()
+鈿擄笌
+static
+CollectibleType
+GetRandomWisp (
+RNG
+RNG )
+鈿擄笌
+GetWeapon ()
+鈿擄笌
+Weapon
+GetWeapon ( )
+鈿擄笌
+Returns
+nil
+for familiars that don't mimic the player's attacks (Incubus, etc).
+InvalidateCachedMultiplier ()
+鈿擄笌
+void InvalidateCachedMultiplier ( )
+鈿擄笌
+Makes it so that the next time
+GetMultiplier
+is called,
+MC_EVALUATE_FAMILIAR_MULTIPLIER
+is triggered to recalculate/allow modifying the multiplier.
+IsCharmed ()
+鈿擄笌
+boolean IsCharmed ( )
+鈿擄笌
+Returns
+true
+if the familiar is charmed by the Siren boss.
+IsLilDelirium ()
+鈿擄笌
+boolean IsLilDelirium ( )
+鈿擄笌
+RemoveFromPlayer ()
+鈿擄笌
+void RemoveFromPlayer ( )
+鈿擄笌
+SetLilDelirium ()
+鈿擄笌
+void SetLilDelirium ( boolean isLilDelirium )
+鈿擄笌
+SetMoveDelayNum ()
+鈿擄笌
+void SetMoveDelayNum ( int Delay )
+鈿擄笌
+Sets the amount in frames that the familiar's movements are delayed from the player's. 30 frames = 1 second.
+TriggerRoomClear ()
+鈿擄笌
+void TriggerRoomClear ( )
+鈿擄笌
+TryAimAtMarkedTarget ()
+鈿擄笌
+Vector
+TryAimAtMarkedTarget (
+Vector
+AimDirection,
+Direction
+Direction = Direction.NO_DIRECTION )
+鈿擄笌
+boolean, table TryAimAtMarkedTarget (
+Vector
+AimDirection = nil,
+Direction
+Direction = Direction.NO_DIRECTION,
+Vector
+TargetPos = nil )
+鈿擄笌
+Return
+true
+if player's mark from Marked or Eye of the Occult/Gello target exists,
+false
+otherwise.
+Return a table containing the changed AimDirection, Direction, and TargetPos.
+Legacy version returns modified TargetPos,
+nil
+if unsuccessful.
+UpdateDirtColor ()
+鈿擄笌
+void UpdateDirtColor ( )
+鈿擄笌
+Class
+Back to top
+Copyright © 2026 REPENTOGON developers
+Made with
+Zensical

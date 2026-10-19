@@ -1,0 +1,584 @@
+﻿GridEntity - BoI: REPENTOGON
+Skip to content
+BoI: REPENTOGON
+GridEntity
+Search
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Changes
+XML
+Example Mods
+Lua 5.4 Docs
+BoI: REPENTOGON
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+Achievement
+AddHealthType
+AnimRenderFlags
+AnnouncerVoiceMode
+AutocompleteType
+BagOfCraftingPickup
+BlendFactor
+BlendType
+BlendEquation
+BombCostumeLayer
+BossType
+ButtonActionBitwise
+CameraStyle
+CharacterMenuStatus
+ChargeType
+CompletionType
+CompletionStatus
+ConceptionFamiliarFlag
+ConsoleFont
+CustomCacheTag
+DebugFlag
+DeliriumCallbacks
+DialogButtons
+DialogIcons
+DialogReturn
+Dimension
+DipSubType
+DoorMask
+DwmWindowAttribute
+Ending
+EnemyTargetFlags
+EntityPoopVariant
+EntityTag
+EvaluateStatStage
+EventCounter
+ExtraHudStyle
+FadeoutTarget
+FollowerPriority
+GetCollectibleFlag
+GLSLType
+Giantbook
+GibFlag
+GridPoopVariant
+HealthType
+ImGuiCallback
+ImGuiColor
+ImGuiChildFlags
+ImGuiData
+ImGuiElement
+ImGuiNotificationType
+ImGuiWindowFlags
+ItemAnim
+KnifeSubType
+KnifeVariant
+Language
+LineCheckMode
+MainMenuType
+MinimapState
+ModCallbacks
+MouseButton
+NullPickupSubType
+PauseMenuStates
+PedestalType
+PillCardSlot
+PillEffectSubClass
+PlayerHUDLayout
+PlayerVariant
+PocketItemType
+PressurePlateVariant
+ProceduralEffectActionType
+ProceduralEffectConditionType
+ProjectileMode
+PurityState
+RetractingSpikesVariant
+RoomEventOutput
+RoomSubType
+ShaderType
+SlotVariant
+SpecialQuest
+SplitTearType
+StatusEffect
+StbGridType
+StbPoopSubType
+StbRailVariant
+StbRockSubType
+StbTeleporterSubType
+StbType
+TaintedMarksGroup
+TeleporterVariant
+TrinketSlot
+UseActiveItemResultFlag
+VertexAttributeFormat
+WaterClipFlag
+WeaponModifier
+WispSubType
+XMLNode
+Ambush
+Backdrop
+BossPool
+BossPool
+BossPool
+BossPoolManager
+Camera
+Capsule
+CcpContainer
+CcpContainer
+RoomConfigSet
+ChallengeParam
+Color
+ColorModifier
+ColorParams
+Console
+CostumeSpriteDesc
+DailyChallenge
+Debug
+Entity
+Entity
+Entity
+EntityBomb
+EntityDelirium
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPlayer
+EntityPickup
+EntityProjectile
+EntitySlot
+EntityTear
+EntityConfig
+EntityConfig
+EntityConfig
+EntityConfigBaby
+EntityConfigEntity
+EntityConfigPlayer
+EntityDesc
+EntitySaveStateManager
+Font
+FXLayers
+FXParams
+Game
+GenericPrompt
+GridEntity
+GridEntity
+GridEntity
+GridEntity
+On this page
+Modified Functions
+ToTNT ()
+Functions
+GetRenderPosition ()
+GetWaterClipFlags ()
+HurtDamage ()
+IsBreakableRock ()
+ResetWaterClipFlags ()
+SetWaterClipFlags ()
+ToDecoration ()
+ToFire ()
+ToGravity ()
+ToLock ()
+ToStairs ()
+ToStatue ()
+ToTeleporter ()
+ToTrapDoor ()
+ToWall ()
+ToWeb ()
+GridEntityDecoration
+GridEntityDoor
+GridEntityFire
+GridEntityGravity
+GridEntityLock
+GridEntityPressurePlate
+GridEntityRock
+GridEntityStairs
+GridEntityStatue
+GridEntityTeleporter
+GridEntityTrapDoor
+GridEntityWall
+GridEntityWeb
+History
+History
+History
+HistoryItem
+HUDs
+HUDs
+DebugRenderer
+HUD
+Minimap
+PlayerHUD
+PlayerHUDHeart
+ScoreSheet
+ImGui
+Isaac
+ItemConfig
+ItemConfig
+ItemConfig
+ItemConfig - Item
+ItemConfig - PillEffect
+ItemConfig - Card
+ItemConfig - Costume
+ItemOverlay
+ItemPool
+Input
+Level
+LevelGenerator
+LevelGenerator
+LevelGenerator
+LevelGeneratorEntry
+LevelGeneratorRoom
+LootList
+LootList
+LootList
+LootListEntry
+LRoomAreaDesc
+LRoomTileDesc
+Menus
+Menus
+MenuManager
+BestiaryMenu
+ChallengeMenu
+CharacterMenu
+CollectionMenu
+ControllerSelectMenu
+CustomChallengeMenu
+CutscenesMenu
+DailyChallengeMenu
+KeyConfigMenu
+MainMenu
+ModsMenu
+OptionsMenu
+PauseMenu
+SaveMenu
+SpecialSeedsMenu
+StatsMenu
+TitleMenu
+MultiShotParams
+MusicManager
+NightmareScene
+Options
+Pathfinder
+PersistentGameData
+PlayerManager
+Procedural Items
+Procedural Items
+ProceduralItemManager
+ProceduralEffect
+ProceduralItem
+PocketItem
+ProjectileParams
+RailManager
+Rendering
+Rendering
+Beam
+BlendMode
+DestinationQuad
+GLSLValue
+Image
+Pipeline
+Point
+Renderer
+RenderSet
+Shader
+SourceQuad
+Shape
+SurfaceRenderController
+Transformer
+Vertex
+VertexBuffer
+VertexDescriptor
+REPENTOGON
+RNG
+Room
+RoomConfig
+RoomConfig
+RoomConfig
+RoomConfigStage
+GridEntitiesSaveStateVector
+RoomConfigRoom
+RoomDescriptor
+EntitiesSaveState
+EntitiesSaveStateVector
+RoomTransition
+Seeds
+Sprite
+Sprite
+AnimationData
+AnimationFrame
+AnimationLayer
+LayerState
+NullFrame
+Sprite
+StageTransition
+TearParams
+Vector
+Weapon
+WeightedOutcomePicker
+XMLData
+Changes
+Changes
+General
+Debugging
+UI
+XML
+XML
+XML Overview
+XMLData
+achievements.xml
+ambush.xml
+backdrops.xml
+bosscolors.xml
+costumes.xml
+cutscenes.xml
+challenges.xml
+entities2.xml
+giantbook.xml
+items.xml
+itempools.xml
+pocketitems.xml
+players.xml
+stringtable.sta
+Example Mods
+Example Mods
+Capsules
+Deal Chance
+ImGui Menu
+Weighted Outcomes
+Beams
+Color Modifiers
+Lua 5.4 Docs
+On this page
+Modified Functions
+ToTNT ()
+Functions
+GetRenderPosition ()
+GetWaterClipFlags ()
+HurtDamage ()
+IsBreakableRock ()
+ResetWaterClipFlags ()
+SetWaterClipFlags ()
+ToDecoration ()
+ToFire ()
+ToGravity ()
+ToLock ()
+ToStairs ()
+ToStatue ()
+ToTeleporter ()
+ToTrapDoor ()
+ToWall ()
+ToWeb ()
+Class "GridEntity"
+鈿擄笌
+Modified Functions
+鈿擄笌
+ToTNT ()
+鈿擄笌
+GridEntityTNT
+ToTNT ( )
+鈿擄笌
+Altered function to improve GridEntity Update callback behavior.
+Functions
+鈿擄笌
+GetRenderPosition ()
+鈿擄笌
+Vector
+GetRenderPosition ( )
+鈿擄笌
+GetWaterClipFlags ()
+鈿擄笌
+WaterClipFlag
+GetWaterClipFlags ( )
+鈿擄笌
+Gets a bitset that informs whether this GridEntity renders above or below water.
+Vanilla state can be restored with
+ResetWaterClipFlags()
+.
+HurtDamage ()
+鈿擄笌
+void HurtDamage (
+Entity
+Entity, int PlayerDamage, int DamageFlags, float Damage, boolean ignoreGridCollision )
+鈿擄笌
+IsBreakableRock ()
+鈿擄笌
+void IsBreakableRock ( )
+鈿擄笌
+ResetWaterClipFlags ()
+鈿擄笌
+void ResetWaterClipFlags ( )
+鈿擄笌
+Restores water rendering to the default vanilla state. See
+SetWaterClipFlags()
+.
+SetWaterClipFlags ()
+鈿擄笌
+void SetWaterClipFlags (
+WaterClipFlag
+Flags )
+鈿擄笌
+Allows modification of whether this GridEntity renders above or below water.
+Note that this will also disable any natural vanilla changes to these flags, such as a poop switching to rendering below water after being broken.
+Vanilla state can be restored with
+ResetWaterClipFlags()
+.
+ToDecoration ()
+鈿擄笌
+GridEntityDecoration
+ToDecoration ( )
+鈿擄笌
+Used to cast a
+GridEntity
+object to a
+GridEntityDecoration
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+ToFire ()
+鈿擄笌
+GridEntityFire
+ToFire ( )
+鈿擄笌
+Used to cast a
+GridEntity
+object to a
+GridEntityFire
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+ToGravity ()
+鈿擄笌
+GridEntityGravity
+ToGravity ( )
+鈿擄笌
+Used to cast a
+GridEntity
+object to a
+GridEntityGravity
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+ToLock ()
+鈿擄笌
+GridEntityLock
+ToLock ( )
+鈿擄笌
+Used to cast a
+GridEntity
+object to a
+GridEntityLock
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+ToStairs ()
+鈿擄笌
+GridEntityStairs
+ToStairs ( )
+鈿擄笌
+Used to cast a
+GridEntity
+object to a
+GridEntityStairs
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+ToStatue ()
+鈿擄笌
+GridEntityStatue
+ToStatue ( )
+鈿擄笌
+Used to cast a
+GridEntity
+object to a
+GridEntityStatue
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+ToTeleporter ()
+鈿擄笌
+GridEntityTeleporter
+ToTeleporter ( )
+鈿擄笌
+Used to cast a
+GridEntity
+object to a
+GridEntityTeleporter
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+ToTrapDoor ()
+鈿擄笌
+GridEntityTrapDoor
+ToTrapDoor ( )
+鈿擄笌
+Used to cast a
+GridEntity
+object to a
+GridEntityTrapDoor
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+ToWall ()
+鈿擄笌
+GridEntityWall
+ToWall ( )
+鈿擄笌
+Used to cast a
+GridEntity
+object to a
+GridEntityWall
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+ToWeb ()
+鈿擄笌
+GridEntityWeb
+ToWeb ( )
+鈿擄笌
+Used to cast a
+GridEntity
+object to a
+GridEntityWeb
+object.
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+Class
+Back to top
+Copyright © 2026 REPENTOGON developers
+Made with
+Zensical

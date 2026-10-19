@@ -1,0 +1,446 @@
+﻿RoomConfig - BoI: REPENTOGON
+Skip to content
+BoI: REPENTOGON
+RoomConfig
+Search
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Changes
+XML
+Example Mods
+Lua 5.4 Docs
+BoI: REPENTOGON
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+Achievement
+AddHealthType
+AnimRenderFlags
+AnnouncerVoiceMode
+AutocompleteType
+BagOfCraftingPickup
+BlendFactor
+BlendType
+BlendEquation
+BombCostumeLayer
+BossType
+ButtonActionBitwise
+CameraStyle
+CharacterMenuStatus
+ChargeType
+CompletionType
+CompletionStatus
+ConceptionFamiliarFlag
+ConsoleFont
+CustomCacheTag
+DebugFlag
+DeliriumCallbacks
+DialogButtons
+DialogIcons
+DialogReturn
+Dimension
+DipSubType
+DoorMask
+DwmWindowAttribute
+Ending
+EnemyTargetFlags
+EntityPoopVariant
+EntityTag
+EvaluateStatStage
+EventCounter
+ExtraHudStyle
+FadeoutTarget
+FollowerPriority
+GetCollectibleFlag
+GLSLType
+Giantbook
+GibFlag
+GridPoopVariant
+HealthType
+ImGuiCallback
+ImGuiColor
+ImGuiChildFlags
+ImGuiData
+ImGuiElement
+ImGuiNotificationType
+ImGuiWindowFlags
+ItemAnim
+KnifeSubType
+KnifeVariant
+Language
+LineCheckMode
+MainMenuType
+MinimapState
+ModCallbacks
+MouseButton
+NullPickupSubType
+PauseMenuStates
+PedestalType
+PillCardSlot
+PillEffectSubClass
+PlayerHUDLayout
+PlayerVariant
+PocketItemType
+PressurePlateVariant
+ProceduralEffectActionType
+ProceduralEffectConditionType
+ProjectileMode
+PurityState
+RetractingSpikesVariant
+RoomEventOutput
+RoomSubType
+ShaderType
+SlotVariant
+SpecialQuest
+SplitTearType
+StatusEffect
+StbGridType
+StbPoopSubType
+StbRailVariant
+StbRockSubType
+StbTeleporterSubType
+StbType
+TaintedMarksGroup
+TeleporterVariant
+TrinketSlot
+UseActiveItemResultFlag
+VertexAttributeFormat
+WaterClipFlag
+WeaponModifier
+WispSubType
+XMLNode
+Ambush
+Backdrop
+BossPool
+BossPool
+BossPool
+BossPoolManager
+Camera
+Capsule
+CcpContainer
+CcpContainer
+RoomConfigSet
+ChallengeParam
+Color
+ColorModifier
+ColorParams
+Console
+CostumeSpriteDesc
+DailyChallenge
+Debug
+Entity
+Entity
+Entity
+EntityBomb
+EntityDelirium
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPlayer
+EntityPickup
+EntityProjectile
+EntitySlot
+EntityTear
+EntityConfig
+EntityConfig
+EntityConfig
+EntityConfigBaby
+EntityConfigEntity
+EntityConfigPlayer
+EntityDesc
+EntitySaveStateManager
+Font
+FXLayers
+FXParams
+Game
+GenericPrompt
+GridEntity
+GridEntity
+GridEntity
+GridEntityDecoration
+GridEntityDoor
+GridEntityFire
+GridEntityGravity
+GridEntityLock
+GridEntityPressurePlate
+GridEntityRock
+GridEntityStairs
+GridEntityStatue
+GridEntityTeleporter
+GridEntityTrapDoor
+GridEntityWall
+GridEntityWeb
+History
+History
+History
+HistoryItem
+HUDs
+HUDs
+DebugRenderer
+HUD
+Minimap
+PlayerHUD
+PlayerHUDHeart
+ScoreSheet
+ImGui
+Isaac
+ItemConfig
+ItemConfig
+ItemConfig
+ItemConfig - Item
+ItemConfig - PillEffect
+ItemConfig - Card
+ItemConfig - Costume
+ItemOverlay
+ItemPool
+Input
+Level
+LevelGenerator
+LevelGenerator
+LevelGenerator
+LevelGeneratorEntry
+LevelGeneratorRoom
+LootList
+LootList
+LootList
+LootListEntry
+LRoomAreaDesc
+LRoomTileDesc
+Menus
+Menus
+MenuManager
+BestiaryMenu
+ChallengeMenu
+CharacterMenu
+CollectionMenu
+ControllerSelectMenu
+CustomChallengeMenu
+CutscenesMenu
+DailyChallengeMenu
+KeyConfigMenu
+MainMenu
+ModsMenu
+OptionsMenu
+PauseMenu
+SaveMenu
+SpecialSeedsMenu
+StatsMenu
+TitleMenu
+MultiShotParams
+MusicManager
+NightmareScene
+Options
+Pathfinder
+PersistentGameData
+PlayerManager
+Procedural Items
+Procedural Items
+ProceduralItemManager
+ProceduralEffect
+ProceduralItem
+PocketItem
+ProjectileParams
+RailManager
+Rendering
+Rendering
+Beam
+BlendMode
+DestinationQuad
+GLSLValue
+Image
+Pipeline
+Point
+Renderer
+RenderSet
+Shader
+SourceQuad
+Shape
+SurfaceRenderController
+Transformer
+Vertex
+VertexBuffer
+VertexDescriptor
+REPENTOGON
+RNG
+Room
+RoomConfig
+RoomConfig
+RoomConfig
+RoomConfig
+On this page
+Functions
+AddRooms ()
+GetRandomRoom ()
+GetRoomByStageTypeAndVariant ()
+GetStage ()
+LoadStb ()
+RoomConfigStage
+GridEntitiesSaveStateVector
+RoomConfigRoom
+RoomDescriptor
+EntitiesSaveState
+EntitiesSaveStateVector
+RoomTransition
+Seeds
+Sprite
+Sprite
+AnimationData
+AnimationFrame
+AnimationLayer
+LayerState
+NullFrame
+Sprite
+StageTransition
+TearParams
+Vector
+Weapon
+WeightedOutcomePicker
+XMLData
+Changes
+Changes
+General
+Debugging
+UI
+XML
+XML
+XML Overview
+XMLData
+achievements.xml
+ambush.xml
+backdrops.xml
+bosscolors.xml
+costumes.xml
+cutscenes.xml
+challenges.xml
+entities2.xml
+giantbook.xml
+items.xml
+itempools.xml
+pocketitems.xml
+players.xml
+stringtable.sta
+Example Mods
+Example Mods
+Capsules
+Deal Chance
+ImGui Menu
+Weighted Outcomes
+Beams
+Color Modifiers
+Lua 5.4 Docs
+On this page
+Functions
+AddRooms ()
+GetRandomRoom ()
+GetRoomByStageTypeAndVariant ()
+GetStage ()
+LoadStb ()
+Global Class "RoomConfig"
+鈿擄笌
+Info
+You can get this class by using the RoomConfig global table.
+Note that to call these functions, you must use a
+.
+(period) instead of a
+:
+(colon)!
+Example Code
+1
+local
+roomConfigStage
+=
+RoomConfig
+.
+GetStage
+(
+StbType
+.
+BASEMENT
+)
+Functions
+鈿擄笌
+AddRooms ()
+鈿擄笌
+RoomConfigRoom
+[] AddRooms (
+StbType
+Stage, int Mode, table[] Rooms )
+鈿擄笌
+Adds the provided Lua Rooms to the specified RoomConfigSet. For details on how to generate Lua Rooms, refer to the
+Custom StageAPI Github page
+.
+The function returns a table containing the placed RoomConfigRoom objects, in the same order as the input
+Rooms
+table. If a room at a given index could not be converted into a valid RoomConfigRoom, the corresponding entry in the returned table will be nil instead.
+GetRandomRoom ()
+鈿擄笌
+RoomConfigRoom
+GetRandomRoom ( int Seed, boolean ReduceWeight,
+StbType
+Stage,
+RoomType
+Type,
+RoomShape
+Shape = RoomShape.NUM_ROOMSHAPES, int MinVariant = 0, int MaxVariant = -1, int MinDifficulty = 0, int MaxDifficulty = 10, int RequiredDoors = 0, int Subtype = -1, int Mode = -1 )
+鈿擄笌
+Returns a RoomConfigRoom corresponding to the given params.
+GetRoomByStageTypeAndVariant ()
+鈿擄笌
+RoomConfigRoom
+GetRoomByStageTypeAndVariant (
+StbType
+Stage,
+RoomType
+Type, int Variant, int Mode = -1 )
+鈿擄笌
+Returns a RoomConfigRoom corresponding to the given params.
+GetStage ()
+鈿擄笌
+RoomConfigStage
+GetStage (
+StbType
+Stage )
+鈿擄笌
+LoadStb ()
+鈿擄笌
+RoomConfigRoom
+[] LoadStb (
+StbType
+Stage, int Mode, string StbFileName )
+鈿擄笌
+Adds the rooms from the provided
+.stb
+file to the specified RoomConfigSet. Files can only be loaded starting from the
+.../content(-repentogon)/rooms/
+folder of all mods (so you should not include
+content/rooms/
+in your path).
+If files from multiple mods match the filename, they will all be loaded.
+Global
+Class
+Back to top
+Copyright © 2026 REPENTOGON developers
+Made with
+Zensical

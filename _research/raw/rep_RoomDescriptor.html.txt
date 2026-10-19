@@ -1,0 +1,650 @@
+﻿RoomDescriptor - BoI: REPENTOGON
+Skip to content
+BoI: REPENTOGON
+RoomDescriptor
+Search
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Changes
+XML
+Example Mods
+Lua 5.4 Docs
+BoI: REPENTOGON
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+Achievement
+AddHealthType
+AnimRenderFlags
+AnnouncerVoiceMode
+AutocompleteType
+BagOfCraftingPickup
+BlendFactor
+BlendType
+BlendEquation
+BombCostumeLayer
+BossType
+ButtonActionBitwise
+CameraStyle
+CharacterMenuStatus
+ChargeType
+CompletionType
+CompletionStatus
+ConceptionFamiliarFlag
+ConsoleFont
+CustomCacheTag
+DebugFlag
+DeliriumCallbacks
+DialogButtons
+DialogIcons
+DialogReturn
+Dimension
+DipSubType
+DoorMask
+DwmWindowAttribute
+Ending
+EnemyTargetFlags
+EntityPoopVariant
+EntityTag
+EvaluateStatStage
+EventCounter
+ExtraHudStyle
+FadeoutTarget
+FollowerPriority
+GetCollectibleFlag
+GLSLType
+Giantbook
+GibFlag
+GridPoopVariant
+HealthType
+ImGuiCallback
+ImGuiColor
+ImGuiChildFlags
+ImGuiData
+ImGuiElement
+ImGuiNotificationType
+ImGuiWindowFlags
+ItemAnim
+KnifeSubType
+KnifeVariant
+Language
+LineCheckMode
+MainMenuType
+MinimapState
+ModCallbacks
+MouseButton
+NullPickupSubType
+PauseMenuStates
+PedestalType
+PillCardSlot
+PillEffectSubClass
+PlayerHUDLayout
+PlayerVariant
+PocketItemType
+PressurePlateVariant
+ProceduralEffectActionType
+ProceduralEffectConditionType
+ProjectileMode
+PurityState
+RetractingSpikesVariant
+RoomEventOutput
+RoomSubType
+ShaderType
+SlotVariant
+SpecialQuest
+SplitTearType
+StatusEffect
+StbGridType
+StbPoopSubType
+StbRailVariant
+StbRockSubType
+StbTeleporterSubType
+StbType
+TaintedMarksGroup
+TeleporterVariant
+TrinketSlot
+UseActiveItemResultFlag
+VertexAttributeFormat
+WaterClipFlag
+WeaponModifier
+WispSubType
+XMLNode
+Ambush
+Backdrop
+BossPool
+BossPool
+BossPool
+BossPoolManager
+Camera
+Capsule
+CcpContainer
+CcpContainer
+RoomConfigSet
+ChallengeParam
+Color
+ColorModifier
+ColorParams
+Console
+CostumeSpriteDesc
+DailyChallenge
+Debug
+Entity
+Entity
+Entity
+EntityBomb
+EntityDelirium
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPlayer
+EntityPickup
+EntityProjectile
+EntitySlot
+EntityTear
+EntityConfig
+EntityConfig
+EntityConfig
+EntityConfigBaby
+EntityConfigEntity
+EntityConfigPlayer
+EntityDesc
+EntitySaveStateManager
+Font
+FXLayers
+FXParams
+Game
+GenericPrompt
+GridEntity
+GridEntity
+GridEntity
+GridEntityDecoration
+GridEntityDoor
+GridEntityFire
+GridEntityGravity
+GridEntityLock
+GridEntityPressurePlate
+GridEntityRock
+GridEntityStairs
+GridEntityStatue
+GridEntityTeleporter
+GridEntityTrapDoor
+GridEntityWall
+GridEntityWeb
+History
+History
+History
+HistoryItem
+HUDs
+HUDs
+DebugRenderer
+HUD
+Minimap
+PlayerHUD
+PlayerHUDHeart
+ScoreSheet
+ImGui
+Isaac
+ItemConfig
+ItemConfig
+ItemConfig
+ItemConfig - Item
+ItemConfig - PillEffect
+ItemConfig - Card
+ItemConfig - Costume
+ItemOverlay
+ItemPool
+Input
+Level
+LevelGenerator
+LevelGenerator
+LevelGenerator
+LevelGeneratorEntry
+LevelGeneratorRoom
+LootList
+LootList
+LootList
+LootListEntry
+LRoomAreaDesc
+LRoomTileDesc
+Menus
+Menus
+MenuManager
+BestiaryMenu
+ChallengeMenu
+CharacterMenu
+CollectionMenu
+ControllerSelectMenu
+CustomChallengeMenu
+CutscenesMenu
+DailyChallengeMenu
+KeyConfigMenu
+MainMenu
+ModsMenu
+OptionsMenu
+PauseMenu
+SaveMenu
+SpecialSeedsMenu
+StatsMenu
+TitleMenu
+MultiShotParams
+MusicManager
+NightmareScene
+Options
+Pathfinder
+PersistentGameData
+PlayerManager
+Procedural Items
+Procedural Items
+ProceduralItemManager
+ProceduralEffect
+ProceduralItem
+PocketItem
+ProjectileParams
+RailManager
+Rendering
+Rendering
+Beam
+BlendMode
+DestinationQuad
+GLSLValue
+Image
+Pipeline
+Point
+Renderer
+RenderSet
+Shader
+SourceQuad
+Shape
+SurfaceRenderController
+Transformer
+Vertex
+VertexBuffer
+VertexDescriptor
+REPENTOGON
+RNG
+Room
+RoomConfig
+RoomConfig
+RoomConfig
+RoomConfigStage
+GridEntitiesSaveStateVector
+RoomConfigRoom
+RoomDescriptor
+RoomDescriptor
+On this page
+Modified Variables
+AllowedDoors
+Functions
+AddRestrictedGridIndex ()
+CreateGroup ()
+GetDecoSaveState ()
+GetDimension ()
+GetEntitiesSaveState ()
+GetErrorTrinketEffect ()
+GetGridEntitiesSaveState ()
+GetGroup ()
+GetGroupByName ()
+GetNeighboringRooms ()
+GetRestrictedGridIndexes ()
+GetTaintedKeeperCoinSpawns ()
+GetValidNeighborPlacementLocations ()
+InitSeeds ()
+SetGroup ()
+SetTaintedKeeperCoinSpawns ()
+Variables
+BossDeathSeed
+Doors
+EntitiesSaveState
+EntitiesSaveStateVector
+RoomTransition
+Seeds
+Sprite
+Sprite
+AnimationData
+AnimationFrame
+AnimationLayer
+LayerState
+NullFrame
+Sprite
+StageTransition
+TearParams
+Vector
+Weapon
+WeightedOutcomePicker
+XMLData
+Changes
+Changes
+General
+Debugging
+UI
+XML
+XML
+XML Overview
+XMLData
+achievements.xml
+ambush.xml
+backdrops.xml
+bosscolors.xml
+costumes.xml
+cutscenes.xml
+challenges.xml
+entities2.xml
+giantbook.xml
+items.xml
+itempools.xml
+pocketitems.xml
+players.xml
+stringtable.sta
+Example Mods
+Example Mods
+Capsules
+Deal Chance
+ImGui Menu
+Weighted Outcomes
+Beams
+Color Modifiers
+Lua 5.4 Docs
+On this page
+Modified Variables
+AllowedDoors
+Functions
+AddRestrictedGridIndex ()
+CreateGroup ()
+GetDecoSaveState ()
+GetDimension ()
+GetEntitiesSaveState ()
+GetErrorTrinketEffect ()
+GetGridEntitiesSaveState ()
+GetGroup ()
+GetGroupByName ()
+GetNeighboringRooms ()
+GetRestrictedGridIndexes ()
+GetTaintedKeeperCoinSpawns ()
+GetValidNeighborPlacementLocations ()
+InitSeeds ()
+SetGroup ()
+SetTaintedKeeperCoinSpawns ()
+Variables
+BossDeathSeed
+Doors
+Class "RoomDescriptor"
+鈿擄笌
+Modified Variables
+鈿擄笌
+AllowedDoors
+鈿擄笌
+DoorSet AllowedDoors
+鈿擄笌
+Now properly returns a value.
+Returns a bitmask corresponding to which door slots are currently enabled.
+Doors are typically only included in this bitmask when there is a door currently present, even if the room would allow a door in that slot.
+Example
+This tests if the DoorSlot
+LEFT0
+is enabled.
+1
+2
+3
+if
+roomDesc
+.
+AllowedDoors
+&
+(
+1
+<<
+DoorSlot
+.
+LEFT0
+)
+~=
+0
+then
+print
+(
+"Room has a door in slot LEFT0"
+)
+end
+Functions
+鈿擄笌
+AddRestrictedGridIndex ()
+鈿擄笌
+void AddRestrictedGridIndex ( int GridIndex )
+鈿擄笌
+CreateGroup ()
+鈿擄笌
+static int CreateGroup ( string groupName )
+鈿擄笌
+Creates a new unique group id for
+SetGroup
+Errors
+The function will error if a group with the specified name already exists.
+GetDecoSaveState ()
+鈿擄笌
+EntitiesSaveStateVector
+GetDecoSaveState ( )
+鈿擄笌
+GetDimension ()
+鈿擄笌
+Dimension
+GetDimension ( )
+鈿擄笌
+Returns the
+Dimension
+that this room exists in.
+GetEntitiesSaveState ()
+鈿擄笌
+EntitiesSaveStateVector
+GetEntitiesSaveState ( )
+鈿擄笌
+GetErrorTrinketEffect ()
+鈿擄笌
+TrinketType
+GetErrorTrinketEffect ( )
+鈿擄笌
+Returns the current effect that would be mimicked by the "Error" trinket (
+TrinketType.TRINKET_ERROR
+) for a player in this room.
+Note that this effect is based entirely on the
+SpawnSeed
+.
+GetGridEntitiesSaveState ()
+鈿擄笌
+GridEntitiesSaveStateVector
+GetGridEntitiesSaveState ( )
+鈿擄笌
+GetGroup ()
+鈿擄笌
+int GetGroup ( )
+鈿擄笌
+Usage
+Group
+is only used by effects that need to randomly select a room to warp to (e.g. Teleport, Gold Pill Teleport, etc.).
+A room can only be selected if its group is either RoomGroup.GROUP_NONE or matches the current room's group.
+By default, all rooms use
+RoomGroup.GROUP_NONE
+. The only exception is Ultra Secret Rooms, which are assigned a different group by the game during level generation.
+GetGroupByName ()
+鈿擄笌
+static int? GetGroupByName ( string groupName )
+鈿擄笌
+Returns the group id tied to the specified name.
+Returns
+nil
+if the name has not been registered.
+GetNeighboringRooms ()
+鈿擄笌
+table GetNeighboringRooms ( )
+鈿擄笌
+Returns a table that maps
+DoorSlot
+to
+RoomDescriptor
+for all of the current neighbors of this room.
+Don't use
+ipairs
+to iterate over this, use
+pairs
+!
+Example Code
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+-- Returns true if the room has a neighboring secret room.
+local
+function
+HasSecretRoomNeighbor
+(
+roomDesc
+)
+for
+doorSlot
+,
+neighborDesc
+in
+pairs
+(
+roomDesc
+:
+GetNeighboringRooms
+())
+do
+local
+roomType
+=
+neighborDesc
+.
+Data
+.
+Type
+if
+roomType
+==
+RoomType
+.
+ROOM_SECRET
+or
+roomType
+==
+RoomType
+.
+ROOM_SUPERSECRET
+or
+roomType
+==
+RoomType
+.
+ROOM_ULTRASECRET
+then
+return
+true
+end
+end
+return
+false
+end
+GetRestrictedGridIndexes ()
+鈿擄笌
+int[] GetRestrictedGridIndexes ( )
+鈿擄笌
+GetTaintedKeeperCoinSpawns ()
+鈿擄笌
+int GetTaintedKeeperCoinSpawns ( )
+鈿擄笌
+Prevent coin spawn from killed enemies on room reenter when counter reaches 10.
+GetValidNeighborPlacementLocations ()
+鈿擄笌
+int[] GetValidNeighborPlacementLocations (
+RoomConfigRoom
+RoomConfig, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false )
+鈿擄笌
+int[] GetValidNeighborPlacementLocations (
+RoomShape
+RoomShape = 1,
+DoorMask
+DoorMask = -1, boolean AllowMultipleDoors = true, boolean AllowSpecialNeighbors = false )
+鈿擄笌
+Returns a table of room grid indices that would be valid locations to place the specified room as a neighbor of this room using
+TryPlaceRoom
+.
+See
+TryPlaceRoom
+for more information on room placement and example code.
+InitSeeds ()
+鈿擄笌
+void InitSeeds (
+RNG
+RNG )
+鈿擄笌
+SetGroup ()
+鈿擄笌
+void SetGroup ( int group )
+鈿擄笌
+It is suggested to use CreateGroup instead of setting an arbitrary group.
+Usage
+Group
+is only used by effects that need to randomly select a room to warp to (e.g. Teleport, Gold Pill Teleport, etc.).
+A room can only be selected if its group is either RoomGroup.GROUP_NONE or matches the current room's group.
+By default, all rooms use
+RoomGroup.GROUP_NONE
+. The only exception is Ultra Secret Rooms, which are assigned a different group by the game during level generation.
+SetTaintedKeeperCoinSpawns ()
+鈿擄笌
+void SetTaintedKeeperCoinSpawns ( int Num )
+鈿擄笌
+Variables
+鈿擄笌
+BossDeathSeed
+鈿擄笌
+const int BossDeathSeed
+鈿擄笌
+Doors
+鈿擄笌
+const int[] Doors
+鈿擄笌
+Allows you to check which level grid index each
+DoorSlot
+in the room connects to.
+For example,
+roomdesc.Doors[DoorSlot.UP0]
+provides the level grid index that the upwards door would connect to.
+The value will be
+-1
+if the
+RoomShape
+does not allow a door in that slot.
+Note that this typically provides a valid index even if there is no door present, and even if the room itself does not allow a door in that slot.
+Class
+Back to top
+Copyright © 2026 REPENTOGON developers
+Made with
+Zensical

@@ -1,0 +1,713 @@
+﻿GridEntity - BoI: Lua API Docs
+Skip to content
+WARNING
+Due to the new DLC, some informations on this website can potentially be out-of-date.
+If you notice errors, please use the "Pencil"
+icon in the top right to edit the page.
+-->
+BoI: Lua API Docs
+GridEntity
+Initializing search
+wofsauge/IsaacDocs
+Home
+Docs
+Entities
+Tutorials
+XMLs
+FAQ
+Tools
+Bugs
+Tags
+Lua 5.3 Docs
+BoI: Lua API Docs
+wofsauge/IsaacDocs
+Home
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+ActionTriggers
+ActiveSlot
+BabySubType
+BackdropType
+BatterySubType
+BedSubType
+BombSubType
+BombVariant
+ButtonAction
+CacheFlag
+CallbackPriority
+Card
+Challenge
+ChampionColor
+ChestSubType
+CoinSubType
+CollectibleType
+DamageFlag
+Difficulty
+Direction
+DoorSlot
+DoorState
+DoorVariant
+DrawStringAlignment
+EffectVariant
+EntityCollisionClass
+EntityFlag
+EntityGridCollisionClass
+EntityPartition
+EntityType
+FamiliarVariant
+GameStateFlag
+GridCollisionClass
+GridEntityType
+GridRooms
+HeartSubType
+InputHook
+ItemConfig
+ItemPoolType
+ItemType
+Keyboard
+KeySubType
+LaserOffset
+LaserSubType
+LaserVariant
+LevelCurse
+LevelStage
+LevelStateFlag
+LocustSubtypes
+ModCallbacks
+Mouse
+Music
+NpcState
+NullItemID
+PickupPrice
+PickupVariant
+PillColor
+PillEffect
+PlayerForm
+PlayerSpriteLayer
+PlayerType
+PoopPickupSubType
+PoopSpellType
+ProjectileFlags
+ProjectileVariant
+RenderMode
+RoomDescriptor
+RoomShape
+RoomTransitionAnim
+RoomType
+SackSubType
+SeedEffect
+SkinColor
+SortingLayer
+SoundEffect
+StageType
+TearFlags
+TearVariant
+TrinketType
+UseFlag
+WeaponType
+Globals
+Global Functions
+BitSet128
+Color
+CppContainer
+CppContainer
+ArrayProxy
+ArrayProxy
+RoomConfigEntries
+RoomConfigSpawns
+RoomDescriptor
+intValues
+EntityList
+Vector
+Vector
+CardConfigList
+CostumeConfigList
+EffectList
+ItemConfigList
+PillConfigList
+VectorList
+Entity
+Entity
+Entity
+EntityBomb
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPickup
+EntityPlayer
+EntityProjectile
+EntityTear
+EntityPtr
+EntityRef
+Font
+FontRenderSettings
+Game
+GridEntity
+GridEntity
+GridEntity
+GridEntity
+Table of contents
+Class Diagram
+Functions
+Destroy ()
+Destroy路With路Source ()
+Get路Grid路Index ()
+Get路RNG ()
+Get路Save路State ()
+Get路Sprite ()
+Get路Type ()
+Get路Variant ()
+Hurt ()
+Hurt路With路Source ()
+Init ()
+Post路Init ()
+Render ()
+Set路Type ()
+Set路Variant ()
+To路Door ()
+To路Pit ()
+To路Poop ()
+To路Pressure路Plate ()
+To路Rock ()
+To路Spikes ()
+To路TNT ()
+Update ()
+Variables
+Collision路Class
+Desc
+Position
+State
+Var路Data
+GridEntityDoor
+GridEntityPit
+GridEntityPoop
+GridEntityPressurePlate
+GridEntityRock
+GridEntitySpikes
+GridEntityTNT
+GridEntityDesc
+HUD
+ItemConfig
+ItemConfig
+ItemConfig Functions
+ItemConfig - Card
+ItemConfig - Costume
+ItemConfig - Item
+ItemConfig - PillEffect
+Input
+Isaac
+ItemPool
+KColor
+Level
+MusicManager
+Mod Reference
+Options
+PathFinder
+PlayerTypes
+PlayerTypes
+PlayerTypesActiveItemDesc
+PlayerTypesPosVel
+ProjectileParams
+QueueItemData
+Room
+RoomConfig
+RoomConfig
+Entry
+Room
+Spawn
+RoomDescriptor
+RNG
+Seeds
+Sprite
+SFXManager
+TearParams
+TemporaryEffect
+TemporaryEffects
+Vector
+Entities
+Entities
+Overview
+Boss Data
+Boss Data
+Chapter 1
+Chapter 1.5
+Chapter 2
+Chapter 2.5
+Chapter 3
+Chapter 3.5
+Chapter 4
+Chapter 4.5
+Final Bosses
+Entity Data
+Fissure Spawner
+Ball & Chain
+Tutorials
+Tutorials
+Example Project
+Functions in Lua
+Good Coding Practices
+Getting Coding Help
+Math and Lua Tips
+Adding Costumes to items without LUA
+Debugging with ZeroBrane Studio
+Debug Console
+Using additional .lua Files
+Using the standard library
+Writing screen shaders
+Render text
+Directories and save files
+Mod Organization
+Storing Data
+Custom Callbacks
+XMLs
+XMLs
+XML Overview
+achievements.xml
+ambush.xml
+ANM2 format
+babies.xml
+bombcostumes.xml
+backdrops.xml
+bosscolors.xml
+bossoverlays.xml
+bosspools.xml
+bossportraits.xml
+challenges.xml
+costumes2.xml
+curses.xml
+cutscenes.xml
+entities2.xml
+fortunes.txt
+fxlayers.xml
+giantbook.xml
+itempools.xml
+items.xml
+items_metadata.xml
+locusts.xml
+minibosses.xml
+music.xml
+nightmares.xml
+players.xml
+playerforms.xml
+pocketitems.xml
+preload.xml
+recipes.xml
+rules.txt
+seedmenu.xml
+seeds.txt
+sounds.xml
+stages.xml
+translations.xml
+wisps.xml
+FAQ
+FAQ
+FAQ
+Interactive FAQ
+Basic Information
+Getting Started
+Coding Help
+Lua Language
+Troubleshooting
+Launch Options
+Tools
+Tools
+Tools Overview
+XML Validator
+Animation Editor
+Itempool Editor
+Bugs
+Tags
+Lua 5.3 Docs
+Table of contents
+Class Diagram
+Functions
+Destroy ()
+Destroy路With路Source ()
+Get路Grid路Index ()
+Get路RNG ()
+Get路Save路State ()
+Get路Sprite ()
+Get路Type ()
+Get路Variant ()
+Hurt ()
+Hurt路With路Source ()
+Init ()
+Post路Init ()
+Render ()
+Set路Type ()
+Set路Variant ()
+To路Door ()
+To路Pit ()
+To路Poop ()
+To路Pressure路Plate ()
+To路Rock ()
+To路Spikes ()
+To路TNT ()
+Update ()
+Variables
+Collision路Class
+Desc
+Position
+State
+Var路Data
+Class
+Class "GridEntity"
+鈿擄笌
+Info
+You can get this class by using the following function:
+Isaac.GridSpawn()
+Room.GetGridEntity()
+Room.GetGridEntityFromPos()
+Example Code
+Game():GetRoom():GetGridEntity(25)
+Class Diagram
+鈿擄笌
+classDiagram
+class GridEntity:::diagramCurrentPage
+class GridEntityDoor
+class GridEntityPit
+class GridEntityPoop
+class GridEntityPressurePlate
+class GridEntityRock
+class GridEntitySpikes
+class GridEntityTNT
+GridEntity <|-- GridEntityDoor
+GridEntity <|-- GridEntityPit
+GridEntity <|-- GridEntityPoop
+GridEntity <|-- GridEntityPressurePlate
+GridEntity <|-- GridEntityRock
+GridEntity <|-- GridEntitySpikes
+GridEntity <|-- GridEntityTNT
+link GridEntity "GridEntity.html" "Go to page for 'GridEntity' class"
+link GridEntityDoor "GridEntityDoor.html" "Go to page for 'GridEntityDoor' class"
+link GridEntityPit "GridEntityPit.html" "Go to page for 'GridEntityPit' class"
+link GridEntityPoop "GridEntityPoop.html" "Go to page for 'GridEntityPoop' class"
+link GridEntityPressurePlate "GridEntityPressurePlate.html" "Go to page for 'GridEntityPressurePlate' class"
+link GridEntityRock "GridEntityRock.html" "Go to page for 'GridEntityRock' class"
+link GridEntitySpikes "GridEntitySpikes.html" "Go to page for 'GridEntitySpikes' class"
+link GridEntityTNT "GridEntityTNT.html" "Go to page for 'GridEntityTNT' class"
+Functions
+鈿擄笌
+Destroy ()
+鈿擄笌
+boolean Destroy ( boolean Immediate )
+鈿擄笌
+Destroy路With路Source ()
+鈿擄笌
+boolean DestroyWithSource ( boolean Immediate,
+EntityRef
+Source )
+鈿擄笌
+Get路Grid路Index ()
+鈿擄笌
+int GetGridIndex ( )
+鈿擄笌
+Get路RNG ()
+鈿擄笌
+RNG
+GetRNG ( )
+鈿擄笌
+Warning
+This RNG is initialized with the same seed for all grid entities in the whole run. Instead, it's advised to create a custom data structure or use either the
+SpawnSeed
+or
+VariableSeed
+fields from the
+GridEntityDesc
+object.
+Get路Save路State ()
+鈿擄笌
+GridEntityDesc
+GetSaveState ( )
+鈿擄笌
+Info
+Both the
+Desc
+property and the
+GetSaveState()
+method return the exact same
+GridEntityDesc
+object. The game devs advise to use
+GetSaveState()
+instead of
+Desc
+.
+Get路Sprite ()
+鈿擄笌
+Sprite
+GetSprite ( )
+鈿擄笌
+Get路Type ()
+鈿擄笌
+GridEntityType
+GetType ( )
+鈿擄笌
+Get路Variant ()
+鈿擄笌
+int GetVariant ( )
+鈿擄笌
+Hurt ()
+鈿擄笌
+boolean Hurt ( int Damage )
+鈿擄笌
+Hurt路With路Source ()
+鈿擄笌
+boolean HurtWithSource ( int Damage,
+EntityRef
+Source )
+鈿擄笌
+Init ()
+鈿擄笌
+void Init ( int Seed )
+鈿擄笌
+Post路Init ()
+鈿擄笌
+void PostInit ( )
+鈿擄笌
+Render ()
+鈿擄笌
+void Render (
+Vector
+Offset )
+鈿擄笌
+Set路Type ()
+鈿擄笌
+void SetType (
+GridEntityType
+Type )
+鈿擄笌
+Set路Variant ()
+鈿擄笌
+void SetVariant ( int Variant )
+鈿擄笌
+To路Door ()
+鈿擄笌
+GridEntityDoor
+ToDoor ( )
+鈿擄笌
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Pit ()
+鈿擄笌
+GridEntityPit
+ToPit ( )
+鈿擄笌
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Poop ()
+鈿擄笌
+GridEntityPoop
+ToPoop ( )
+鈿擄笌
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Pressure路Plate ()
+鈿擄笌
+GridEntityPressurePlate
+ToPressurePlate ( )
+鈿擄笌
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Rock ()
+鈿擄笌
+GridEntityRock
+ToRock ( )
+鈿擄笌
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路Spikes ()
+鈿擄笌
+GridEntitySpikes
+ToSpikes ( )
+鈿擄笌
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+To路TNT ()
+鈿擄笌
+GridEntityTNT
+ToTNT ( )
+鈿擄笌
+Return behavior
+If the conversion is not successful, this function returns
+nil
+.
+Update ()
+鈿擄笌
+void Update ( )
+鈿擄笌
+Variables
+鈿擄笌
+Collision路Class
+鈿擄笌
+GridCollisionClass
+CollisionClass
+鈿擄笌
+Desc
+鈿擄笌
+GridEntityDesc
+Desc
+鈿擄笌
+Info
+Both the
+Desc
+property and the
+GetSaveState()
+method return the exact same
+GridEntityDesc
+object. The game devs advise to use
+GetSaveState()
+instead of
+Desc
+.
+Position
+鈿擄笌
+const
+Vector
+Position
+鈿擄笌
+Returns the position of the grid cell's center point
+State
+鈿擄笌
+int State
+鈿擄笌
+Used for various different usecases.
+Example States
+1
+Rocks with state = 2 are destroyed rocks (The rubble is the rock basically)
+Var路Data
+鈿擄笌
+int VarData
+鈿擄笌
+A Variable that stores some entity-specific data. The content can have completely different effects for different GridEntities.
+Example Code
+This code spawns a functioning Void Portal into the center of the room. This will teleport you to the floor "The Void" and will have the same appearance as the vanilla portal:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+-- From: https://github.com/IsaacScript/isaac-typescript-definitions/blob/main/typings/unofficial/enumsGridEntityVariants.d.ts
+local
+TrapdoorVariant
+=
+{
+NORMAL
+=
+0
+,
+VOID_PORTAL
+=
+1
+,
+}
+local
+game
+=
+Game
+();
+local
+room
+=
+game
+:
+GetRoom
+()
+local
+centerPos
+=
+room
+:
+GetCenterPos
+()
+-- By default, this will spawn a normal trapdoor, even though we specify the Void Portal variant
+local
+voidPortal
+=
+Isaac
+.
+GridSpawn
+(
+GridEntityType
+.
+GRID_TRAPDOOR
+,
+TrapdoorVariant
+.
+VOID_PORTAL
+,
+centerPos
+,
+true
+)
+-- Set the destination to The Void and apply the pulse effect shader
+voidPortal
+.
+VarData
+=
+1
+-- Replace the spritesheet to make it look like a Void Portal
+local
+sprite
+=
+portalEntity
+:
+GetSprite
+()
+sprite
+:
+Load
+(
+"gfx/grid/voidtrapdoor.anm2"
+,
+true
+)
+Last update:
+April 26, 2025
+Back to top
+Copyright © 2021 - 2026 Wofsauge (Discord: Wofsauge#6503)
+Made with
+Material for MkDocs

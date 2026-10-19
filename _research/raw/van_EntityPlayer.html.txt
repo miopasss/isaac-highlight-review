@@ -1,0 +1,4246 @@
+﻿EntityPlayer - BoI: Lua API Docs
+Skip to content
+WARNING
+Due to the new DLC, some informations on this website can potentially be out-of-date.
+If you notice errors, please use the "Pencil"
+icon in the top right to edit the page.
+-->
+BoI: Lua API Docs
+EntityPlayer
+Initializing search
+wofsauge/IsaacDocs
+Home
+Docs
+Entities
+Tutorials
+XMLs
+FAQ
+Tools
+Bugs
+Tags
+Lua 5.3 Docs
+BoI: Lua API Docs
+wofsauge/IsaacDocs
+Home
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityPlayer
+Table of contents
+Class Diagram
+Functions
+Add路Black路Hearts ()
+Add路Blood路Charge ()
+Add路Blue路Flies ()
+Add路Blue路Spider ()
+Add路Bombs ()
+Add路Bone路Hearts ()
+Add路Broken路Hearts ()
+Add路Cache路Flags ()
+Add路Card ()
+Add路Coins ()
+Add路Collectible ()
+Add路Controls路Cooldown ()
+Add路Costume ()
+Add路Curse路Mist路Effect ()
+Add路Dead路Eye路Charge ()
+Add路Dollar路Bill路Effect ()
+Add路Eternal路Hearts ()
+Add路Friendly路Dip ()
+Add路Giga路Bombs ()
+Add路Golden路Bomb ()
+Add路Golden路Hearts ()
+Add路Golden路Key ()
+Add路Hearts ()
+Add路Item路Wisp ()
+Add路Jar路Flies ()
+Add路Jar路Hearts ()
+Add路Keys ()
+Add路Max路Hearts ()
+Add路Minisaac ()
+Add路Null路Costume ()
+Add路Pill ()
+Add路Player路Form路Costume ()
+Add路Poop路Mana ()
+Add路Pretty路Fly ()
+Add路Rotten路Hearts ()
+Add路Soul路Charge ()
+Add路Soul路Hearts ()
+Add路Swarm路Fly路Orbital ()
+Add路Trinket ()
+Add路Wisp ()
+Animate路Appear ()
+Animate路Card ()
+Animate路Collectible ()
+Animate路Happy ()
+Animate路Light路Travel ()
+Animate路Pickup ()
+Animate路Pill ()
+Animate路Pitfall路In ()
+Animate路Pitfall路Out ()
+Animate路Sad ()
+Animate路Teleport ()
+Animate路Trapdoor ()
+Animate路Trinket ()
+Are路Controls路Enabled ()
+Are路Opposing路Shoot路Directions路Pressed ()
+Can路Add路Collectible ()
+Can路Pick路Black路Hearts ()
+Can路Pick路Bone路Hearts ()
+Can路Pick路Golden路Hearts ()
+Can路Pick路Red路Hearts ()
+Can路Pick路Rotten路Hearts ()
+Can路Pick路Soul路Hearts ()
+Can路Pickup路Item ()
+Can路Shoot ()
+Can路Turn路Head ()
+Change路Player路Type ()
+Check路Familiar ()
+Clear路Costumes ()
+Clear路Dead路Eye路Charge ()
+Clear路Temporary路Effects ()
+Discharge路Active路Item ()
+Donate路Luck ()
+Do路Zit路Effect ()
+Drop路Pocket路Item ()
+Drop路Trinket ()
+Evaluate路Items ()
+Fire路Bomb ()
+Fire路Brimstone ()
+Fire路Delayed路Brimstone ()
+Fire路Knife ()
+Fire路Tear ()
+Fire路Tech路Laser ()
+Fire路Tech路XLaser ()
+Flush路Queue路Item ()
+Full路Charge ()
+Get路Active路Charge ()
+Get路Active路Item ()
+Get路Active路Sub路Charge ()
+Get路Active路Weapon路Entity ()
+Get路Aim路Direction ()
+Get路Baby路Skin ()
+Get路Battery路Charge ()
+Get路Black路Hearts ()
+Get路Blood路Charge ()
+Get路Body路Color ()
+Get路Bomb路Flags ()
+Get路Bomb路Variant ()
+Get路Bone路Hearts ()
+Get路Broken路Hearts ()
+Get路Card ()
+Get路Card路RNG ()
+Get路Collectible路Count ()
+Get路Collectible路Num ()
+Get路Collectible路RNG ()
+Get路Costume路Null路Pos ()
+Get路Damage路Cooldown ()
+Get路Effective路Blood路Charge ()
+Get路Effective路Max路Hearts ()
+Get路Effective路Soul路Charge ()
+Get路Effects ()
+Get路Eternal路Hearts ()
+Get路Extra路Lives ()
+Get路Fire路Direction ()
+Get路Flying路Offset ()
+Get路Golden路Hearts ()
+Get路Greed路Donation路Break路Chance ()
+Get路Head路Color ()
+Get路Head路Direction ()
+Get路Heart路Limit ()
+Get路Hearts ()
+Get路Item路State ()
+Get路Jar路Flies ()
+Get路Jar路Hearts ()
+Get路Laser路Offset ()
+Get路Last路Action路Triggers ()
+Get路Last路Damage路Flags ()
+Get路Last路Damage路Source ()
+Get路Last路Direction ()
+Get路Main路Twin ()
+Get路Max路Hearts ()
+Get路Max路Pocket路Items ()
+Get路Max路Poop路Mana ()
+Get路Max路Trinkets ()
+Get路Modeling路Clay路Effect ()
+Get路Movement路Direction ()
+Get路Movement路Input ()
+Get路Movement路Joystick ()
+Get路Movement路Vector ()
+Get路Multi路Shot路Params ()
+Get路Multi路Shot路Position路Velocity ()
+Get路Name ()
+Get路NPCTarget ()
+Get路Num路Blue路Flies ()
+Get路Num路Blue路Spiders ()
+Get路Num路Bombs ()
+Get路Num路Coins ()
+Get路Num路Giga路Bombs ()
+Get路Num路Keys ()
+Get路Other路Twin ()
+Get路Pill ()
+Get路Pill路RNG ()
+Get路Player路Type ()
+Get路Pocket路Item ()
+Get路Poop路Mana ()
+Get路Poop路Spell ()
+Get路Recent路Movement路Vector ()
+Get路Rotten路Hearts ()
+Get路Shooting路Input ()
+Get路Shooting路Joystick ()
+Get路Smooth路Body路Rotation ()
+Get路Soul路Charge ()
+Get路Soul路Hearts ()
+Get路Sub路Player ()
+Get路Tear路Hit路Params ()
+Get路Tear路Movement路Inheritance ()
+Get路Tear路Poison路Damage ()
+Get路Tear路Range路Modifier ()
+Get路Total路Damage路Taken ()
+Get路Tractor路Beam ()
+Get路Trinket ()
+Get路Trinket路Multiplier ()
+Get路Trinket路RNG ()
+Get路Velocity路Before路Update ()
+Get路Zodiac路Effect ()
+Has路Collectible ()
+Has路Curse路Mist路Effect ()
+Has路Full路Hearts ()
+Has路Full路Hearts路And路Soul路Hearts ()
+Has路Golden路Bomb ()
+Has路Golden路Key ()
+Has路Invincibility ()
+Has路Player路Form ()
+Has路Timed路Item ()
+Has路Trinket ()
+Has路Weapon路Type ()
+Init路Baby路Skin ()
+Is路Black路Heart ()
+Is路Bone路Heart ()
+Is路Coop路Ghost ()
+Is路Extra路Animation路Finished ()
+Is路Full路Sprite路Rendering ()
+Is路Held路Item路Visible ()
+Is路Holding路Item ()
+Is路Item路Queue路Empty ()
+Is路P2Appearing ()
+Is路Pos路In路Spot路Light ()
+Is路Sub路Player ()
+Needs路Charge ()
+Play路Extra路Animation ()
+Queue路Extra路Animation ()
+Queue路Item ()
+Remove路Black路Heart ()
+Remove路Blue路Fly ()
+Remove路Blue路Spider ()
+Remove路Collectible ()
+Remove路Costume ()
+Remove路Curse路Mist路Effect ()
+Remove路Golden路Bomb ()
+Remove路Golden路Key ()
+Remove路Skin路Costume ()
+Render路Body ()
+Render路Glow ()
+Render路Head ()
+Render路Top ()
+Replace路Costume路Sprite ()
+Reset路Damage路Cooldown ()
+Reset路Item路State ()
+Respawn路Familiars ()
+Revive ()
+Set路Active路Charge ()
+Set路Blood路Charge ()
+Set路Card ()
+Set路Full路Hearts ()
+Set路Min路Damage路Cooldown ()
+Set路Pill ()
+Set路Pocket路Active路Item()
+Set路Shooting路Cooldown ()
+Set路Soul路Charge ()
+Set路Target路Trap路Door ()
+Shoot路Red路Candle ()
+Spawn路Maw路Of路Void ()
+Stop路Extra路Animation ()
+Swap路Active路Items ()
+Throw路Blue路Spider ()
+Throw路Friendly路Dip ()
+Throw路Held路Entity ()
+Trigger路Book路Of路Virtues ()
+Try路Hold路Entity ()
+Try路Hold路Trinket ()
+Try路Remove路Collectible路Costume ()
+Try路Remove路Null路Costume ()
+Try路Remove路Trinket ()
+Try路Remove路Trinket路Costume ()
+Try路Use路Key ()
+Update路Can路Shoot ()
+Use路Active路Item ()
+Use路Card ()
+Use路Pill ()
+Use路Poop路Spell ()
+Will路Player路Revive ()
+Variables
+Baby路Skin
+Can路Fly
+Controller路Index
+Controls路Cooldown
+Controls路Enabled
+Damage
+Fire路Delay
+Friend路Ball路Enemy
+Head路Frame路Delay
+IBS路Charge
+Item路Hold路Cooldown
+Laser路Color
+Luck
+Max路Fire路Delay
+Move路Speed
+Queued路Item
+Samson路Berserk路Charge
+Secondary路Active路Item
+Shot路Speed
+Tear路Color
+Tear路Falling路Acceleration
+Tear路Falling路Speed
+Tear路Flags
+Tear路Height
+Tear路Range
+Tears路Offset
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+ActionTriggers
+ActiveSlot
+BabySubType
+BackdropType
+BatterySubType
+BedSubType
+BombSubType
+BombVariant
+ButtonAction
+CacheFlag
+CallbackPriority
+Card
+Challenge
+ChampionColor
+ChestSubType
+CoinSubType
+CollectibleType
+DamageFlag
+Difficulty
+Direction
+DoorSlot
+DoorState
+DoorVariant
+DrawStringAlignment
+EffectVariant
+EntityCollisionClass
+EntityFlag
+EntityGridCollisionClass
+EntityPartition
+EntityType
+FamiliarVariant
+GameStateFlag
+GridCollisionClass
+GridEntityType
+GridRooms
+HeartSubType
+InputHook
+ItemConfig
+ItemPoolType
+ItemType
+Keyboard
+KeySubType
+LaserOffset
+LaserSubType
+LaserVariant
+LevelCurse
+LevelStage
+LevelStateFlag
+LocustSubtypes
+ModCallbacks
+Mouse
+Music
+NpcState
+NullItemID
+PickupPrice
+PickupVariant
+PillColor
+PillEffect
+PlayerForm
+PlayerSpriteLayer
+PlayerType
+PoopPickupSubType
+PoopSpellType
+ProjectileFlags
+ProjectileVariant
+RenderMode
+RoomDescriptor
+RoomShape
+RoomTransitionAnim
+RoomType
+SackSubType
+SeedEffect
+SkinColor
+SortingLayer
+SoundEffect
+StageType
+TearFlags
+TearVariant
+TrinketType
+UseFlag
+WeaponType
+Globals
+Global Functions
+BitSet128
+Color
+CppContainer
+CppContainer
+ArrayProxy
+ArrayProxy
+RoomConfigEntries
+RoomConfigSpawns
+RoomDescriptor
+intValues
+EntityList
+Vector
+Vector
+CardConfigList
+CostumeConfigList
+EffectList
+ItemConfigList
+PillConfigList
+VectorList
+Entity
+Entity
+Entity
+EntityBomb
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPickup
+EntityPlayer
+EntityPlayer
+Table of contents
+Class Diagram
+Functions
+Add路Black路Hearts ()
+Add路Blood路Charge ()
+Add路Blue路Flies ()
+Add路Blue路Spider ()
+Add路Bombs ()
+Add路Bone路Hearts ()
+Add路Broken路Hearts ()
+Add路Cache路Flags ()
+Add路Card ()
+Add路Coins ()
+Add路Collectible ()
+Add路Controls路Cooldown ()
+Add路Costume ()
+Add路Curse路Mist路Effect ()
+Add路Dead路Eye路Charge ()
+Add路Dollar路Bill路Effect ()
+Add路Eternal路Hearts ()
+Add路Friendly路Dip ()
+Add路Giga路Bombs ()
+Add路Golden路Bomb ()
+Add路Golden路Hearts ()
+Add路Golden路Key ()
+Add路Hearts ()
+Add路Item路Wisp ()
+Add路Jar路Flies ()
+Add路Jar路Hearts ()
+Add路Keys ()
+Add路Max路Hearts ()
+Add路Minisaac ()
+Add路Null路Costume ()
+Add路Pill ()
+Add路Player路Form路Costume ()
+Add路Poop路Mana ()
+Add路Pretty路Fly ()
+Add路Rotten路Hearts ()
+Add路Soul路Charge ()
+Add路Soul路Hearts ()
+Add路Swarm路Fly路Orbital ()
+Add路Trinket ()
+Add路Wisp ()
+Animate路Appear ()
+Animate路Card ()
+Animate路Collectible ()
+Animate路Happy ()
+Animate路Light路Travel ()
+Animate路Pickup ()
+Animate路Pill ()
+Animate路Pitfall路In ()
+Animate路Pitfall路Out ()
+Animate路Sad ()
+Animate路Teleport ()
+Animate路Trapdoor ()
+Animate路Trinket ()
+Are路Controls路Enabled ()
+Are路Opposing路Shoot路Directions路Pressed ()
+Can路Add路Collectible ()
+Can路Pick路Black路Hearts ()
+Can路Pick路Bone路Hearts ()
+Can路Pick路Golden路Hearts ()
+Can路Pick路Red路Hearts ()
+Can路Pick路Rotten路Hearts ()
+Can路Pick路Soul路Hearts ()
+Can路Pickup路Item ()
+Can路Shoot ()
+Can路Turn路Head ()
+Change路Player路Type ()
+Check路Familiar ()
+Clear路Costumes ()
+Clear路Dead路Eye路Charge ()
+Clear路Temporary路Effects ()
+Discharge路Active路Item ()
+Donate路Luck ()
+Do路Zit路Effect ()
+Drop路Pocket路Item ()
+Drop路Trinket ()
+Evaluate路Items ()
+Fire路Bomb ()
+Fire路Brimstone ()
+Fire路Delayed路Brimstone ()
+Fire路Knife ()
+Fire路Tear ()
+Fire路Tech路Laser ()
+Fire路Tech路XLaser ()
+Flush路Queue路Item ()
+Full路Charge ()
+Get路Active路Charge ()
+Get路Active路Item ()
+Get路Active路Sub路Charge ()
+Get路Active路Weapon路Entity ()
+Get路Aim路Direction ()
+Get路Baby路Skin ()
+Get路Battery路Charge ()
+Get路Black路Hearts ()
+Get路Blood路Charge ()
+Get路Body路Color ()
+Get路Bomb路Flags ()
+Get路Bomb路Variant ()
+Get路Bone路Hearts ()
+Get路Broken路Hearts ()
+Get路Card ()
+Get路Card路RNG ()
+Get路Collectible路Count ()
+Get路Collectible路Num ()
+Get路Collectible路RNG ()
+Get路Costume路Null路Pos ()
+Get路Damage路Cooldown ()
+Get路Effective路Blood路Charge ()
+Get路Effective路Max路Hearts ()
+Get路Effective路Soul路Charge ()
+Get路Effects ()
+Get路Eternal路Hearts ()
+Get路Extra路Lives ()
+Get路Fire路Direction ()
+Get路Flying路Offset ()
+Get路Golden路Hearts ()
+Get路Greed路Donation路Break路Chance ()
+Get路Head路Color ()
+Get路Head路Direction ()
+Get路Heart路Limit ()
+Get路Hearts ()
+Get路Item路State ()
+Get路Jar路Flies ()
+Get路Jar路Hearts ()
+Get路Laser路Offset ()
+Get路Last路Action路Triggers ()
+Get路Last路Damage路Flags ()
+Get路Last路Damage路Source ()
+Get路Last路Direction ()
+Get路Main路Twin ()
+Get路Max路Hearts ()
+Get路Max路Pocket路Items ()
+Get路Max路Poop路Mana ()
+Get路Max路Trinkets ()
+Get路Modeling路Clay路Effect ()
+Get路Movement路Direction ()
+Get路Movement路Input ()
+Get路Movement路Joystick ()
+Get路Movement路Vector ()
+Get路Multi路Shot路Params ()
+Get路Multi路Shot路Position路Velocity ()
+Get路Name ()
+Get路NPCTarget ()
+Get路Num路Blue路Flies ()
+Get路Num路Blue路Spiders ()
+Get路Num路Bombs ()
+Get路Num路Coins ()
+Get路Num路Giga路Bombs ()
+Get路Num路Keys ()
+Get路Other路Twin ()
+Get路Pill ()
+Get路Pill路RNG ()
+Get路Player路Type ()
+Get路Pocket路Item ()
+Get路Poop路Mana ()
+Get路Poop路Spell ()
+Get路Recent路Movement路Vector ()
+Get路Rotten路Hearts ()
+Get路Shooting路Input ()
+Get路Shooting路Joystick ()
+Get路Smooth路Body路Rotation ()
+Get路Soul路Charge ()
+Get路Soul路Hearts ()
+Get路Sub路Player ()
+Get路Tear路Hit路Params ()
+Get路Tear路Movement路Inheritance ()
+Get路Tear路Poison路Damage ()
+Get路Tear路Range路Modifier ()
+Get路Total路Damage路Taken ()
+Get路Tractor路Beam ()
+Get路Trinket ()
+Get路Trinket路Multiplier ()
+Get路Trinket路RNG ()
+Get路Velocity路Before路Update ()
+Get路Zodiac路Effect ()
+Has路Collectible ()
+Has路Curse路Mist路Effect ()
+Has路Full路Hearts ()
+Has路Full路Hearts路And路Soul路Hearts ()
+Has路Golden路Bomb ()
+Has路Golden路Key ()
+Has路Invincibility ()
+Has路Player路Form ()
+Has路Timed路Item ()
+Has路Trinket ()
+Has路Weapon路Type ()
+Init路Baby路Skin ()
+Is路Black路Heart ()
+Is路Bone路Heart ()
+Is路Coop路Ghost ()
+Is路Extra路Animation路Finished ()
+Is路Full路Sprite路Rendering ()
+Is路Held路Item路Visible ()
+Is路Holding路Item ()
+Is路Item路Queue路Empty ()
+Is路P2Appearing ()
+Is路Pos路In路Spot路Light ()
+Is路Sub路Player ()
+Needs路Charge ()
+Play路Extra路Animation ()
+Queue路Extra路Animation ()
+Queue路Item ()
+Remove路Black路Heart ()
+Remove路Blue路Fly ()
+Remove路Blue路Spider ()
+Remove路Collectible ()
+Remove路Costume ()
+Remove路Curse路Mist路Effect ()
+Remove路Golden路Bomb ()
+Remove路Golden路Key ()
+Remove路Skin路Costume ()
+Render路Body ()
+Render路Glow ()
+Render路Head ()
+Render路Top ()
+Replace路Costume路Sprite ()
+Reset路Damage路Cooldown ()
+Reset路Item路State ()
+Respawn路Familiars ()
+Revive ()
+Set路Active路Charge ()
+Set路Blood路Charge ()
+Set路Card ()
+Set路Full路Hearts ()
+Set路Min路Damage路Cooldown ()
+Set路Pill ()
+Set路Pocket路Active路Item()
+Set路Shooting路Cooldown ()
+Set路Soul路Charge ()
+Set路Target路Trap路Door ()
+Shoot路Red路Candle ()
+Spawn路Maw路Of路Void ()
+Stop路Extra路Animation ()
+Swap路Active路Items ()
+Throw路Blue路Spider ()
+Throw路Friendly路Dip ()
+Throw路Held路Entity ()
+Trigger路Book路Of路Virtues ()
+Try路Hold路Entity ()
+Try路Hold路Trinket ()
+Try路Remove路Collectible路Costume ()
+Try路Remove路Null路Costume ()
+Try路Remove路Trinket ()
+Try路Remove路Trinket路Costume ()
+Try路Use路Key ()
+Update路Can路Shoot ()
+Use路Active路Item ()
+Use路Card ()
+Use路Pill ()
+Use路Poop路Spell ()
+Will路Player路Revive ()
+Variables
+Baby路Skin
+Can路Fly
+Controller路Index
+Controls路Cooldown
+Controls路Enabled
+Damage
+Fire路Delay
+Friend路Ball路Enemy
+Head路Frame路Delay
+IBS路Charge
+Item路Hold路Cooldown
+Laser路Color
+Luck
+Max路Fire路Delay
+Move路Speed
+Queued路Item
+Samson路Berserk路Charge
+Secondary路Active路Item
+Shot路Speed
+Tear路Color
+Tear路Falling路Acceleration
+Tear路Falling路Speed
+Tear路Flags
+Tear路Height
+Tear路Range
+Tears路Offset
+EntityProjectile
+EntityTear
+EntityPtr
+EntityRef
+Font
+FontRenderSettings
+Game
+GridEntity
+GridEntity
+GridEntity
+GridEntityDoor
+GridEntityPit
+GridEntityPoop
+GridEntityPressurePlate
+GridEntityRock
+GridEntitySpikes
+GridEntityTNT
+GridEntityDesc
+HUD
+ItemConfig
+ItemConfig
+ItemConfig Functions
+ItemConfig - Card
+ItemConfig - Costume
+ItemConfig - Item
+ItemConfig - PillEffect
+Input
+Isaac
+ItemPool
+KColor
+Level
+MusicManager
+Mod Reference
+Options
+PathFinder
+PlayerTypes
+PlayerTypes
+PlayerTypesActiveItemDesc
+PlayerTypesPosVel
+ProjectileParams
+QueueItemData
+Room
+RoomConfig
+RoomConfig
+Entry
+Room
+Spawn
+RoomDescriptor
+RNG
+Seeds
+Sprite
+SFXManager
+TearParams
+TemporaryEffect
+TemporaryEffects
+Vector
+Entities
+Entities
+Overview
+Boss Data
+Boss Data
+Chapter 1
+Chapter 1.5
+Chapter 2
+Chapter 2.5
+Chapter 3
+Chapter 3.5
+Chapter 4
+Chapter 4.5
+Final Bosses
+Entity Data
+Fissure Spawner
+Ball & Chain
+Tutorials
+Tutorials
+Example Project
+Functions in Lua
+Good Coding Practices
+Getting Coding Help
+Math and Lua Tips
+Adding Costumes to items without LUA
+Debugging with ZeroBrane Studio
+Debug Console
+Using additional .lua Files
+Using the standard library
+Writing screen shaders
+Render text
+Directories and save files
+Mod Organization
+Storing Data
+Custom Callbacks
+XMLs
+XMLs
+XML Overview
+achievements.xml
+ambush.xml
+ANM2 format
+babies.xml
+bombcostumes.xml
+backdrops.xml
+bosscolors.xml
+bossoverlays.xml
+bosspools.xml
+bossportraits.xml
+challenges.xml
+costumes2.xml
+curses.xml
+cutscenes.xml
+entities2.xml
+fortunes.txt
+fxlayers.xml
+giantbook.xml
+itempools.xml
+items.xml
+items_metadata.xml
+locusts.xml
+minibosses.xml
+music.xml
+nightmares.xml
+players.xml
+playerforms.xml
+pocketitems.xml
+preload.xml
+recipes.xml
+rules.txt
+seedmenu.xml
+seeds.txt
+sounds.xml
+stages.xml
+translations.xml
+wisps.xml
+FAQ
+FAQ
+FAQ
+Interactive FAQ
+Basic Information
+Getting Started
+Coding Help
+Lua Language
+Troubleshooting
+Launch Options
+Tools
+Tools
+Tools Overview
+XML Validator
+Animation Editor
+Itempool Editor
+Bugs
+Tags
+Lua 5.3 Docs
+Table of contents
+Class Diagram
+Functions
+Add路Black路Hearts ()
+Add路Blood路Charge ()
+Add路Blue路Flies ()
+Add路Blue路Spider ()
+Add路Bombs ()
+Add路Bone路Hearts ()
+Add路Broken路Hearts ()
+Add路Cache路Flags ()
+Add路Card ()
+Add路Coins ()
+Add路Collectible ()
+Add路Controls路Cooldown ()
+Add路Costume ()
+Add路Curse路Mist路Effect ()
+Add路Dead路Eye路Charge ()
+Add路Dollar路Bill路Effect ()
+Add路Eternal路Hearts ()
+Add路Friendly路Dip ()
+Add路Giga路Bombs ()
+Add路Golden路Bomb ()
+Add路Golden路Hearts ()
+Add路Golden路Key ()
+Add路Hearts ()
+Add路Item路Wisp ()
+Add路Jar路Flies ()
+Add路Jar路Hearts ()
+Add路Keys ()
+Add路Max路Hearts ()
+Add路Minisaac ()
+Add路Null路Costume ()
+Add路Pill ()
+Add路Player路Form路Costume ()
+Add路Poop路Mana ()
+Add路Pretty路Fly ()
+Add路Rotten路Hearts ()
+Add路Soul路Charge ()
+Add路Soul路Hearts ()
+Add路Swarm路Fly路Orbital ()
+Add路Trinket ()
+Add路Wisp ()
+Animate路Appear ()
+Animate路Card ()
+Animate路Collectible ()
+Animate路Happy ()
+Animate路Light路Travel ()
+Animate路Pickup ()
+Animate路Pill ()
+Animate路Pitfall路In ()
+Animate路Pitfall路Out ()
+Animate路Sad ()
+Animate路Teleport ()
+Animate路Trapdoor ()
+Animate路Trinket ()
+Are路Controls路Enabled ()
+Are路Opposing路Shoot路Directions路Pressed ()
+Can路Add路Collectible ()
+Can路Pick路Black路Hearts ()
+Can路Pick路Bone路Hearts ()
+Can路Pick路Golden路Hearts ()
+Can路Pick路Red路Hearts ()
+Can路Pick路Rotten路Hearts ()
+Can路Pick路Soul路Hearts ()
+Can路Pickup路Item ()
+Can路Shoot ()
+Can路Turn路Head ()
+Change路Player路Type ()
+Check路Familiar ()
+Clear路Costumes ()
+Clear路Dead路Eye路Charge ()
+Clear路Temporary路Effects ()
+Discharge路Active路Item ()
+Donate路Luck ()
+Do路Zit路Effect ()
+Drop路Pocket路Item ()
+Drop路Trinket ()
+Evaluate路Items ()
+Fire路Bomb ()
+Fire路Brimstone ()
+Fire路Delayed路Brimstone ()
+Fire路Knife ()
+Fire路Tear ()
+Fire路Tech路Laser ()
+Fire路Tech路XLaser ()
+Flush路Queue路Item ()
+Full路Charge ()
+Get路Active路Charge ()
+Get路Active路Item ()
+Get路Active路Sub路Charge ()
+Get路Active路Weapon路Entity ()
+Get路Aim路Direction ()
+Get路Baby路Skin ()
+Get路Battery路Charge ()
+Get路Black路Hearts ()
+Get路Blood路Charge ()
+Get路Body路Color ()
+Get路Bomb路Flags ()
+Get路Bomb路Variant ()
+Get路Bone路Hearts ()
+Get路Broken路Hearts ()
+Get路Card ()
+Get路Card路RNG ()
+Get路Collectible路Count ()
+Get路Collectible路Num ()
+Get路Collectible路RNG ()
+Get路Costume路Null路Pos ()
+Get路Damage路Cooldown ()
+Get路Effective路Blood路Charge ()
+Get路Effective路Max路Hearts ()
+Get路Effective路Soul路Charge ()
+Get路Effects ()
+Get路Eternal路Hearts ()
+Get路Extra路Lives ()
+Get路Fire路Direction ()
+Get路Flying路Offset ()
+Get路Golden路Hearts ()
+Get路Greed路Donation路Break路Chance ()
+Get路Head路Color ()
+Get路Head路Direction ()
+Get路Heart路Limit ()
+Get路Hearts ()
+Get路Item路State ()
+Get路Jar路Flies ()
+Get路Jar路Hearts ()
+Get路Laser路Offset ()
+Get路Last路Action路Triggers ()
+Get路Last路Damage路Flags ()
+Get路Last路Damage路Source ()
+Get路Last路Direction ()
+Get路Main路Twin ()
+Get路Max路Hearts ()
+Get路Max路Pocket路Items ()
+Get路Max路Poop路Mana ()
+Get路Max路Trinkets ()
+Get路Modeling路Clay路Effect ()
+Get路Movement路Direction ()
+Get路Movement路Input ()
+Get路Movement路Joystick ()
+Get路Movement路Vector ()
+Get路Multi路Shot路Params ()
+Get路Multi路Shot路Position路Velocity ()
+Get路Name ()
+Get路NPCTarget ()
+Get路Num路Blue路Flies ()
+Get路Num路Blue路Spiders ()
+Get路Num路Bombs ()
+Get路Num路Coins ()
+Get路Num路Giga路Bombs ()
+Get路Num路Keys ()
+Get路Other路Twin ()
+Get路Pill ()
+Get路Pill路RNG ()
+Get路Player路Type ()
+Get路Pocket路Item ()
+Get路Poop路Mana ()
+Get路Poop路Spell ()
+Get路Recent路Movement路Vector ()
+Get路Rotten路Hearts ()
+Get路Shooting路Input ()
+Get路Shooting路Joystick ()
+Get路Smooth路Body路Rotation ()
+Get路Soul路Charge ()
+Get路Soul路Hearts ()
+Get路Sub路Player ()
+Get路Tear路Hit路Params ()
+Get路Tear路Movement路Inheritance ()
+Get路Tear路Poison路Damage ()
+Get路Tear路Range路Modifier ()
+Get路Total路Damage路Taken ()
+Get路Tractor路Beam ()
+Get路Trinket ()
+Get路Trinket路Multiplier ()
+Get路Trinket路RNG ()
+Get路Velocity路Before路Update ()
+Get路Zodiac路Effect ()
+Has路Collectible ()
+Has路Curse路Mist路Effect ()
+Has路Full路Hearts ()
+Has路Full路Hearts路And路Soul路Hearts ()
+Has路Golden路Bomb ()
+Has路Golden路Key ()
+Has路Invincibility ()
+Has路Player路Form ()
+Has路Timed路Item ()
+Has路Trinket ()
+Has路Weapon路Type ()
+Init路Baby路Skin ()
+Is路Black路Heart ()
+Is路Bone路Heart ()
+Is路Coop路Ghost ()
+Is路Extra路Animation路Finished ()
+Is路Full路Sprite路Rendering ()
+Is路Held路Item路Visible ()
+Is路Holding路Item ()
+Is路Item路Queue路Empty ()
+Is路P2Appearing ()
+Is路Pos路In路Spot路Light ()
+Is路Sub路Player ()
+Needs路Charge ()
+Play路Extra路Animation ()
+Queue路Extra路Animation ()
+Queue路Item ()
+Remove路Black路Heart ()
+Remove路Blue路Fly ()
+Remove路Blue路Spider ()
+Remove路Collectible ()
+Remove路Costume ()
+Remove路Curse路Mist路Effect ()
+Remove路Golden路Bomb ()
+Remove路Golden路Key ()
+Remove路Skin路Costume ()
+Render路Body ()
+Render路Glow ()
+Render路Head ()
+Render路Top ()
+Replace路Costume路Sprite ()
+Reset路Damage路Cooldown ()
+Reset路Item路State ()
+Respawn路Familiars ()
+Revive ()
+Set路Active路Charge ()
+Set路Blood路Charge ()
+Set路Card ()
+Set路Full路Hearts ()
+Set路Min路Damage路Cooldown ()
+Set路Pill ()
+Set路Pocket路Active路Item()
+Set路Shooting路Cooldown ()
+Set路Soul路Charge ()
+Set路Target路Trap路Door ()
+Shoot路Red路Candle ()
+Spawn路Maw路Of路Void ()
+Stop路Extra路Animation ()
+Swap路Active路Items ()
+Throw路Blue路Spider ()
+Throw路Friendly路Dip ()
+Throw路Held路Entity ()
+Trigger路Book路Of路Virtues ()
+Try路Hold路Entity ()
+Try路Hold路Trinket ()
+Try路Remove路Collectible路Costume ()
+Try路Remove路Null路Costume ()
+Try路Remove路Trinket ()
+Try路Remove路Trinket路Costume ()
+Try路Use路Key ()
+Update路Can路Shoot ()
+Use路Active路Item ()
+Use路Card ()
+Use路Pill ()
+Use路Poop路Spell ()
+Will路Player路Revive ()
+Variables
+Baby路Skin
+Can路Fly
+Controller路Index
+Controls路Cooldown
+Controls路Enabled
+Damage
+Fire路Delay
+Friend路Ball路Enemy
+Head路Frame路Delay
+IBS路Charge
+Item路Hold路Cooldown
+Laser路Color
+Luck
+Max路Fire路Delay
+Move路Speed
+Queued路Item
+Samson路Berserk路Charge
+Secondary路Active路Item
+Shot路Speed
+Tear路Color
+Tear路Falling路Acceleration
+Tear路Falling路Speed
+Tear路Flags
+Tear路Height
+Tear路Range
+Tears路Offset
+Class
+Player
+Class "EntityPlayer"
+鈿擄笌
+Info
+You can get this class by using the following function:
+Entity.ToPlayer()
+EntityFamiliar.Player
+EntityPlayer.GetMainTwin()
+EntityPlayer.GetOtherTwin()
+EntityPlayer.GetSubPlayer()
+Game.GetNearestPlayer()
+Game.GetPlayer()
+Game.GetRandomPlayer()
+Isaac.GetPlayer()
+Example Code
+local player = Isaac.GetPlayer()
+Class Diagram
+鈿擄笌
+classDiagram
+class Entity:::diagramCurrentPage
+class EntityBomb
+class EntityEffect
+class EntityFamiliar
+class EntityKnife
+class EntityLaser
+class EntityNPC
+class EntityPickup
+class EntityPlayer
+class EntityProjectile
+class EntityTear
+Entity <|-- EntityBomb
+Entity <|-- EntityEffect
+Entity <|-- EntityFamiliar
+Entity <|-- EntityKnife
+Entity <|-- EntityLaser
+Entity <|-- EntityNPC
+Entity <|-- EntityPickup
+Entity <|-- EntityPlayer
+Entity <|-- EntityProjectile
+Entity <|-- EntityTear
+link Entity "Entity.html" "Go to page for 'Entity' class"
+link EntityBomb "EntityBomb.html" "Go to page for 'EntityBomb' class"
+link EntityEffect "EntityEffect.html" "Go to page for 'EntityEffect' class"
+link EntityFamiliar "EntityFamiliar.html" "Go to page for 'EntityFamiliar' class"
+link EntityKnife "EntityKnife.html" "Go to page for 'EntityKnife' class"
+link EntityLaser "EntityLaser.html" "Go to page for 'EntityLaser' class"
+link EntityNPC "EntityNPC.html" "Go to page for 'EntityNPC' class"
+link EntityPickup "EntityPickup.html" "Go to page for 'EntityPickup' class"
+link EntityPlayer "EntityPlayer.html" "Go to page for 'EntityPlayer' class"
+link EntityProjectile "EntityProjectile.html" "Go to page for 'EntityProjectile' class"
+link EntityTear "EntityTear.html" "Go to page for 'EntityTear' class"
+Functions
+鈿擄笌
+Add路Black路Hearts ()
+鈿擄笌
+void AddBlackHearts ( int BlackHearts )
+鈿擄笌
+Adds Black hearts to the player. 1 unit is half a heart. Remove them with negative numbers.
+Example Code
+This code adds 1 full black heart to the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddBlackHearts
+(
+2
+)
+Add路Blood路Charge ()
+鈿擄笌
+void AddBloodCharge ( int Amount )
+鈿擄笌
+Adds to the amount of Blood Charge the player has. Blood Charge does not do anything on characters besides Tainted Bethany.
+Add路Blue路Flies ()
+鈿擄笌
+Entity
+AddBlueFlies ( int Amount,
+Vector
+Position,
+Entity
+Target )
+鈿擄笌
+Amount
+The trinket
+Fish Tail
+will always double the
+amount
+of flies added by this function.
+Add路Blue路Spider ()
+鈿擄笌
+Entity
+AddBlueSpider (
+Vector
+Position )
+鈿擄笌
+Example Code
+This code spawns 3 blue spiders at the player's position.
+1
+2
+3
+4
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+for
+_
+=
+1
+,
+3
+do
+player
+:
+AddBlueSpider
+(
+player
+.
+Position
+)
+end
+Add路Bombs ()
+鈿擄笌
+void AddBombs ( int Amount )
+鈿擄笌
+Adds bombs to the player. Remove them with negative numbers.
+Example Code
+This code removes 1 bomb from the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddBombs
+(
+-
+1
+)
+Add路Bone路Hearts ()
+鈿擄笌
+void AddBoneHearts ( int Hearts )
+鈿擄笌
+Adds bone hearts to the player. 1 unit is a single bone heart. Remove them with negative numbers.
+Example Code
+This code adds 1 bone heart to the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddBoneHearts
+(
+1
+)
+Add路Broken路Hearts ()
+鈿擄笌
+void AddBrokenHearts ( int BrokenHearts )
+鈿擄笌
+Adds broken hearts to the player. 1 unit is one broken heart. Broken hearts can be removed with negative numbers.
+Example Code
+This code adds 1 broken heart to the player, then takes it away.
+1
+2
+Isaac
+.
+GetPlayer
+():
+AddBrokenHearts
+(
+1
+)
+Isaac
+.
+GetPlayer
+():
+AddBrokenHearts
+(
+-
+1
+)
+Add路Cache路Flags ()
+鈿擄笌
+void AddCacheFlags (
+CacheFlag
+CacheFlag )
+鈿擄笌
+Will reevaluate the cache flags provided in the next cache reevaluation.
+Example Code
+This code will add several cacheflags.
+1
+Isaac
+.
+GetPlayer
+():
+AddCacheFlags
+(
+CacheFlag
+.
+CACHE_DAMAGE
+|
+CacheFlag
+.
+CACHE_FIREDELAY
+|
+CacheFlag
+.
+CACHE_LUCK
+)
+Add路Card ()
+鈿擄笌
+void AddCard (
+Card
+ID )
+鈿擄笌
+Add路Coins ()
+鈿擄笌
+void AddCoins ( int Amount )
+鈿擄笌
+Adds coins to the player. Remove them with negative numbers.
+Example Code
+This code adds 1 coin to the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddCoins
+(
+1
+)
+Add路Collectible ()
+鈿擄笌
+void AddCollectible (
+CollectibleType
+Type, int Charge = 0, boolean FirstTimePickingUp = true,
+ActiveSlot
+Slot = ActiveSlot.SLOT_PRIMARY, int VarData = 0)
+鈿擄笌
+void AddCollectible (
+CollectibleType
+Type, int Charge = 0, boolean FirstTimePickingUp = true,
+ActiveSlot
+Slot = ActiveSlot.SLOT_PRIMARY, int VarData = 0,
+ItemPoolType
+PoolType )
+鈿擄笌
+Setting
+FirstTimePickingUp
+to false will not add the consumables (keys, bombs,...) of the item and will cause it to not count towards transformations.
+Slot 0 is default (normal active item)
+Slot 1 is used by Schoolbag
+Slot 2 is used for pocket active items
+Notes
+Slot 2 cannot be used if character did not start with a pocket active
+VarData is used for the storage of a persistent context-sensitive value
+Notes
+This is a list of all items that make use of VarData:
+Jar of Wisps: Wisps spawned on next use (Max 12)
+D Infinity, Blank Card, Clear Rune, Placebo: Current maximum charge (Any value above 0)
+Hold: Stored poop
+Poop Types:
+[0] None
+[1] Normal
+[2] Flies
+[3] Fire
+[4] Petrified
+[5] Toxic
+[6] Black
+[7] Holy
+[8] X-Lax
+[9] Fart
+[10] Bomb
+[11] Explosive Diarrhea
+[12+] Empty
+Add路Controls路Cooldown ()
+鈿擄笌
+void AddControlsCooldown ( int Cooldown )
+鈿擄笌
+Add路Costume ()
+鈿擄笌
+void AddCostume (
+ItemConfigItem
+Item, boolean ItemStateOnly )
+鈿擄笌
+Add路Curse路Mist路Effect ()
+鈿擄笌
+void AddCurseMistEffect ( )
+鈿擄笌
+Add路Dead路Eye路Charge ()
+鈿擄笌
+void AddDeadEyeCharge ( )
+鈿擄笌
+Add路Dollar路Bill路Effect ()
+鈿擄笌
+void AddDollarBillEffect ( )
+鈿擄笌
+Add路Eternal路Hearts ()
+鈿擄笌
+void AddEternalHearts ( int EternalHearts )
+鈿擄笌
+Adds eternal hearts to the player. 1 unit is half a heart. Remove them with negative numbers.
+(Note that eternal hearts automatically turn to full hearts, when you have more than one.)
+Example Code
+This code adds 1 eternal heart to the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddEternalHearts
+(
+1
+)
+Add路Friendly路Dip ()
+鈿擄笌
+EntityFamiliar
+AddFriendlyDip ( int Subtype,
+Vector
+Position )
+鈿擄笌
+Dip Subtypes
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+0
+:
+normal
+1
+:
+red
+2
+:
+corny
+3
+:
+golden
+4
+:
+rainbow
+5
+:
+black
+6
+:
+holy
+12
+:
+stone
+13
+:
+flaming
+14
+:
+poison
+20
+:
+brownie
+Add路Giga路Bombs ()
+鈿擄笌
+void AddGigaBombs ( int GigaBombs )
+鈿擄笌
+Notes
+Giga bombs do not add to the bomb counter, make sure to increase the bomb count beforehand!
+You can't add more giga bombs than player's current bomb count.
+Add路Golden路Bomb ()
+鈿擄笌
+void AddGoldenBomb ( )
+鈿擄笌
+Add路Golden路Hearts ()
+鈿擄笌
+void AddGoldenHearts ( int Hearts )
+鈿擄笌
+Adds golden hearts to the player. 1 unit is a single gold heart. Remove them with negative numbers.
+Example Code
+This code adds 1 golden heart to the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddGoldenHearts
+(
+1
+)
+Add路Golden路Key ()
+鈿擄笌
+void AddGoldenKey ( )
+鈿擄笌
+Add路Hearts ()
+鈿擄笌
+void AddHearts ( int Hearts )
+鈿擄笌
+Adds red hearts to the player if there are any empty heart containers. 1 unit is half a heart. Remove health with negative numbers.
+Example Code
+This code adds 1 full red heart to the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddHearts
+(
+2
+)
+Add路Item路Wisp ()
+鈿擄笌
+EntityFamiliar
+AddItemWisp (
+CollectibleType
+Collectible,
+Vector
+Position, boolean AdjustOrbitLayer = false )
+鈿擄笌
+Add路Jar路Flies ()
+鈿擄笌
+void AddJarFlies ( int Flies )
+鈿擄笌
+Add路Jar路Hearts ()
+鈿擄笌
+void AddJarHearts ( int Hearts )
+鈿擄笌
+Add路Keys ()
+鈿擄笌
+void AddKeys ( int Amount )
+鈿擄笌
+Adds keys to the player. Remove them with negative numbers.
+Example Code
+This code adds 1 key to the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddKeys
+(
+1
+)
+Add路Max路Hearts ()
+鈿擄笌
+void AddMaxHearts ( int MaxHearts, boolean IgnoreKeeper )
+鈿擄笌
+Adds heart containers to the player. 2 units is a full heart container. Remove them with negative numbers.
+Notes
+It is possible to add a half heart container to the player. This will appear as a regular heart container but can only be filled half-way.
+Example Code
+This code adds 1 heart container to the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddMaxHearts
+(
+2
+,
+true
+)
+Bugs
+IgnoreKeeper does not appear to work as intended.
+Max hearts can be added or removed from Keeper regardless of what this boolean is.
+If Keeper has Greed's Gullet and this boolean is set to false, max hearts cannot be added to Keeper, but can be removed normally.
+If Keeper has Greed's Gullet and this boolean is set to true, Max hearts can be added or removed from Keeper normally.
+Add路Minisaac ()
+鈿擄笌
+EntityFamiliar
+AddMinisaac (
+Vector
+Position, boolean PlayAnim = true )
+鈿擄笌
+Add路Null路Costume ()
+鈿擄笌
+void AddNullCostume (
+NullItemID
+NullId )
+鈿擄笌
+Add路Pill ()
+鈿擄笌
+void AddPill (
+PillColor
+Pill )
+鈿擄笌
+Add路Player路Form路Costume ()
+鈿擄笌
+void AddPlayerFormCostume (
+PlayerForm
+Form )
+鈿擄笌
+Adds the costume of the given transformation.
+Add路Poop路Mana ()
+鈿擄笌
+void AddPoopMana ( int Num )
+鈿擄笌
+Adds (or remove) poop consumables from the player.
+Add路Pretty路Fly ()
+鈿擄笌
+void AddPrettyFly ( )
+鈿擄笌
+Add路Rotten路Hearts ()
+鈿擄笌
+void AddRottenHearts ( int RottenHearts )
+鈿擄笌
+Adds rotten hearts to the player. 1 unit is half a heart. Remove rotten hearts with negative numbers.
+Example Code
+This code adds 1 full rotten heart to the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddRottenHearts
+(
+2
+)
+Add路Soul路Charge ()
+鈿擄笌
+void AddSoulCharge ( int Amount )
+鈿擄笌
+Adds Soul Charge to the player. Soul Charge does not do anything on characters besides Bethany.
+Add路Soul路Hearts ()
+鈿擄笌
+void AddSoulHearts ( int SoulHearts )
+鈿擄笌
+Adds soul hearts to the player. 1 unit is half a heart. Remove them with negative numbers.
+Example Code
+This code adds 1 full soul heart to the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddSoulHearts
+(
+2
+)
+Add路Swarm路Fly路Orbital ()
+鈿擄笌
+EntityFamiliar
+AddSwarmFlyOrbital (
+Vector
+Position )
+鈿擄笌
+Add路Trinket ()
+鈿擄笌
+void AddTrinket (
+TrinketType
+Type, boolean FirstTimePickingUp = true )
+鈿擄笌
+If the player does not have any open trinket slots, this function will do nothing.
+If the player has an open trinket slot but already has a trinket, the new trinket will go to the first slot and the existing trinket will get pushed back to the second slot.
+If you provide an argument of 0 or an otherwise invalid trinket ID, the game will crash.
+Setting
+FirstTimePickingUp
+to false will not spawn or add pickups for the item and will not cause it to count towards transformations.
+Example Code
+This code adds the golden variant of the Swallowed Penny trinket to the player.
+1
+Isaac
+.
+GetPlayer
+():
+AddTrinket
+(
+TrinketType
+.
+TRINKET_SWALLOWED_PENNY
+|
+TrinketType
+.
+TRINKET_GOLDEN_FLAG
+)
+Add路Wisp ()
+鈿擄笌
+EntityFamiliar
+AddWisp (
+CollectibleType
+Collectible,
+Vector
+Position, boolean AdjustOrbitLayer = false, boolean DontUpdate = false )
+鈿擄笌
+The type of Wisp can be defined with the Collectible. If the ID is not corresponding to an active item with a special wisp, it will default to the regular blue wisp.
+To access special wisp variant like Delirious forms, you need to add
+65536
+(1 << 16) to the id. Example: Delirious Monstro has
+id = s14
+, so the wisps id is
+65550
+.
+Animate路Appear ()
+鈿擄笌
+void AnimateAppear ( )
+鈿擄笌
+Play the animation that is normally played at the beginning of a stage.
+Animate路Card ()
+鈿擄笌
+void AnimateCard (
+Card
+ID, string AnimName = "Pickup" )
+鈿擄笌
+Animate路Collectible ()
+鈿擄笌
+void AnimateCollectible (
+CollectibleType
+Collectible, string AnimName = "Pickup", string SpriteAnimName = "PlayerPickupSparkle" )
+鈿擄笌
+AnimName
+refers to an animation name in
+001.000_player.anm2
+(e.g.
+Pickup
+or
+UseItem
+).
+SpriteAnimName
+refers to an animation name in
+005.100_collectible.anm2
+(e.g.
+PlayerPickup
+or
+PlayerPickupSparkle
+).
+Animate路Happy ()
+鈿擄笌
+void AnimateHappy ( )
+鈿擄笌
+Plays the happy animation, played when taking a positive pill.
+Example Code
+This code plays the happy animation.
+1
+Isaac
+.
+GetPlayer
+():
+AnimateHappy
+()
+Animate路Light路Travel ()
+鈿擄笌
+void AnimateLightTravel ( )
+鈿擄笌
+Plays the animation that is played when entering the light in the ascent, or entering the cathedral.
+Example Code
+Plays the animation.
+1
+Isaac
+.
+GetPlayer
+():
+AnimateLightTravel
+()
+Animate路Pickup ()
+鈿擄笌
+void AnimatePickup (
+Sprite
+sprite, boolean HideShadow = false, string AnimName = "Pickup" )
+鈿擄笌
+Plays a pickup animation using any supplied Sprite object
+HideShadow should be usually set to true when rendering a sprite with a custom shadow layer
+Animate路Pill ()
+鈿擄笌
+void AnimatePill (
+PillColor
+Pill, string AnimName = "Pickup" )
+鈿擄笌
+Animate路Pitfall路In ()
+鈿擄笌
+void AnimatePitfallIn ( )
+鈿擄笌
+Does 1/2 heart of damage and plays the animation of falling into a pitfall.
+Animate路Pitfall路Out ()
+鈿擄笌
+void AnimatePitfallOut ( )
+鈿擄笌
+The animation of jumping back out of a pitfall.
+Animate路Sad ()
+鈿擄笌
+void AnimateSad ( )
+鈿擄笌
+Plays the sad animation, played when taking a negative pill.
+Example Code
+Plays the sad animation.
+1
+Isaac
+.
+GetPlayer
+():
+AnimateSad
+()
+Animate路Teleport ()
+鈿擄笌
+void AnimateTeleport ( boolean Up )
+鈿擄笌
+The animation played when teleporting into another room.
+Animate路Trapdoor ()
+鈿擄笌
+void AnimateTrapdoor ( )
+鈿擄笌
+Plays the animation of the player jumping down a trapdoor.
+Example Code
+Plays the animation of jumping down a trapdoor.
+1
+Isaac
+.
+GetPlayer
+():
+AnimateTrapdoor
+()
+Animate路Trinket ()
+鈿擄笌
+void AnimateTrinket (
+TrinketType
+Trinket, string AnimName = "Pickup", string SpriteAnimName = "PlayerPickupSparkle" )
+鈿擄笌
+Are路Controls路Enabled ()
+鈿擄笌
+boolean AreControlsEnabled ( )
+鈿擄笌
+Are路Opposing路Shoot路Directions路Pressed ()
+鈿擄笌
+boolean AreOpposingShootDirectionsPressed ( )
+鈿擄笌
+Returns the non-zero joystick direction from the most recent movement input, but goes to zero after the player comes to a stop.
+Can路Add路Collectible ()
+鈿擄笌
+boolean CanAddCollectible (
+CollectibleType
+Type = CollectibleType.COLLECTIBLE_NULL )
+鈿擄笌
+Can路Pick路Black路Hearts ()
+鈿擄笌
+boolean CanPickBlackHearts ( )
+鈿擄笌
+returns true if player has room for more black hearts
+Can路Pick路Bone路Hearts ()
+鈿擄笌
+boolean CanPickBoneHearts ( )
+鈿擄笌
+returns true if player has room for more bone hearts
+Can路Pick路Golden路Hearts ()
+鈿擄笌
+boolean CanPickGoldenHearts ( )
+鈿擄笌
+returns true if player has room for more golden hearts
+Can路Pick路Red路Hearts ()
+鈿擄笌
+boolean CanPickRedHearts ( )
+鈿擄笌
+Can路Pick路Rotten路Hearts ()
+鈿擄笌
+boolean CanPickRottenHearts ( )
+鈿擄笌
+Returns true if player has room for more rotten hearts
+Can路Pick路Soul路Hearts ()
+鈿擄笌
+boolean CanPickSoulHearts ( )
+鈿擄笌
+Returns true if player has room for more soul hearts
+Can路Pickup路Item ()
+鈿擄笌
+boolean CanPickupItem ( )
+鈿擄笌
+Can Player pick up an item right now?
+Can路Shoot ()
+鈿擄笌
+boolean CanShoot ( )
+鈿擄笌
+Can路Turn路Head ()
+鈿擄笌
+boolean CanTurnHead ( )
+鈿擄笌
+Returns true if head should react to keys or false otherwise
+Change路Player路Type ()
+鈿擄笌
+void ChangePlayerType (
+PlayerType
+PlayerType )
+鈿擄笌
+Used to change one player into another player type. For example turning Cain into Maggy.
+Changing the player type within MC_POST_PLAYER_INIT will result in the player getting the default items for that character. E.g. Maggy will get her Yum Heart without you having to explicitly add it. Exceptions here include unlockable items (e.g. Isaac's D6) and default numbers of hearts/keys/bombs/coins. You can change the player type after init, but then you're generally responsible for adding any items you might associate with that character.
+Changing the player Type into Jacob will also spawn Esau.
+Check路Familiar ()
+鈿擄笌
+void CheckFamiliar (
+FamiliarVariant
+FamiliarVariant, int TargetCount,
+RNG
+rng,
+ItemConfigItem
+SourceItemConfigItem = nil, int FamiliarSubType = -1 )
+鈿擄笌
+Call this method to spawn the appropriate amount of familiars associated with a custom collectible.
+If the target count specified is less than the current amount of familiars, it will spawn more until the target count is met.
+If the target count specified is than the current amount of familiars, it will despawn familiars until the target count is met.
+This is meant to be called in the EvaluateCache callback (when the cache flag is equal to
+CacheFlag.CACHE_FAMILIARS
+).
+In most cases,
+IsaacScript
+users should use the
+checkFamiliarFromCollectibles
+helper function instead of using this method directly, as it automatically calculates the appropriate target count.
+FamiliarVariant
+: In most cases, use the familiar variant for your custom familiar.
+TargetCount
+: The expected amount of this FamiliarVariant that this EntityPlayer should have. This argument can simply be how many of an item that the current EntityPlayer owns. However, if you want your familiar to synergize with Monster Manual and Box of Friends, then this argument should be
+EntityPlayer:GetCollectibleNum(collectibleType) + EntityPlayer:GetEffects():GetCollectibleEffectNum(collectibleType)
+.
+rng
+: Can just be the RNG object from
+EntityPlayer.GetCollectibleRNG
+of the collectible that spawns the familiar.
+SourceItemConfigItem
+: The
+ItemConfigItem
+that this familiar was created by. This is nil by default, but it should always be specified so that Sacrificial Altar will work properly. (It informs the game which collectible should be removed if the familiar is tagged with the "cansacrifice" entity tag.) This can be obtained with:
+Isaac.GetItemConfig():GetCollectible(collectibleType)
+FamiliarSubType
+: The subtype of the familiar to check. -1 matches any subtype.
+Example Code
+This code spawns 3 "Sister Maggy" familiars.
+1
+2
+3
+4
+5
+6
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+sourceCollectibleID
+=
+CollectibleType
+.
+COLLECTIBLE_SAD_ONION
+local
+collectibleRNG
+=
+player
+:
+GetCollectibleRNG
+(
+sourceCollectibleID
+)
+local
+itemConfig
+=
+Isaac
+.
+GetItemConfig
+():
+GetCollectible
+(
+sourceCollectibleID
+)
+player
+:
+CheckFamiliar
+(
+FamiliarVariant
+.
+SISTER_MAGGY
+,
+3
+,
+collectibleRNG
+,
+itemConfig
+)
+Clear路Costumes ()
+鈿擄笌
+void ClearCostumes ( )
+鈿擄笌
+Removes all costumes.
+Clear路Dead路Eye路Charge ()
+鈿擄笌
+void ClearDeadEyeCharge ( )
+鈿擄笌
+Clear路Temporary路Effects ()
+鈿擄笌
+void ClearTemporaryEffects ( )
+鈿擄笌
+Will be called when player exits the room.
+Discharge路Active路Item ()
+鈿擄笌
+void DischargeActiveItem (
+ActiveSlot
+ActiveSlot = ActiveSlot.SLOT_PRIMARY )
+鈿擄笌
+Sets the charge of your active item to 0 without triggering the active item effect.
+Donate路Luck ()
+鈿擄笌
+void DonateLuck ( int Luck )
+鈿擄笌
+Unlike the Luck property which should be set in MC_EVALUATE_CACHE, this method can be used anywhere and will automatically remember any additional luck added.
+Do路Zit路Effect ()
+鈿擄笌
+void DoZitEffect (
+Vector
+Direction )
+鈿擄笌
+Fires a creep shot, same as the one fired by the item "Large Zit".
+Drop路Pocket路Item ()
+鈿擄笌
+void DropPocketItem ( int PocketNum,
+Vector
+Pos )
+鈿擄笌
+Drops a held pocketitem (Card, Pill, Rune... from the given itemslot at the given position. Possible pocketnumbers are [0, 1, 2, 3].  Dropping pocket active items or dice bag dices does not work.
+Drop路Trinket ()
+鈿擄笌
+void DropTrinket (
+Vector
+DropPos, boolean ReplaceTick )
+鈿擄笌
+Evaluate路Items ()
+鈿擄笌
+void EvaluateItems ( )
+鈿擄笌
+Triggers a cache reevaluation. Will trigger the MC_EVALUATE_CACHE callback.
+Before you use this function, you need to set the appropriate cache flags first. See the example below.
+Example Code
+This code re-evaluates all of the stats for the player.
+1
+2
+3
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+player
+:
+AddCacheFlags
+(
+CacheFlag
+.
+CACHE_ALL
+)
+player
+:
+EvaluateItems
+()
+Fire路Bomb ()
+鈿擄笌
+EntityBomb
+FireBomb (
+Vector
+Position,
+Vector
+Velocity, Entity Source = nil )
+鈿擄笌
+Fire路Brimstone ()
+鈿擄笌
+EntityLaser
+FireBrimstone (
+Vector
+Direction, Entity Source = nil, float DamageMultiplier = 1 )
+鈿擄笌
+Fire路Delayed路Brimstone ()
+鈿擄笌
+EntityLaser
+FireDelayedBrimstone ( float Angle,
+Entity
+Parent )
+鈿擄笌
+Fire路Knife ()
+鈿擄笌
+EntityKnife
+FireKnife (
+Entity
+Parent, float RotationOffset = 0, boolean CantOverwrite = false, int SubType = 0, int Variant = 0 )
+鈿擄笌
+Knife Variants
+1
+2
+3
+4
+5
+6
+7
+8
+9
+0
+:
+Mom
+'s Knife
+1: Bone Club
+2: Bone Scythe
+3: Berserk Club
+4: Bag of Crafting
+5: Sumptorium
+9: Notched Axe
+10: Spirit Sword
+11: Tech Sword
+Fire路Tear ()
+鈿擄笌
+EntityTear
+FireTear (
+Vector
+Position,
+Vector
+Velocity, boolean CanBeEye = true, boolean NoTractorBeam = false, boolean CanTriggerStreakEnd = true, Entity Source = nil, float DamageMultiplier = 1 )
+鈿擄笌
+CanBeEye
+: If the player has the Evil Eye item, passing true allows the tear to have a chance of being an eye.
+NoTractorBeam
+: If the player has the Tractor Beam item, passing true means that the tear will be exempt from the beam.
+CanTriggerStreakEnd
+: If the player has the Dead Eye item, passing false means that the tear will be exempt from ending the streak.
+Fire路Tech路Laser ()
+鈿擄笌
+EntityLaser
+FireTechLaser (
+Vector
+Position,
+LaserOffset
+OffsetID,
+Vector
+Direction, boolean LeftEye, boolean OneHit = false, Entity Source = nil, float DamageMultiplier = 1 )
+鈿擄笌
+Bugs
+The
+DamageMultiplier
+parameter doesn't do anything when supplying
+LASER_TECH2_OFFSET
+as the offset.
+Fire路Tech路XLaser ()
+鈿擄笌
+EntityLaser
+FireTechXLaser (
+Vector
+Position,
+Vector
+Direction, float Radius, Entity Source = nil, float DamageMultiplier = 1 )
+鈿擄笌
+Flush路Queue路Item ()
+鈿擄笌
+boolean FlushQueueItem ( )
+鈿擄笌
+called after animation is finished, or on special occasions to prevent bugs
+Full路Charge ()
+鈿擄笌
+boolean FullCharge (
+ActiveSlot
+ActiveSlot = ActiveSlot.SLOT_PRIMARY, int Force = false )
+鈿擄笌
+Fully charges the active item. Returns true if the item was fully charged, false otherwise. If player has battery it will first try to fill first charge slot, then the battery slot.
+Force
+: If set, items will always be charged even if they normally cannot be recharged by batteries
+ActiveSlot
+Setting the ActiveSlot argument to
+-1
+will recharge items in all slots.
+Get路Active路Charge ()
+鈿擄笌
+int GetActiveCharge (
+ActiveSlot
+ActiveSlot = ActiveSlot.SLOT_PRIMARY )
+鈿擄笌
+Get the current charge of your active item.
+Get路Active路Item ()
+鈿擄笌
+CollectibleType
+GetActiveItem (
+ActiveSlot
+ActiveSlot = ActiveSlot.SLOT_PRIMARY )
+鈿擄笌
+Returns the currently held item. Returns
+0
+when no item is held.
+Get路Active路Sub路Charge ()
+鈿擄笌
+int GetActiveSubCharge (
+ActiveSlot
+ActiveSlot = ActiveSlot.SLOT_PRIMARY )
+鈿擄笌
+Get the current items subcharge.
+Bug
+This function seems to always return 0. Use EntityPlayer:GetActiveCharge() to get any type of charges instead. Use EntityPlayer:GetBatteryCharge() to get the charge of the second charge bar.
+Get路Active路Weapon路Entity ()
+鈿擄笌
+Entity
+GetActiveWeaponEntity ( )
+鈿擄笌
+Get路Aim路Direction ()
+鈿擄笌
+const
+Vector
+GetAimDirection ( )
+鈿擄笌
+Get路Baby路Skin ()
+鈿擄笌
+BabySubType
+GetBabySkin ( )
+鈿擄笌
+Get路Battery路Charge ()
+鈿擄笌
+int GetBatteryCharge (
+ActiveSlot
+ActiveSlot = ActiveSlot.SLOT_PRIMARY )
+鈿擄笌
+Get the current charge progress of the second charge of your current active item. This bar is only active, when you have the Collectible "The Battery"
+Get路Black路Hearts ()
+鈿擄笌
+int GetBlackHearts ( )
+鈿擄笌
+This does not return the number of black hearts; it returns the bit mask for which soul hearts are black hearts.
+Example
+Imagine we have the following setup of hearts, where S is a soul heart and B is a black heart:
+1
+B S S B B S S B B
+Calling the function will return:
+1
+Isaac
+.
+GetPlayer
+():
+GetBlackHearts
+()
+-- returns 409, which is 0001 1001 1001 in binary. Therefore, the read order is right to left.
+Quick code example to parse soul hearts vs black hearts:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+-- if you setup your hearts as described above then you'll get the following values
+-- GetSoulHearts = 18
+-- GetBlackHearts = 409
+local
+tbl
+=
+{}
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+-- loop over all the soul hearts
+-- divide by 2 because we need to go from half to whole hearts
+-- math.ceil to make sure we account for a possible half heart at the end
+for
+i
+=
+0
+,
+math.ceil
+(
+player
+:
+GetSoulHearts
+()
+/
+2
+)
+-
+1
+do
+-- you can also use BitSet128 here if you want: BitSet128(player:GetBlackHearts(),0):Get(i)
+table.insert
+(
+tbl
+,
+(
+player
+:
+GetBlackHearts
+()
+&
+(
+1
+<<
+i
+))
+>
+0
+and
+'B'
+or
+'S'
+)
+end
+if
+player
+:
+GetSoulHearts
+()
+%
+2
+~=
+0
+then
+tbl
+[
+#
+tbl
+]
+=
+string.lower
+(
+tbl
+[
+#
+tbl
+])
+-- lowercase to indicate half heart at end
+end
+print
+(
+table.concat
+(
+tbl
+,
+' '
+))
+-- prints: B S S B B S S B B
+Get路Blood路Charge ()
+鈿擄笌
+int GetBloodCharge ( )
+鈿擄笌
+Returns the amount of Blood Charge the player has.
+Get路Body路Color ()
+鈿擄笌
+SkinColor
+GetBodyColor ( )
+鈿擄笌
+Get路Bomb路Flags ()
+鈿擄笌
+int GetBombFlags ( )
+鈿擄笌
+int GetBombFlags ( boolean IsFetus = false )
+鈿擄笌
+IsFetus
+: If set to true, can set flags from bomb collectibles at random chance.
+Get路Bomb路Variant ()
+鈿擄笌
+BombVariant
+GetBombVariant (
+TearFlags
+TearFlags, boolean ForceSmallBomb )
+鈿擄笌
+Pass tear flags to add extra effects to the bomb visual like burn -> hot bombs, even if player doesn't have Hot Bombs collectible. ForceSmallBomb will override large bomb variants for TEAR_PERSISTENT.
+Get路Bone路Hearts ()
+鈿擄笌
+int GetBoneHearts ( )
+鈿擄笌
+Returns the amount of bone hearts that the player has. This is not doubled like the
+EntityPlayer.GetMaxHearts
+method is, so if e.g. the player has 3 bone hearts, this will return 3.
+Also see the
+EntityPlayer.GetEffectiveMaxHearts
+method, which accounts for bone hearts.
+Get路Broken路Hearts ()
+鈿擄笌
+int GetBrokenHearts ( )
+鈿擄笌
+Returns the amount of broken hearts that the player has. This is not doubled like the
+EntityPlayer.GetMaxHearts
+method is, so if e.g. the player has 3 broken hearts, this will return 3.
+Get路Card ()
+鈿擄笌
+Card
+GetCard ( int SlotId )
+鈿擄笌
+Gets the ID of the card the player is holding in the given itemslot (0 = Main slot, 1 = secondary slot, 2 or 3). Returns
+0
+when no card is held in the slot.
+Get路Card路RNG ()
+鈿擄笌
+RNG
+GetCardRNG (
+Card
+ID )
+鈿擄笌
+Get路Collectible路Count ()
+鈿擄笌
+int GetCollectibleCount ( )
+鈿擄笌
+Get路Collectible路Num ()
+鈿擄笌
+int GetCollectibleNum (
+CollectibleType
+Type, boolean OnlyCountTrueItems = false )
+鈿擄笌
+OnlyCountTrueItems
+: If set to true, the function only counts collectibles that the player actually owns and ignores things like Lilith's Incubus, items granted by 3 Dollar Bill, and so forth.
+Get路Collectible路RNG ()
+鈿擄笌
+RNG
+GetCollectibleRNG (
+CollectibleType
+ID )
+鈿擄笌
+Gets the
+RNG
+object of a collectible.
+Example Code
+this code gives you the RNG object of the "Sad Onion" collectible.
+1
+2
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+collectibleRNG
+=
+player
+:
+GetCollectibleRNG
+(
+CollectibleType
+.
+COLLECTIBLE_SAD_ONION
+)
+Get路Costume路Null路Pos ()
+鈿擄笌
+Vector
+GetCostumeNullPos ( string NullFrameName, boolean HeadScale,
+Vector
+Direction )
+鈿擄笌
+Get路Damage路Cooldown ()
+鈿擄笌
+int GetDamageCooldown ( )
+鈿擄笌
+When the player is hit, they will flash a different color and receive invulnerability frames. This method returns the amount of invulnerability frames. Normally, the player will receive 60 invulnerability frames when dealt a half-heart of damage or 120 invulnerability frames when dealt a full heart of damage. Additionally, the Blind Rage trinket can affect how invulnerability frames are granted.
+Note that the frames returned by this function are render frames, not game frames.
+Get路Effective路Blood路Charge ()
+鈿擄笌
+int GetEffectiveBloodCharge ( )
+鈿擄笌
+Returns the amount of Blood Charge the player has. If playing as any other character besides Tainted Bethany, this will return
+0
+.
+Get路Effective路Max路Hearts ()
+鈿擄笌
+int GetEffectiveMaxHearts ( )
+鈿擄笌
+Returns the amount of Red Hearts the player can contain in their Heart Containers and Bone Hearts. 1 unit is half a red heart.
+Example:
+you have 3 red heart container and one bone heart. 6(red) + 2(bone) = 8
+Get路Effective路Soul路Charge ()
+鈿擄笌
+int GetEffectiveSoulCharge ( )
+鈿擄笌
+Returns the amount of Soul Charge the player has. If playing as any other character besides Bethany, this will return
+0
+.
+Get路Effects ()
+鈿擄笌
+TemporaryEffects
+GetEffects ( )
+鈿擄笌
+Get路Eternal路Hearts ()
+鈿擄笌
+int GetEternalHearts ( )
+鈿擄笌
+Returns the amount of eternal hearts the player has.
+Get路Extra路Lives ()
+鈿擄笌
+int GetExtraLives ( )
+鈿擄笌
+Returns the number of extra lives the player currently has.
+Get路Fire路Direction ()
+鈿擄笌
+Direction
+GetFireDirection ( )
+鈿擄笌
+Get路Flying路Offset ()
+鈿擄笌
+Vector
+GetFlyingOffset ( )
+鈿擄笌
+Get路Golden路Hearts ()
+鈿擄笌
+int GetGoldenHearts ( )
+鈿擄笌
+Returns the amount of golden hearts the player has.
+Get路Greed路Donation路Break路Chance ()
+鈿擄笌
+float GetGreedDonationBreakChance ( )
+鈿擄笌
+Get路Head路Color ()
+鈿擄笌
+SkinColor
+GetHeadColor ( )
+鈿擄笌
+Get路Head路Direction ()
+鈿擄笌
+Direction
+GetHeadDirection ( )
+鈿擄笌
+Get路Heart路Limit ()
+鈿擄笌
+int GetHeartLimit ( )
+鈿擄笌
+Get路Hearts ()
+鈿擄笌
+int GetHearts ( )
+鈿擄笌
+Returns the amount of red hearts the player has inside their heart containers and bone hearts. 1 unit is half a heart.
+Get路Item路State ()
+鈿擄笌
+CollectibleType
+GetItemState ( )
+鈿擄笌
+Get路Jar路Flies ()
+鈿擄笌
+int GetJarFlies ( )
+鈿擄笌
+Get路Jar路Hearts ()
+鈿擄笌
+int GetJarHearts ( )
+鈿擄笌
+Get路Laser路Offset ()
+鈿擄笌
+Vector
+GetLaserOffset (
+LaserOffset
+ID,
+Vector
+Direction )
+鈿擄笌
+Get路Last路Action路Triggers ()
+鈿擄笌
+int GetLastActionTriggers ( )
+鈿擄笌
+Get路Last路Damage路Flags ()
+鈿擄笌
+int GetLastDamageFlags ( )
+鈿擄笌
+Get路Last路Damage路Source ()
+鈿擄笌
+const
+EntityRef
+GetLastDamageSource ( )
+鈿擄笌
+Get路Last路Direction ()
+鈿擄笌
+const
+Vector
+GetLastDirection ( )
+鈿擄笌
+Get路Main路Twin ()
+鈿擄笌
+EntityPlayer
+GetMainTwin ( )
+鈿擄笌
+Returns the main player of pair characters or the main form of characters with multiple forms.
+When called on Jacob or Esau, returns Jacob.
+When called on Tainted Forgotten or Tainted Forgotten's Soul, returns Tainted Forgotten.
+When called on Tainted Lazarus or Dead Tainted Lazarus, returns themself. If the player has Birthright, then it will return Tainted Lazarus.
+When called on any other character, returns that character.
+Get路Max路Hearts ()
+鈿擄笌
+int GetMaxHearts ( )
+鈿擄笌
+Returns the amount of Heart Containers the player has. 1 unit is half a heart container.
+Get路Max路Pocket路Items ()
+鈿擄笌
+int GetMaxPocketItems ( )
+鈿擄笌
+Get the number of Pickup items you can carry. (1 on default. 2 with polydactyly or similar)
+If you have a pocket active, it also increments the number by one.
+Get路Max路Poop路Mana ()
+鈿擄笌
+int GetMaxPoopMana ( )
+鈿擄笌
+Returns the max amount of poop consumables that can be held by the player
+Get路Max路Trinkets ()
+鈿擄笌
+int GetMaxTrinkets ( )
+鈿擄笌
+Get the number of trinkets you can carry. (1 on default. 2 with moms purse or similar)
+Get路Modeling路Clay路Effect ()
+鈿擄笌
+CollectibleType
+GetModelingClayEffect ( )
+鈿擄笌
+Get路Movement路Direction ()
+鈿擄笌
+Direction
+GetMovementDirection ( )
+鈿擄笌
+Get路Movement路Input ()
+鈿擄笌
+const
+Vector
+GetMovementInput ( )
+鈿擄笌
+Get路Movement路Joystick ()
+鈿擄笌
+Vector
+GetMovementJoystick ( )
+鈿擄笌
+Get路Movement路Vector ()
+鈿擄笌
+Vector
+GetMovementVector ( )
+鈿擄笌
+Get路Multi路Shot路Params ()
+鈿擄笌
+MultiShotParams GetMultiShotParams (
+WeaponType
+WeaponType = WeaponType.WEAPON_TEARS )
+鈿擄笌
+Bug
+Since it returns UserData which cant be edited directly, the return value of this function can only be used in combination with the
+GetMultiShotPositionVelocity()
+function.
+Get路Multi路Shot路Position路Velocity ()
+鈿擄笌
+PosVel
+GetMultiShotPositionVelocity ( int LoopIndex,
+WeaponType
+Weapon,
+Vector
+ShotDirection, float ShotSpeed, MultiShotParams params )
+鈿擄笌
+Call this function in a loop, where the LoopIndex is a number between 0 and the amount of tears the current MultiShotParams contains. Since MultiShotParams is currently not accessable via the modding api, you need to find other ways to get the amount.
+Removed Function
+This function no longer exists since Repentance version
+v1.7.9b.J835
+!
+Get路Name ()
+鈿擄笌
+string GetName ( )
+鈿擄笌
+Returns the name of the player. (Isaac, Cain, Azazel,...)
+Get路NPCTarget ()
+鈿擄笌
+Entity
+GetNPCTarget ( )
+鈿擄笌
+Normally, this function returns the player. However, in some cases, NPCs can be redirected to attack another target, in which case this function will return the alternate target (e.g. after using Best Friend).
+Get路Num路Blue路Flies ()
+鈿擄笌
+int GetNumBlueFlies ( )
+鈿擄笌
+Get路Num路Blue路Spiders ()
+鈿擄笌
+int GetNumBlueSpiders ( )
+鈿擄笌
+Get路Num路Bombs ()
+鈿擄笌
+int GetNumBombs ( )
+鈿擄笌
+Get路Num路Coins ()
+鈿擄笌
+int GetNumCoins ( )
+鈿擄笌
+Get路Num路Giga路Bombs ()
+鈿擄笌
+int GetNumGigaBombs ( )
+鈿擄笌
+Get路Num路Keys ()
+鈿擄笌
+int GetNumKeys ( )
+鈿擄笌
+Get路Other路Twin ()
+鈿擄笌
+EntityPlayer
+GetOtherTwin ( )
+鈿擄笌
+Returns the other player of pair characters or the other form of characters with multiple forms.
+When called on Jacob, returns Esau.
+When called on Esau, returns Jacob.
+When called on Tainted Forgotten, returns Tainted Forgotten's Soul.
+When called on Tainted Forgotten's Soul, returns Tainted Forgotten.
+When called on Tainted Lazarus, it will only return the Flip Lazarus, if the player has the Birthright item. Otherwise it returns nil.
+When called on any other character, returns nil.
+Get路Pill ()
+鈿擄笌
+PillColor
+GetPill ( int SlotId )
+鈿擄笌
+Gets the ID of the pill the player is holding in the given itemslot (0 = Main slot, 1 = secondary slot, 2 or 3) Returns
+0
+when no pill is held in the given slot.
+Get路Pill路RNG ()
+鈿擄笌
+RNG
+GetPillRNG (
+PillEffect
+ID )
+鈿擄笌
+Get路Player路Type ()
+鈿擄笌
+PlayerType
+GetPlayerType ( )
+鈿擄笌
+Get路Pocket路Item ()
+鈿擄笌
+const PlayerPocketItem GetPocketItem ( int SlotId )
+鈿擄笌
+Get the userdata of the pocketitem (Card, Pill, Rune) in a said slot.
+Bugs
+This function returns userdata, which can't be processed. It is therefore broken and should not be used!
+Get路Poop路Mana ()
+鈿擄笌
+int GetPoopMana ( )
+鈿擄笌
+Returns how many poop consumables the player is currently holding
+Get路Poop路Spell ()
+鈿擄笌
+PoopSpellType
+GetPoopSpell ( int Position )
+鈿擄笌
+Returns the poop spell at the given position in the player's spell queue
+Get路Recent路Movement路Vector ()
+鈿擄笌
+const
+Vector
+GetRecentMovementVector ( )
+鈿擄笌
+Returns the joystick direction that drives player movement, taking into account certain modifiers like disabled controls and seed effects.
+Get路Rotten路Hearts ()
+鈿擄笌
+int GetRottenHearts ( )
+鈿擄笌
+Get路Shooting路Input ()
+鈿擄笌
+Vector
+GetShootingInput ( )
+鈿擄笌
+Returns a vector that corresponds to the shooting inputs that this player is pressing.
+Shooting Angle diagram
+Get路Shooting路Joystick ()
+鈿擄笌
+Vector
+GetShootingJoystick ( )
+鈿擄笌
+Returns a vector that corresponds to the shooting inputs that this player is holding.
+See the image for the
+GetShootingInput
+method.
+Get路Smooth路Body路Rotation ()
+鈿擄笌
+float GetSmoothBodyRotation ( )
+鈿擄笌
+Get路Soul路Charge ()
+鈿擄笌
+int GetSoulCharge ( )
+鈿擄笌
+Returns the amount of Soul Charge the player has.
+Get路Soul路Hearts ()
+鈿擄笌
+int GetSoulHearts ( )
+鈿擄笌
+Returns the amount of Soul Hearts the player has. 1 unit is half a heart.
+Notes
+Black Hearts count toward this total, as the game sees them as soul hearts.
+Get路Sub路Player ()
+鈿擄笌
+EntityPlayer
+GetSubPlayer ( )
+鈿擄笌
+Returns the other form of The Forgotten.
+Get路Tear路Hit路Params ()
+鈿擄笌
+TearParams
+GetTearHitParams (
+WeaponType
+WeaponType, float DamageScale = 1, int TearDisplacement = 1, Entity Source = nil )
+鈿擄笌
+Used for tear parameters that are calculated on hit (ex: Tough love, Common cold), DamageScale is used for scale calculation based on damage
+Get路Tear路Movement路Inheritance ()
+鈿擄笌
+Vector
+GetTearMovementInheritance (
+Vector
+ShotDirection )
+鈿擄笌
+Get路Tear路Poison路Damage ()
+鈿擄笌
+float GetTearPoisonDamage ( )
+鈿擄笌
+Get路Tear路Range路Modifier ()
+鈿擄笌
+int GetTearRangeModifier ( )
+鈿擄笌
+For Experimental Treatement, returns
+-1
+,
+0
+or
+1
+depending on the range rolled.
+Get路Total路Damage路Taken ()
+鈿擄笌
+int GetTotalDamageTaken ( )
+鈿擄笌
+Get路Tractor路Beam ()
+鈿擄笌
+Entity
+GetTractorBeam ( )
+鈿擄笌
+Get路Trinket ()
+鈿擄笌
+TrinketType
+GetTrinket ( int TrinketIndex )
+鈿擄笌
+Gets the ID of the trinket the player is holding in the given trinketslot (0 or 1). Returns
+0
+when no trinket is held in the given slot.
+Get路Trinket路Multiplier ()
+鈿擄笌
+int GetTrinketMultiplier (
+TrinketType
+TrinketID )
+鈿擄笌
+Gets the multiplier of a given Trinket effect. This is analog to the number of times the trinket effect is applied.
+Multiplier Breakdown
+Per normal trinket of this type equipped / gulped : +1
+Per golden trinket of this type equipped / gulped : +2
+Mom's Box equipped : +1 (does not stack)
+Get路Trinket路RNG ()
+鈿擄笌
+RNG
+GetTrinketRNG (
+TrinketType
+TrinketID )
+鈿擄笌
+Get路Velocity路Before路Update ()
+鈿擄笌
+const
+Vector
+GetVelocityBeforeUpdate ( )
+鈿擄笌
+Get路Zodiac路Effect ()
+鈿擄笌
+CollectibleType
+GetZodiacEffect ( )
+鈿擄笌
+Has路Collectible ()
+鈿擄笌
+boolean HasCollectible (
+CollectibleType
+Type, boolean IgnoreModifiers = false )
+鈿擄笌
+IgnoreModifiers
+: If set to true, only counts collectibles the player actually owns and ignores effects granted by items like Zodiac, 3 Dollar Bill and Lemegeton
+Has路Curse路Mist路Effect ()
+鈿擄笌
+boolean HasCurseMistEffect ( )
+鈿擄笌
+Has路Full路Hearts ()
+鈿擄笌
+boolean HasFullHearts ( )
+鈿擄笌
+Has路Full路Hearts路And路Soul路Hearts ()
+鈿擄笌
+boolean HasFullHeartsAndSoulHearts ( )
+鈿擄笌
+Has路Golden路Bomb ()
+鈿擄笌
+boolean HasGoldenBomb ( )
+鈿擄笌
+Has路Golden路Key ()
+鈿擄笌
+boolean HasGoldenKey ( )
+鈿擄笌
+Has路Invincibility ()
+鈿擄笌
+boolean HasInvincibility (
+DamageFlag
+Flags = 0 )
+鈿擄笌
+returns true when player is in an invincibility state
+Has路Player路Form ()
+鈿擄笌
+boolean HasPlayerForm (
+PlayerForm
+Form )
+鈿擄笌
+Has路Timed路Item ()
+鈿擄笌
+boolean HasTimedItem ( )
+鈿擄笌
+Returns true if you have a timed active item
+(such as Brown Nugget)
+in the first active slot
+Has路Trinket ()
+鈿擄笌
+boolean HasTrinket (
+TrinketType
+Type, boolean IgnoreModifiers = false )
+鈿擄笌
+IgnoreModifiers
+: If set to true, only counts trinkets the player actually holds and ignores effects granted by other items
+Has路Weapon路Type ()
+鈿擄笌
+boolean HasWeaponType (
+WeaponType
+WeaponType )
+鈿擄笌
+Init路Baby路Skin ()
+鈿擄笌
+void InitBabySkin ( )
+鈿擄笌
+Is路Black路Heart ()
+鈿擄笌
+boolean IsBlackHeart ( int Heart )
+鈿擄笌
+This can be used instead of GetBlackHearts to figure out which soul hearts are black hearts.
+Example
+Imagine we have the following setup of hearts, where S is a soul heart and B is a black heart:
+1
+B S S B B S S B B
+Each soul heart is composed of two halves. Only the odd numbers seem to trigger this function. Even numbers always return false. The following assumes that the indexing starts at 1 rather than 0, but regardless, it's the odd numbers that work here. The indexing here only applies to your soul/black hearts. It doesn't matter if you have other red/bone/etc hearts.
+1
+B(1,2) S(3,4) S(5,6) B(7,8) B(9,10) S(11,12) S(13,14) B(15,16) B(17,18)
+1
+2
+3
+4
+Isaac
+.
+GetPlayer
+():
+IsBlackHeart
+(
+1
+)
+-- returns true (black heart)
+Isaac
+.
+GetPlayer
+():
+IsBlackHeart
+(
+2
+)
+-- returns false (not useful)
+Isaac
+.
+GetPlayer
+():
+IsBlackHeart
+(
+3
+)
+-- returns false (soul heart)
+-- 1,7,9,15,17 all return true (black hearts)
+Quick code example to parse soul hearts vs black hearts:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+-- if you setup your hearts as described above then you'll get the following value
+-- GetSoulHearts = 18
+local
+tbl
+=
+{}
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+-- loop over all the soul heart odd indexes
+for
+i
+=
+1
+,
+player
+:
+GetSoulHearts
+(),
+2
+do
+table.insert
+(
+tbl
+,
+player
+:
+IsBlackHeart
+(
+i
+)
+and
+'B'
+or
+'S'
+)
+end
+if
+player
+:
+GetSoulHearts
+()
+%
+2
+~=
+0
+then
+tbl
+[
+#
+tbl
+]
+=
+string.lower
+(
+tbl
+[
+#
+tbl
+])
+-- lowercase to indicate half heart at end
+end
+print
+(
+table.concat
+(
+tbl
+,
+' '
+))
+-- prints: B S S B B S S B B
+Is路Bone路Heart ()
+鈿擄笌
+boolean IsBoneHeart ( int heart )
+鈿擄笌
+This can be used to figure out the ordering of bone hearts amongst soul/black hearts.
+Example
+Imagine we have the following setup of hearts:
+1
+BONE SOUL BONE BLACK BONE
+The indexing here is for whole hearts, and the index starts at 0. The indexing takes into account bone/soul/black hearts. It doesn't matter if you have other heart types (e.g. red hearts).
+1
+2
+3
+4
+Isaac
+.
+GetPlayer
+():
+IsBoneHeart
+(
+0
+)
+-- returns true (bone heart)
+Isaac
+.
+GetPlayer
+():
+IsBoneHeart
+(
+1
+)
+-- returns false (soul heart)
+Isaac
+.
+GetPlayer
+():
+IsBoneHeart
+(
+3
+)
+-- returns false (black heart)
+-- 0,2,4 all return true (bone hearts)
+Quick code example to parse soul hearts vs black hearts vs bone hearts:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+-- if you setup your hearts as described above then you'll get the following values
+-- GetSoulHearts = 4
+-- GetBoneHearts = 3
+local
+tbl
+=
+{}
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+-- first, figure out the soul/black heart order
+for
+i
+=
+1
+,
+player
+:
+GetSoulHearts
+(),
+2
+do
+table.insert
+(
+tbl
+,
+player
+:
+IsBlackHeart
+(
+i
+)
+and
+'BLACK'
+or
+'SOUL'
+)
+end
+if
+player
+:
+GetSoulHearts
+()
+%
+2
+~=
+0
+then
+tbl
+[
+#
+tbl
+]
+=
+string.lower
+(
+tbl
+[
+#
+tbl
+])
+-- lowercase to indicate half heart at end
+end
+-- second, figure out where bone hearts fit into the soul/black/bone heart order
+-- divide soul hearts by 2 to get whole hearts, bone hearts are already in whole heart increments
+for
+i
+=
+0
+,
+math.ceil
+(
+player
+:
+GetSoulHearts
+()
+/
+2
+)
++
+player
+:
+GetBoneHearts
+()
+-
+1
+do
+if
+player
+:
+IsBoneHeart
+(
+i
+)
+then
+table.insert
+(
+tbl
+,
+i
++
+1
+,
+'BONE'
+)
+end
+end
+print
+(
+table.concat
+(
+tbl
+,
+' '
+))
+-- prints: BONE SOUL BONE BLACK BONE
+Is路Coop路Ghost ()
+鈿擄笌
+boolean IsCoopGhost ( )
+鈿擄笌
+In a multiplayer game, if a player dies, they will return as a tiny ghost. This method returns true if the player is a co-op ghost.
+Is路Extra路Animation路Finished ()
+鈿擄笌
+boolean IsExtraAnimationFinished ( )
+鈿擄笌
+Is路Full路Sprite路Rendering ()
+鈿擄笌
+boolean IsFullSpriteRendering ( )
+鈿擄笌
+Is路Held路Item路Visible ()
+鈿擄笌
+boolean IsHeldItemVisible ( )
+鈿擄笌
+Is路Holding路Item ()
+鈿擄笌
+boolean IsHoldingItem ( )
+鈿擄笌
+Is Player holding up an item (card/collectible/etc)
+Is路Item路Queue路Empty ()
+鈿擄笌
+boolean IsItemQueueEmpty ( )
+鈿擄笌
+Is路P2Appearing ()
+鈿擄笌
+boolean IsP2Appearing ( )
+鈿擄笌
+Is路Pos路In路Spot路Light ()
+鈿擄笌
+boolean IsPosInSpotLight (
+Vector
+Position )
+鈿擄笌
+Returns true if the
+position
+is in the AOE of the
+Night Light
+item.
+Is路Sub路Player ()
+鈿擄笌
+boolean IsSubPlayer ( )
+鈿擄笌
+Returns true if the player object was returned from the
+EntityPlayer.GetSubPlayer
+method. (This method is not related to multiplayer.)
+Additionally, this also returns true for the player object representing Dead Tainted Lazarus that fires at the beginning of the run in the PostPlayerInit callback. (The PostPlayerInit callback fires first for Dead Tainted Lazarus before firing for the normal Tainted Lazarus.)
+Needs路Charge ()
+鈿擄笌
+boolean NeedsCharge (
+ActiveSlot
+ActiveSlot = ActiveSlot.SLOT_PRIMARY )
+鈿擄笌
+This will always return false for active items that have
+chargetype="special"
+set in the
+items.xml
+file, even if they are not fully charged.
+Play路Extra路Animation ()
+鈿擄笌
+void PlayExtraAnimation ( string Animation )
+鈿擄笌
+Queue路Extra路Animation ()
+鈿擄笌
+void QueueExtraAnimation ( string Animation )
+鈿擄笌
+Queue路Item ()
+鈿擄笌
+void QueueItem (
+ItemConfigItem
+Item, int Charge = 0, boolean Touched = false, boolean Golden = false, int VarData = 0 )
+鈿擄笌
+When the player touches a collectible or trinket, they are not granted it immediately. Instead, the item is queued for the duration of the animation where the player holds the item above their head. When the animation is finished, the item in the queue will be granted. This method adds a new item to the item queue. If the player is not currently playing an animation, then the queued item will simply be awarded instantly.
+Also see
+FlushQueueItem()
+,
+IsItemQueueEmpty()
+, and
+QueuedItem
+.
+Remove路Black路Heart ()
+鈿擄笌
+void RemoveBlackHeart ( int BlackHeart )
+鈿擄笌
+Remove路Blue路Fly ()
+鈿擄笌
+void RemoveBlueFly ( )
+鈿擄笌
+Remove路Blue路Spider ()
+鈿擄笌
+void RemoveBlueSpider ( )
+鈿擄笌
+Remove路Collectible ()
+鈿擄笌
+void RemoveCollectible (
+CollectibleType
+Type, boolean IgnoreModifiers = false,
+ActiveSlot
+ActiveSlot = ActiveSlot.SLOT_PRIMARY, boolean RemoveFromPlayerForm = true )
+鈿擄笌
+IgnoreModifiers
+: Ignores collectible effects granted by other items (i.e. Void)
+Slot
+: Sets the active slot this collectible should be removed from
+RemoveFromPlayerForm
+: If successfully removed and part of a transformation, decrease that transformation's counter by 1
+Remove路Costume ()
+鈿擄笌
+void RemoveCostume (
+ItemConfigItem
+Item )
+鈿擄笌
+Removes a given costume based on its item config entry.
+Example code
+This code removes the costume of the Spoon Bender collectible.
+1
+2
+3
+4
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+local
+itemConfig
+=
+Isaac
+.
+GetItemConfig
+()
+local
+itemConfigItem
+=
+itemConfig
+:
+GetCollectible
+(
+CollectibleType
+.
+COLLECTIBLE_SPOON_BENDER
+)
+player
+:
+RemoveCostume
+(
+itemConfigItem
+)
+Remove路Curse路Mist路Effect ()
+鈿擄笌
+void RemoveCurseMistEffect ( )
+鈿擄笌
+Remove路Golden路Bomb ()
+鈿擄笌
+void RemoveGoldenBomb ( )
+鈿擄笌
+Remove路Golden路Key ()
+鈿擄笌
+void RemoveGoldenKey ( )
+鈿擄笌
+Remove路Skin路Costume ()
+鈿擄笌
+void RemoveSkinCostume ( )
+鈿擄笌
+Removes player-specific costumes like Magdalene's hair or Cain's eyepatch.
+Render路Body ()
+鈿擄笌
+void RenderBody (
+Vector
+position )
+鈿擄笌
+Render路Glow ()
+鈿擄笌
+void RenderGlow (
+Vector
+position )
+鈿擄笌
+Render路Head ()
+鈿擄笌
+void RenderHead (
+Vector
+position )
+鈿擄笌
+Render路Top ()
+鈿擄笌
+void RenderTop (
+Vector
+position )
+鈿擄笌
+Replace路Costume路Sprite ()
+鈿擄笌
+void ReplaceCostumeSprite (
+ItemConfigItem
+Item, string SpritePath, int SpriteId )
+鈿擄笌
+Bugs
+The
+SpriteId
+parameter is ignored and will replace all layers of the item's costume. Usage of this function should be limited to costumes with only one spritesheet to avoid issues.
+Reset路Damage路Cooldown ()
+鈿擄笌
+void ResetDamageCooldown ( )
+鈿擄笌
+Reset路Item路State ()
+鈿擄笌
+void ResetItemState ( )
+鈿擄笌
+Room
+transitions call this to prevent lock ups.
+Respawn路Familiars ()
+鈿擄笌
+void RespawnFamiliars ( )
+鈿擄笌
+Respawns all familiars associated to the player.
+Revive ()
+鈿擄笌
+void Revive ( )
+鈿擄笌
+Revives the player.
+Bugs
+Exiting the run at any point after this function is called will make it so that the run can't be continued.
+Set路Active路Charge ()
+鈿擄笌
+void SetActiveCharge ( int Charge,
+ActiveSlot
+ActiveSlot = ActiveSlot.SLOT_PRIMARY )
+鈿擄笌
+Set路Blood路Charge ()
+鈿擄笌
+void SetBloodCharge ( int Amount )
+鈿擄笌
+Sets the amount of Blood Charge the player has. Blood Charge does not do anything on characters besides Tainted Bethany.
+Set路Card ()
+鈿擄笌
+void SetCard ( int SlotId,
+Card
+ID )
+鈿擄笌
+Change the card/rune the player is holding in the given itemslot (0 or 1).
+Set路Full路Hearts ()
+鈿擄笌
+void SetFullHearts ( )
+鈿擄笌
+Set路Min路Damage路Cooldown ()
+鈿擄笌
+void SetMinDamageCooldown ( int DamageCooldown )
+鈿擄笌
+Set路Pill ()
+鈿擄笌
+void SetPill ( int SlotId,
+PillColor
+Pill )
+鈿擄笌
+Change the pill the player is holding in the given itemslot (0 or 1).
+Set路Pocket路Active路Item()
+鈿擄笌
+void SetPocketActiveItem (
+CollectibleType
+Type,
+ActiveSlot
+Slot, boolean KeepInPools )
+鈿擄笌
+Sets the player's pocket active item to the given active item.
+Slot can be either SLOT_POCKET or SLOT_POCKET2.
+Items added to SLOT_POCKET2 will always be removed upon being used.
+If KeepInPools is set to true, the item will not be removed from the item pools.
+Use this to let the player start with a custom active item in their pocket active slot right away.
+Bugs
+Calling this function inside PostPlayerInit callback causes a crash when continuing a saved run after closing and reopening the game, unless KeepInPools argument is set to true.
+Set路Shooting路Cooldown ()
+鈿擄笌
+void SetShootingCooldown ( int Cooldown )
+鈿擄笌
+Set路Soul路Charge ()
+鈿擄笌
+void SetSoulCharge ( int Amount )
+鈿擄笌
+Sets the amount of Soul Charge the player has. Soul Charge does not do anything on characters besides Bethany.
+Set路Target路Trap路Door ()
+鈿擄笌
+void SetTargetTrapDoor (
+GridEntity
+TrapDoor )
+鈿擄笌
+This function got removed with Repentance.
+Shoot路Red路Candle ()
+鈿擄笌
+void ShootRedCandle (
+Vector
+Direction )
+鈿擄笌
+for ghost pepper item + poop and farts
+Spawn路Maw路Of路Void ()
+鈿擄笌
+EntityLaser
+SpawnMawOfVoid ( int Timeout )
+鈿擄笌
+Stop路Extra路Animation ()
+鈿擄笌
+void StopExtraAnimation ( )
+鈿擄笌
+Swap路Active路Items ()
+鈿擄笌
+void SwapActiveItems ( )
+鈿擄笌
+Swaps active items in the
+Schoolbag
+activeslot
+Throw路Blue路Spider ()
+鈿擄笌
+Entity
+ThrowBlueSpider (
+Vector
+Position,
+Vector
+Target )
+鈿擄笌
+Throw路Friendly路Dip ()
+鈿擄笌
+EntityFamiliar
+ThrowFriendlyDip ( int Subtype,
+Vector
+Position,
+Vector
+Target )
+鈿擄笌
+Dip Subtypes
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+0
+:
+normal
+1
+:
+red
+2
+:
+corny
+3
+:
+golden
+4
+:
+rainbow
+5
+:
+black
+6
+:
+holy
+12
+:
+stone
+13
+:
+flaming
+14
+:
+poison
+20
+:
+brownie
+Throw路Held路Entity ()
+鈿擄笌
+Entity
+ThrowHeldEntity (
+Vector
+Velocity )
+鈿擄笌
+Trigger路Book路Of路Virtues ()
+鈿擄笌
+void TriggerBookOfVirtues (
+CollectibleType
+Type = CollectibleType.COLLECTIBLE_NULL, int Charge = 0 )
+鈿擄笌
+Works only if the player has the
+Book of Virtues
+item, otherwise does nothing
+Try路Hold路Entity ()
+鈿擄笌
+boolean TryHoldEntity (
+Entity
+Entity )
+鈿擄笌
+Try路Hold路Trinket ()
+鈿擄笌
+boolean TryHoldTrinket (
+TrinketType
+Type )
+鈿擄笌
+Returns true if an active item pickup cooldown is over. returns true if trinket can be added, else false
+Try路Remove路Collectible路Costume ()
+鈿擄笌
+void TryRemoveCollectibleCostume (
+CollectibleType
+Collectible, boolean KeepPersistent )
+鈿擄笌
+Tries to remove a costume of the given collectible.
+KeepPersistent
+is used to define if persistent costumes should be removed. If its set to
+false
+, it will only remove temporary costumes.
+Example code
+This code removes the costume of the Spoon Bender collectible.
+1
+2
+local
+player
+=
+Isaac
+.
+GetPlayer
+()
+player
+:
+TryRemoveCollectibleCostume
+(
+CollectibleType
+.
+COLLECTIBLE_SPOON_BENDER
+,
+false
+)
+Try路Remove路Null路Costume ()
+鈿擄笌
+void TryRemoveNullCostume (
+NullItemID
+NullId )
+鈿擄笌
+Try路Remove路Trinket ()
+鈿擄笌
+boolean TryRemoveTrinket (
+TrinketType
+Type )
+鈿擄笌
+Try路Remove路Trinket路Costume ()
+鈿擄笌
+void TryRemoveTrinketCostume (
+TrinketType
+Trinket )
+鈿擄笌
+Tries to remove a trinket costume
+Try路Use路Key ()
+鈿擄笌
+boolean TryUseKey ( )
+鈿擄笌
+Update路Can路Shoot ()
+鈿擄笌
+void UpdateCanShoot ( )
+鈿擄笌
+Use路Active路Item ()
+鈿擄笌
+void UseActiveItem (
+CollectibleType
+Item,
+UseFlags
+UseFlags = 0,
+ActiveSlot
+Slot = -1, int CustomVarData = 0 )
+鈿擄笌
+void UseActiveItem (
+CollectibleType
+Item, boolean ShowAnim = false, boolean KeepActiveItem = false, boolean AllowNonMainPlayer = true, boolean ToAddCostume = false,
+ActiveSlot
+Slot = -1, int CustomVarData = 0 )
+鈿擄笌
+Slot
+: The active slot this item was used from (set to -1 if this item wasn't triggered by any active slot)
+CustomVarData
+:
+UseFlag.USE_CUSTOMVARDATA
+needs to be provided in
+UseFlags
+otherwise this field is ignored
+Notes
+This method will increment the number of CollectibleEffects (see
+Temporary Effects
+) of the passed item by 1 for the current room, and will trigger any associated MC_USE_ITEM callbacks. As of Repentance, this method can also be used on Passive and Familiar ItemTypes.
+Use路Card ()
+鈿擄笌
+void UseCard (
+Card
+ID,
+UseFlags
+UseFlags = 0 )
+鈿擄笌
+Use路Pill ()
+鈿擄笌
+void UsePill (
+PillEffect
+ID,
+PillColor
+PillColor,
+UseFlags
+UseFlags = 0  )
+鈿擄笌
+Use路Poop路Spell ()
+鈿擄笌
+void UsePoopSpell (
+PoopSpellType
+type )
+鈿擄笌
+Triggers one of Tainted ???'s poop spells (see
+PoopSpellType
+enum)
+Will路Player路Revive ()
+鈿擄笌
+boolean WillPlayerRevive ( )
+鈿擄笌
+This function will return true if the player has one or more extra lives or if a conditional revival item will work on the next death.
+Right now, there are 3 items that grant conditional extra lives:
+Guppy's Collar - This function will successfully predict whether or not the next revive from Guppy's Collar will work or not. (50% chance)
+Broken Ankh - This function will successfully predict whether or not the next revive from Broken Ankh will work or not. (22.22% chance)
+Mysterious Paper - This function will only successfully predict the revive from Missing Poster every 4 frames, because it evaluates only one of its 4 possible item effects each frame.
+Variables
+鈿擄笌
+Baby路Skin
+鈿擄笌
+BabySubType
+BabySkin
+鈿擄笌
+P2 Skin section Used to hold the selected skin (in case of glitched baby it will pick a random one)
+Bugs
+This variable actually contains userdata and is not usable within API. Attempt to change it will results in a crash.
+Can路Fly
+鈿擄笌
+boolean CanFly
+鈿擄笌
+Player stat - Only change this in a callback to MC_EVALUATE_CACHE. Can the player fly over rocks and pits?
+Controller路Index
+鈿擄笌
+const int ControllerIndex
+鈿擄笌
+Controls路Cooldown
+鈿擄笌
+int ControlsCooldown
+鈿擄笌
+Specifies the number of frames the player's controls should be disabled. Decrements by 1 every frame, until it reaches 0. Used by the paralysis pill effect.
+At 0 or less, does not block player control.
+Controls路Enabled
+鈿擄笌
+boolean ControlsEnabled
+鈿擄笌
+Damage
+鈿擄笌
+float Damage
+鈿擄笌
+Player stat - Only change this in a callback to MC_EVALUATE_CACHE.
+This is equal to the Damage Stat.
+How much damage do the players tears or other main weapons do?
+Fire路Delay
+鈿擄笌
+float FireDelay
+鈿擄笌
+How long until the player can spawn their next tear?
+Version Difference
+In the Afterbirth+ version of the modding api, this variable is an integer
+Friend路Ball路Enemy
+鈿擄笌
+const EntityDesc FriendBallEnemy
+鈿擄笌
+Bugs
+This function returns userdata that cant be edited or accessed.
+Head路Frame路Delay
+鈿擄笌
+int HeadFrameDelay
+鈿擄笌
+Specifies the number of frames the player's head should be playing the shooting animation. Decrements by 1 every frame, until it reaches -1.
+At negative values, the player's head does not play the shooting animation.
+IBS路Charge
+鈿擄笌
+float IBSCharge
+鈿擄笌
+Internally used by IBS, increases based on damage dealt, range is 0-1
+Item路Hold路Cooldown
+鈿擄笌
+int ItemHoldCooldown
+鈿擄笌
+Used for avoiding player get stucked between rocks when switching a flying item with other active item.
+Laser路Color
+鈿擄笌
+Color
+LaserColor
+鈿擄笌
+Luck
+鈿擄笌
+float Luck
+鈿擄笌
+Player stat - Only change this in a callback to MC_EVALUATE_CACHE.
+This is equal to the Luck Stat.
+Better luck generally means better random events.
+Max路Fire路Delay
+鈿擄笌
+int MaxFireDelay
+鈿擄笌
+float MaxFireDelay
+鈿擄笌
+Player stat - Only change this in a callback to MC_EVALUATE_CACHE. How long must the player wait between each firing each tear?
+Info
+This stat is equal to
+30 / tears stat - 1
+.
+Example Code
+This code converts between max fire delay and tears stat and increases fire rate by 1. Note that this applies after the soft tear cap and tear multipliers such as the ones from Polyphemus and Soy Milk.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+FIRE_RATE_CAP
+=
+120
+function
+get_fire_rate
+(
+player
+)
+return
+30
+/
+(
+player
+.
+MaxFireDelay
++
+1
+)
+end
+function
+set_fire_rate
+(
+player
+,
+fire_rate
+)
+local
+fire_rate
+=
+math.min
+(
+fire_rate
+,
+FIRE_RATE_CAP
+)
+-- Apply fire rate cap.
+player
+.
+MaxFireDelay
+=
+30
+/
+fire_rate
+-
+1
+end
+function
+mod
+:
+OnEvaluateFireRate
+(
+player
+,
+flag
+)
+local
+old_fire_rate
+=
+get_fire_rate
+(
+player
+)
+set_fire_rate
+(
+player
+,
+old_fire_rate
++
+1
+)
+end
+mod
+:
+AddCallback
+(
+ModCallbacks
+.
+MC_EVALUATE_CACHE
+,
+mod
+.
+OnEvaluateFireRate
+,
+CacheFlag
+.
+CACHE_FIREDELAY
+)
+Move路Speed
+鈿擄笌
+float MoveSpeed
+鈿擄笌
+Player stat - Only change this in a callback to MC_EVALUATE_CACHE.
+This is equal to the Speed Stat.
+How fast can the player move?
+Queued路Item
+鈿擄笌
+QueueItemData
+QueuedItem
+鈿擄笌
+When Isaac picks up a collectible or a trinket, he holds it above his head for a while. At this point, the collectible/trinket is not actually put into his inventory yet.
+In other words, the item is queued for insertion until the animation completes, at which point the queue is processed and the item is inserted.
+QueuedItem
+holds a object of type
+QueueItemData
+that describes the item that a player is currently holding above their head.
+QueuedItem
+is never nil, even if the player is not currently holding up any item. (However,
+player.QueuedItem.Item
+will be nil if they are not currently holding up any item.)
+This only stores data for collectibles and trinkets. It does not store any data for pocket items (even though Isaac plays a similar "holding above head" animation for pocket items).
+Also see
+FlushQueueItem()
+,
+IsItemQueueEmpty()
+, and
+QueueItem()
+.
+Samson路Berserk路Charge
+鈿擄笌
+int SamsonBerserkCharge
+鈿擄笌
+Internally used by Tainted Samson, increases based on damage dealt, range is 0-100000
+Secondary路Active路Item
+鈿擄笌
+ActiveItemDesc
+SecondaryActiveItem
+鈿擄笌
+Bug
+This function does not exist anymore in Repentance. As of right now, there is no other function to get the
+ActiveItemDesc
+of any active item the player holds. Until this is fixed, this info will stay here.
+Shot路Speed
+鈿擄笌
+float ShotSpeed
+鈿擄笌
+Player stat - Only change this in a callback to MC_EVALUATE_CACHE.
+This is equal to the ShotSpeed Stat.
+Defines how fast the tear travel when spawned.
+The default velocity of a tear shot is 10 times the players ShotSpeed.
+Tear路Color
+鈿擄笌
+Color
+TearColor
+鈿擄笌
+Tear路Falling路Acceleration
+鈿擄笌
+float TearFallingAcceleration
+鈿擄笌
+Tear路Falling路Speed
+鈿擄笌
+float TearFallingSpeed
+鈿擄笌
+Player stat - Only change this in a callback to MC_EVALUATE_CACHE. How fast is the tear moving up or down when it spawns? Affects range.
+Tear路Flags
+鈿擄笌
+TearFlags
+TearFlags
+鈿擄笌
+Player stat - Only change this in a callback to MC_EVALUATE_CACHE. Various
+TearFlags
+.
+Example Code
+This code makes Isaac's tears spectral.
+1
+2
+3
+4
+function
+mod
+:
+OnEvaluateTearFlags
+(
+player
+,
+flag
+)
+player
+.
+TearFlags
+=
+player
+.
+TearFlags
+|
+TearFlags
+.
+TEAR_SPECTRAL
+end
+mod
+:
+AddCallback
+(
+ModCallbacks
+.
+MC_EVALUATE_CACHE
+,
+mod
+.
+OnEvaluateTearFlags
+,
+CacheFlag
+.
+CACHE_TEARFLAG
+)
+Tear路Height
+鈿擄笌
+float TearHeight
+鈿擄笌
+Player stat - Only change this in a callback to MC_EVALUATE_CACHE. How high above the ground is the tear when it spawns?
+Example Code
+This code gives Isaac a +5 range up.
+1
+2
+3
+4
+5
+function
+mod
+:
+OnEvaluateRange
+(
+player
+,
+flag
+)
+-- we give -5 because the TearHeight stat is always negative; the lower the number - the further the tear travels
+player
+.
+TearHeight
+=
+player
+.
+TearHeight
+-
+5
+end
+mod
+:
+AddCallback
+(
+ModCallbacks
+.
+MC_EVALUATE_CACHE
+,
+mod
+.
+OnEvaluateRange
+,
+CacheFlag
+.
+CACHE_RANGE
+)
+Tear路Range
+鈿擄笌
+float TearRange
+鈿擄笌
+Player stat - Only change this in a callback to MC_EVALUATE_CACHE. How far should a tear go when it spawns?
+Info
+This stat needs to be multiplied by 40, because it calculates the range based on tile length.
+Example Code
+This code gives Isaac a +2 range up.
+1
+2
+3
+4
+function
+mod
+:
+OnEvaluateRange
+(
+player
+,
+flag
+)
+player
+.
+TearRange
+=
+player
+.
+TearRange
++
+(
+2
+*
+40
+)
+end
+mod
+:
+AddCallback
+(
+ModCallbacks
+.
+MC_EVALUATE_CACHE
+,
+mod
+.
+OnEvaluateRange
+,
+CacheFlag
+.
+CACHE_RANGE
+)
+Tears路Offset
+鈿擄笌
+Vector
+TearsOffset
+鈿擄笌
+Last update:
+June 11, 2026
+Back to top
+Copyright © 2021 - 2026 Wofsauge (Discord: Wofsauge#6503)
+Made with
+Material for MkDocs

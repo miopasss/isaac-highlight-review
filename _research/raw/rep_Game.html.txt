@@ -1,0 +1,721 @@
+﻿Game - BoI: REPENTOGON
+Skip to content
+BoI: REPENTOGON
+Game
+Search
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Changes
+XML
+Example Mods
+Lua 5.4 Docs
+BoI: REPENTOGON
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+Achievement
+AddHealthType
+AnimRenderFlags
+AnnouncerVoiceMode
+AutocompleteType
+BagOfCraftingPickup
+BlendFactor
+BlendType
+BlendEquation
+BombCostumeLayer
+BossType
+ButtonActionBitwise
+CameraStyle
+CharacterMenuStatus
+ChargeType
+CompletionType
+CompletionStatus
+ConceptionFamiliarFlag
+ConsoleFont
+CustomCacheTag
+DebugFlag
+DeliriumCallbacks
+DialogButtons
+DialogIcons
+DialogReturn
+Dimension
+DipSubType
+DoorMask
+DwmWindowAttribute
+Ending
+EnemyTargetFlags
+EntityPoopVariant
+EntityTag
+EvaluateStatStage
+EventCounter
+ExtraHudStyle
+FadeoutTarget
+FollowerPriority
+GetCollectibleFlag
+GLSLType
+Giantbook
+GibFlag
+GridPoopVariant
+HealthType
+ImGuiCallback
+ImGuiColor
+ImGuiChildFlags
+ImGuiData
+ImGuiElement
+ImGuiNotificationType
+ImGuiWindowFlags
+ItemAnim
+KnifeSubType
+KnifeVariant
+Language
+LineCheckMode
+MainMenuType
+MinimapState
+ModCallbacks
+MouseButton
+NullPickupSubType
+PauseMenuStates
+PedestalType
+PillCardSlot
+PillEffectSubClass
+PlayerHUDLayout
+PlayerVariant
+PocketItemType
+PressurePlateVariant
+ProceduralEffectActionType
+ProceduralEffectConditionType
+ProjectileMode
+PurityState
+RetractingSpikesVariant
+RoomEventOutput
+RoomSubType
+ShaderType
+SlotVariant
+SpecialQuest
+SplitTearType
+StatusEffect
+StbGridType
+StbPoopSubType
+StbRailVariant
+StbRockSubType
+StbTeleporterSubType
+StbType
+TaintedMarksGroup
+TeleporterVariant
+TrinketSlot
+UseActiveItemResultFlag
+VertexAttributeFormat
+WaterClipFlag
+WeaponModifier
+WispSubType
+XMLNode
+Ambush
+Backdrop
+BossPool
+BossPool
+BossPool
+BossPoolManager
+Camera
+Capsule
+CcpContainer
+CcpContainer
+RoomConfigSet
+ChallengeParam
+Color
+ColorModifier
+ColorParams
+Console
+CostumeSpriteDesc
+DailyChallenge
+Debug
+Entity
+Entity
+Entity
+EntityBomb
+EntityDelirium
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPlayer
+EntityPickup
+EntityProjectile
+EntitySlot
+EntityTear
+EntityConfig
+EntityConfig
+EntityConfig
+EntityConfigBaby
+EntityConfigEntity
+EntityConfigPlayer
+EntityDesc
+EntitySaveStateManager
+Font
+FXLayers
+FXParams
+Game
+Game
+On this page
+Modified Functions
+GetLastDevilRoomStage ()
+GetLastLevelWithDamage ()
+GetLastLevelWithoutHalfHp ()
+GetPlayer ()
+Move路To路Random路Room ()
+StartStageTransition ()
+Functions
+AchievementUnlocksDisallowed ()
+AddDebugFlags ()
+AddErasedEnemy ()
+AddShopVisits ()
+ChainLightning ()
+ClearErasedEnemies ()
+DevolveEnemy ()
+GetChallengeParams ()
+GetCurrentColorModifier ()
+GetDebugFlags ()
+GetDizzyAmount ()
+GetGenericPrompt ()
+GetLerpColorModifier ()
+GetPauseMenuState ()
+GetPlanetariumsVisited ()
+GetShopVisits ()
+GetTargetColorModifier ()
+IsErased ()
+IsGreedBoss ()
+IsGreedFinalBoss ()
+IsHardMode ()
+IsPauseMenuOpen ()
+IsRerun ()
+IsStartingFromState ()
+RecordPlayerCompletion ()
+RemoveErasedEnemy ()
+SetBloom ()
+SetColorModifier ()
+SetDizzyAmount ()
+SetDonationModAngel ()
+SetDonationModGreed ()
+ShowGenericLeaderboard ()
+SpawnBombCrater ()
+GenericPrompt
+GridEntity
+GridEntity
+GridEntity
+GridEntityDecoration
+GridEntityDoor
+GridEntityFire
+GridEntityGravity
+GridEntityLock
+GridEntityPressurePlate
+GridEntityRock
+GridEntityStairs
+GridEntityStatue
+GridEntityTeleporter
+GridEntityTrapDoor
+GridEntityWall
+GridEntityWeb
+History
+History
+History
+HistoryItem
+HUDs
+HUDs
+DebugRenderer
+HUD
+Minimap
+PlayerHUD
+PlayerHUDHeart
+ScoreSheet
+ImGui
+Isaac
+ItemConfig
+ItemConfig
+ItemConfig
+ItemConfig - Item
+ItemConfig - PillEffect
+ItemConfig - Card
+ItemConfig - Costume
+ItemOverlay
+ItemPool
+Input
+Level
+LevelGenerator
+LevelGenerator
+LevelGenerator
+LevelGeneratorEntry
+LevelGeneratorRoom
+LootList
+LootList
+LootList
+LootListEntry
+LRoomAreaDesc
+LRoomTileDesc
+Menus
+Menus
+MenuManager
+BestiaryMenu
+ChallengeMenu
+CharacterMenu
+CollectionMenu
+ControllerSelectMenu
+CustomChallengeMenu
+CutscenesMenu
+DailyChallengeMenu
+KeyConfigMenu
+MainMenu
+ModsMenu
+OptionsMenu
+PauseMenu
+SaveMenu
+SpecialSeedsMenu
+StatsMenu
+TitleMenu
+MultiShotParams
+MusicManager
+NightmareScene
+Options
+Pathfinder
+PersistentGameData
+PlayerManager
+Procedural Items
+Procedural Items
+ProceduralItemManager
+ProceduralEffect
+ProceduralItem
+PocketItem
+ProjectileParams
+RailManager
+Rendering
+Rendering
+Beam
+BlendMode
+DestinationQuad
+GLSLValue
+Image
+Pipeline
+Point
+Renderer
+RenderSet
+Shader
+SourceQuad
+Shape
+SurfaceRenderController
+Transformer
+Vertex
+VertexBuffer
+VertexDescriptor
+REPENTOGON
+RNG
+Room
+RoomConfig
+RoomConfig
+RoomConfig
+RoomConfigStage
+GridEntitiesSaveStateVector
+RoomConfigRoom
+RoomDescriptor
+EntitiesSaveState
+EntitiesSaveStateVector
+RoomTransition
+Seeds
+Sprite
+Sprite
+AnimationData
+AnimationFrame
+AnimationLayer
+LayerState
+NullFrame
+Sprite
+StageTransition
+TearParams
+Vector
+Weapon
+WeightedOutcomePicker
+XMLData
+Changes
+Changes
+General
+Debugging
+UI
+XML
+XML
+XML Overview
+XMLData
+achievements.xml
+ambush.xml
+backdrops.xml
+bosscolors.xml
+costumes.xml
+cutscenes.xml
+challenges.xml
+entities2.xml
+giantbook.xml
+items.xml
+itempools.xml
+pocketitems.xml
+players.xml
+stringtable.sta
+Example Mods
+Example Mods
+Capsules
+Deal Chance
+ImGui Menu
+Weighted Outcomes
+Beams
+Color Modifiers
+Lua 5.4 Docs
+On this page
+Modified Functions
+GetLastDevilRoomStage ()
+GetLastLevelWithDamage ()
+GetLastLevelWithoutHalfHp ()
+GetPlayer ()
+Move路To路Random路Room ()
+StartStageTransition ()
+Functions
+AchievementUnlocksDisallowed ()
+AddDebugFlags ()
+AddErasedEnemy ()
+AddShopVisits ()
+ChainLightning ()
+ClearErasedEnemies ()
+DevolveEnemy ()
+GetChallengeParams ()
+GetCurrentColorModifier ()
+GetDebugFlags ()
+GetDizzyAmount ()
+GetGenericPrompt ()
+GetLerpColorModifier ()
+GetPauseMenuState ()
+GetPlanetariumsVisited ()
+GetShopVisits ()
+GetTargetColorModifier ()
+IsErased ()
+IsGreedBoss ()
+IsGreedFinalBoss ()
+IsHardMode ()
+IsPauseMenuOpen ()
+IsRerun ()
+IsStartingFromState ()
+RecordPlayerCompletion ()
+RemoveErasedEnemy ()
+SetBloom ()
+SetColorModifier ()
+SetDizzyAmount ()
+SetDonationModAngel ()
+SetDonationModGreed ()
+ShowGenericLeaderboard ()
+SpawnBombCrater ()
+Class "Game"
+鈿擄笌
+Modified Functions
+鈿擄笌
+GetLastDevilRoomStage ()
+鈿擄笌
+LevelStage
+GetLastDevilRoomStage ( )
+鈿擄笌
+Now returns integer instead of unusable userdata.
+GetLastLevelWithDamage ()
+鈿擄笌
+LevelStage
+GetLastLevelWithDamage ( )
+鈿擄笌
+Now returns integer instead of unusable userdata.
+GetLastLevelWithoutHalfHp ()
+鈿擄笌
+LevelStage
+GetLastLevelWithoutHalfHp ( )
+鈿擄笌
+Now returns integer instead of unusable userdata.
+GetPlayer ()
+鈿擄笌
+EntityPlayer
+GetPlayer ( int Index )
+鈿擄笌
+If no players exist, this now returns
+nil
+to prevent a crash. Invalid indexes will return index
+0
+.
+Move路To路Random路Room ()
+鈿擄笌
+void MoveToRandomRoom ( boolean IAmErrorRoom, int Seed,
+EntityPlayer
+Player )
+鈿擄笌
+Now no longer crashes the game when given a seed equal
+0
+.
+StartStageTransition ()
+鈿擄笌
+void StartStageTransition ( boolean SameStage, int TransitionOverride,
+EntityPlayer
+Player = nil )
+鈿擄笌
+Fixed the crash that sometimes occurred due to an incorrect call on the C++ side.
+Player
+is now optional (will default to
+GetPlayer(0)
+).
+Functions
+鈿擄笌
+AchievementUnlocksDisallowed ()
+鈿擄笌
+boolean AchievementUnlocksDisallowed ( )
+鈿擄笌
+Returns
+true
+if achievements can't be unlocked this run (challenges, seeded, etc).
+AddDebugFlags ()
+鈿擄笌
+void AddDebugFlags (
+DebugFlag
+Flag )
+鈿擄笌
+Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g.
+DebugFlag.ENTITY_POSITIONS | DebugFlag.HITSPHERES
+).
+AddErasedEnemy ()
+鈿擄笌
+void AddErasedEnemy (
+Entity
+)
+鈿擄笌
+void AddErasedEnemy ( int Type, int Variant )
+鈿擄笌
+Adds an enemy's Type and Variant to the list of "erased" enemies (as with the "Eraser" active item).
+Note that the game does not utilize SubType-specific erasing.
+AddShopVisits ()
+鈿擄笌
+void AddShopVisits ( int Count )
+鈿擄笌
+Adds the amount of shops the player has entered this run.
+ChainLightning ()
+鈿擄笌
+EntityEffect
+ChainLightning (
+Vector
+Position, float BaseDamage = 3.5,
+TearFlags
+TearFlags = TearFlags.TEAR_NORMAL,
+Entity
+Spawner = nil )
+鈿擄笌
+ClearErasedEnemies ()
+鈿擄笌
+void ClearErasedEnemies ( )
+鈿擄笌
+Clears out all enemies listed as an erased enemy, allowing them to spawn again.
+DevolveEnemy ()
+鈿擄笌
+void DevolveEnemy (
+Entity
+)
+鈿擄笌
+Devolves an enemy, as if the item D10 was used on it.
+GetChallengeParams ()
+鈿擄笌
+ChallengeParam
+GetChallengeParams ( )
+鈿擄笌
+GetCurrentColorModifier ()
+鈿擄笌
+ColorModifier
+GetCurrentColorModifier ( )
+鈿擄笌
+Gets a copy of the color correction introduced in Repentance. This stores the raw values currently being used (which can be affected by items such as Astral Projection) and not what the room is set to use (see
+FXParams.ColorModifier
+for this).
+GetDebugFlags ()
+鈿擄笌
+int GetDebugFlags ( )
+鈿擄笌
+Returns a
+DebugFlag
+bitmask.
+GetDizzyAmount ()
+鈿擄笌
+float GetDizzyAmount ( )
+鈿擄笌
+Returns the current dizzy amount akin to Wavy Cap.
+GetGenericPrompt ()
+鈿擄笌
+GenericPrompt
+GetGenericPrompt ( )
+鈿擄笌
+Returns the currently active
+GenericPrompt
+object.
+Bug
+Crashes the game if used during a run while no prompts are active.
+GetLerpColorModifier ()
+鈿擄笌
+ColorModifier
+GetLerpColorModifier ( )
+鈿擄笌
+Returns the lerped color modifier. This is formatted as the absolute rate of change (ie, all values are positive).
+GetPauseMenuState ()
+鈿擄笌
+PauseMenuStates
+GetPauseMenuState ( )
+鈿擄笌
+GetPlanetariumsVisited ()
+鈿擄笌
+int GetPlanetariumsVisited ( )
+鈿擄笌
+Returns the amount of planetariums the player has entered this run.
+GetShopVisits ()
+鈿擄笌
+int GetShopVisits ( )
+鈿擄笌
+Returns the amount of shops the player has entered this run.
+GetTargetColorModifier ()
+鈿擄笌
+ColorModifier
+GetTargetColorModifier ( )
+鈿擄笌
+Returns the target ColorModifier. If currently lerping between two
+ColorModifier
+states, returns the target state. It is otherwise the same as
+GetCurrentColorModifier
+.
+IsErased ()
+鈿擄笌
+boolean IsErased (
+Entity
+Entity )
+鈿擄笌
+boolean IsErased ( int Type, int Variant = -1 )
+鈿擄笌
+Checks if an entity was erased.
+Note that the game does not utilize SubType-specific erasing.
+IsGreedBoss ()
+鈿擄笌
+boolean IsGreedBoss ( )
+鈿擄笌
+Returns
+true
+if the next or current wave is a boss wave. Returns
+false
+otherwise or if not in Greed Mode.
+IsGreedFinalBoss ()
+鈿擄笌
+boolean IsGreedFinalBoss ( )
+鈿擄笌
+Returns
+true
+if the next or current wave is the optional "nightmare" wave. Returns
+false
+otherwise or if not in Greed Mode.
+IsHardMode ()
+鈿擄笌
+boolean IsHardMode ( )
+鈿擄笌
+Returns
+true
+if current mode is Hard Mode or Greedier.
+IsPauseMenuOpen ()
+鈿擄笌
+boolean IsPauseMenuOpen ( )
+鈿擄笌
+Returns
+true
+if the pause menu is open.
+IsRerun ()
+鈿擄笌
+boolean IsRerun ( )
+鈿擄笌
+Returns
+true
+if the current run is a rerun.
+IsStartingFromState ()
+鈿擄笌
+boolean IsStartingFromState ( )
+鈿擄笌
+Returns a boolean whether the game starts from a continued state or not. Always returns false after MC_POST_GAME_STARTED execution.
+RecordPlayerCompletion ()
+鈿擄笌
+void RecordPlayerCompletion (
+CompletionType
+Type )
+鈿擄笌
+Sets marks and unlocks achievements associated with this type for all players. Used by the game to award marks as well as tainted completion paper groups.
+RemoveErasedEnemy ()
+鈿擄笌
+void RemoveErasedEnemy ( int Type, int Variant = -1 )
+鈿擄笌
+Removes a specific Type/Variant from the list of "erased" enemies (as with the "Eraser" active item), allowing it to spawn again.
+Note that the game does not utilize SubType-specific erasing.
+SetBloom ()
+鈿擄笌
+void SetBloom ( float Duration, float Amount )
+鈿擄笌
+SetColorModifier ()
+鈿擄笌
+void SetColorModifier (
+ColorModifier
+ColorModifier, boolean Lerp = true, float Rate = 0.015 )
+鈿擄笌
+SetDizzyAmount ()
+鈿擄笌
+void SetDizzyAmount ( float TargetIntensity , float CurrentIntensity )
+鈿擄笌
+Sets the dizzy amount akin to Wavy Cap.
+The current intensity of the effect will gradually move towards the "TargetIntensity".
+Providing "CurrentIntensity" to this function is optional. If provided, the current intensity is instantly changed to that amount. If unspecified, the current intensity will remain unchanged.
+Warning
+Best to stay within
+0
+-
+1
+and increment by 0.1 while using this function.
+1
+has the most extreme effect on the screen while
+0
+removes the effect.
+SetDonationModAngel ()
+鈿擄笌
+void SetDonationModAngel ( int Amount )
+鈿擄笌
+SetDonationModGreed ()
+鈿擄笌
+void SetDonationModGreed ( int Amount )
+鈿擄笌
+ShowGenericLeaderboard ()
+鈿擄笌
+void ShowGenericLeaderboard ( )
+鈿擄笌
+SpawnBombCrater ()
+鈿擄笌
+Entity
+SpawnBombCrater (
+Vector
+Position, float Radius = 1.0 )
+鈿擄笌
+Class
+Back to top
+Copyright © 2026 REPENTOGON developers
+Made with
+Zensical

@@ -1,0 +1,1050 @@
+﻿Minimap | IsaacScript
+Skip to content
+IsaacScript
+Search
+Ctrl
+K
+Cancel
+Discord
+GitHub
+Select theme
+Dark
+Light
+Auto
+Menu
+Overview
+Features
+Is IsaacScript Right for Me?
+Getting Started
+Basic Info
+Discord
+What Is IsaacScript Doing?
+Directory Structure
+Tutorials
+JavaScript Tutorial
+Example Mod
+Next Steps
+Using getData
+Enums and Objects
+ModFeature
+Other Info
+Converting Lua Code
+Updating IsaacScript
+Custom Stages
+Publishing to the Workshop
+Gotchas
+IsaacScript in Lua
+Change Log
+isaac-typescript-definitions
+Introduction
+Enums
+ActionTrigger
+ActiveSlot
+AngelicBabySubType
+AngelRoomSubType
+AngelVariant
+AnnouncerVoiceMode
+BabyLongLegsVariant
+BabySubType
+BabyVariant
+BackdropType
+BackwardsRoomSubType
+BatterySubType
+BeastVariant
+BedSubType
+BegottenVariant
+BigBonyVariant
+BigHornState
+BigHornVariant
+BloatSubType
+BloodClotSubType
+BloodExplosionSubType
+BloodPuppyVariant
+BlueFlySubType
+BoilVariant
+BombSubType
+BombVariant
+BonyVariant
+BoomFlyVariant
+BossID
+BrokenWatchState
+BrownieSubType
+BucketVariant
+ButtonAction
+CacheFlag
+CageSubType
+CallbackPriority
+CameraStyle
+CanaryVariant
+CardType
+CarpetSubType
+CarrionQueenSubType
+Challenge
+ChallengeRoomSubType
+ChampionColor
+Charger2Variant
+ChargerSubType
+ChargerVariant
+ChestSubType
+ChimeraVariant
+ChubSubType
+ChubVariant
+ClottyVariant
+ClutchVariant
+CoinSubType
+CollectibleAnimation
+CollectiblePedestalType
+CollectibleSpriteLayer
+CollectibleType
+ColostomiaState
+ConjoinedFattyVariant
+ConquestState
+ConsoleFont
+ConstantStoneShooterSubType
+ConstantStoneShooterVariant
+Controller
+ControllerIndex
+CopyableIsaacAPIClassType
+CrawlSpaceState
+CrawlSpaceVariant
+CrazyLongLegsVariant
+CultistVariant
+CurseID
+CurseRoomSubType
+Cutscene
+DaddyLongLegsState
+DaddyLongLegsVariant
+DamageFlag
+DannyVariant
+DarkEsauSubType
+DarkEsauVariant
+DeathsHeadVariant
+DeathState
+DeathSubType
+DeathVariant
+DebugCommand
+DeepGaperSubType
+DevilRoomSubType
+DiceFloorSubType
+Difficulty
+Dimension
+DingleSubType
+DingleVariant
+DipFamiliarSubType
+DipVariant
+Direction
+DisplayFlag
+DogmaVariant
+DoorSlot
+DoorSlotFlag
+DoorState
+DoorVariant
+DopleVariant
+DownpourRoomSubType
+DragonFlySubType
+DrawStringAlignment
+DukeOfFliesSubType
+DukeOfFliesVariant
+DumpVariant
+DungeonSubType
+EffectVariant
+EncyclopediaItemPoolType
+EntityCollisionClass
+EntityFlag
+EntityGridCollisionClass
+EntityPartition
+EntityType
+EnvyVariant
+EvisVariant
+ExorcistVariant
+ExtraHudStyle
+EyeVariant
+FacelessVariant
+FadeoutTarget
+FallenVariant
+FamiliarVariant
+FamineState
+FamineSubType
+FattyVariant
+FireplaceGridEntityVariant
+FireplaceVariant
+FistulaSubType
+FistulaVariant
+FlyBombVariant
+ForsakenSubType
+FrailSubType
+GameStateFlag
+Gaper2Variant
+GaperVariant
+GateSubType
+GeminiSubType
+GeminiVariant
+GenericPropVariant
+GibSubType
+GlobinVariant
+GluttonyVariant
+GoatVariant
+GreedVariant
+GridCollisionClass
+GridEntityType
+GridEntityXMLType
+GridPath
+GridRoom
+GrimaceVariant
+GrubVariant
+GurdyJrSubType
+GurdySubType
+GurgleVariant
+GurglingSubType
+GurglingVariant
+GusherVariant
+GutsVariant
+GuttyFattyVariant
+GyroVariant
+HauntSubType
+HauntVariant
+HeartSubType
+HeartVariant
+HeavenLightDoorSubType
+HiveVariant
+HollowSubType
+HomeRoomSubType
+HomunculusVariant
+HopperVariant
+HostVariant
+HuskSubType
+InputHook
+IsaacsRoomSubType
+IsaacVariant
+ItemConfigCardType
+ItemConfigChargeType
+ItemConfigPillEffectClass
+ItemConfigPillEffectType
+ItemConfigTag
+ItemPoolType
+ItemType
+JacobEsauControls
+Keyboard
+KeySubType
+KnifeVariant
+KnightVariant
+LambVariant
+LanguageAbbreviation
+LarryJrSubType
+LarryJrVariant
+LaserOffset
+LaserSubType
+LaserVariant
+LeaperVariant
+LeechVariant
+LeperSubType
+LeperVariant
+LevelStage
+LevelStateFlag
+LibrarySubType
+LineCheckMode
+LittleHornSubType
+LittleHornVariant
+LockState
+LokiVariant
+LostSoulState
+LustVariant
+MamaGurdyVariant
+MaskVariant
+MawVariant
+MazeRoamerSubType
+MegaFattySubType
+MegaMawSubType
+MegaSatanVariant
+MemBrainVariant
+MinesRoomSubType
+MinibossID
+ModCallback
+ModConfigMenuOptionType
+MoleVariant
+MomsHeartVariant
+MomSubType
+MomVariant
+Monstro2SubType
+Monstro2Variant
+MonstroSubType
+MorningStarSubType
+MotherBallSubType
+MotherSubType
+MotherVariant
+Mouse
+MoveableTNTVariant
+MrMawVariant
+MrMineVariant
+MulliganVariant
+MushroomVariant
+Music
+NeedleVariant
+NerveEndingVariant
+NPCID
+NPCState
+NullItemID
+ParaBiteVariant
+PeeperFattyVariant
+PeepSubType
+PeepVariant
+PestilenceState
+PestilenceSubType
+PickupNullSubType
+PickupPrice
+PickupVariant
+PillColor
+PillEffect
+PinSubType
+PinVariant
+PitfallVariant
+PitState
+PitVariant
+PlayerForm
+PlayerItemAnimation
+PlayerSpriteLayer
+PlayerType
+PlayerVariant
+PocketItemSlot
+PokyVariant
+PoltyVariant
+PolycephalusSubType
+PolycephalusVariant
+PolypVariant
+Poof2SubType
+PoofSubType
+PoopEntityVariant
+PoopGridEntityVariant
+PoopPickupSubType
+PoopSpellType
+PoopState
+PooterVariant
+PortalTeleportSubType
+PortalVariant
+PressurePlateState
+PressurePlateVariant
+PreyVariant
+PrideVariant
+ProjectileFlag
+ProjectilesMode
+ProjectileVariant
+PurgatorySubType
+QuakeGrimaceSubType
+RageCreepVariant
+RaglichVariant
+RaglingVariant
+RagManSubType
+RagManVariant
+RagMegaVariant
+ReapCreepState
+RenderMode
+RevenantVariant
+RockSpiderVariant
+RockState
+RockVariant
+RoomDescriptorDisplayType
+RoomDescriptorFlag
+RoomDifficulty
+RoomShape
+RoomTransitionAnim
+RoomType
+RotgutVariant
+RottenGaperSubType
+RoundWormVariant
+SackSubType
+SatanVariant
+ScourgeVariant
+SecretExitSubType
+SeedEffect
+ShopkeeperVariant
+ShopSubType
+SingeVariant
+SirenVariant
+SkinColor
+SkinnyVariant
+SkullVariant
+SlothVariant
+SlotVariant
+SortingLayer
+SoundEffect
+SpiderWebState
+SpikesOnOffState
+SpittyVariant
+SquirtVariant
+StageAPICallback
+StageAPILayoutButtonVariant
+StageAPILayoutCornyPoopSubtype
+StageAPILayoutGridType
+StageAPILayoutPitfallVariant
+StageAPILayoutPoopSubtype
+StageAPILayoutRockSubtype
+StageAPILayoutSpikesOnOffVariant
+StageAPIPickupRandomGroupVariant
+StageID
+StageTransitionType
+StageType
+StainSubType
+StatueVariant
+StoneyVariant
+SubHorfVariant
+SuckerVariant
+SwingerVariant
+TallLadderSubType
+TargetFlag
+TearVariant
+TeleporterState
+TNTState
+TrapdoorState
+TrapdoorVariant
+TreasureRoomSubType
+TrinketSlot
+TrinketType
+TumorVariant
+UltraCoinVariant
+UltraGreedierState
+UltraGreedState
+UltraGreedVariant
+UrnVariant
+UseFlag
+VisageVariant
+VisFattyVariant
+VisVariant
+WalkingBoilVariant
+WallCreepVariant
+WarState
+WarSubType
+WarVariant
+WarWithoutHorseState
+WeaponType
+WhipperVariant
+WidowSubType
+WidowVariant
+WrathVariant
+isaacscript-common
+Introduction
+Core
+Cached Classes
+Constants (Miscellaneous)
+Constants (First & Last)
+Constants (Vanilla Collections)
+Upgrading Your Mod
+Helper Functions by Category
+Ambush
+Array
+Array (in Lua)
+Benchmark
+BitSet128
+Bitwise
+Bombs
+Bosses
+Cards
+Challenges
+Characters
+Charge
+Charge Bar
+Collectibles
+Collectible Tag
+Color
+Console
+Curses
+Debug Functions
+Decorators
+Deep Copy
+Deep Copy Tests
+Dimensions
+Direction
+Doors
+Easing
+Effects
+Empty Room
+Entities
+Entities Specific
+Entity Types
+Enums
+External
+Familiars
+Flag
+Frames
+Globals
+Grid Entities
+Grid Entities Specific
+Grid Index
+Hash
+Hex
+Input
+Isaac API Class
+Item Pool
+JSON
+JSON Room
+KColor
+Language
+Level
+Level Grid
+Log
+Log Entities
+Log Misc
+Map
+Math
+Merge
+Merge Tests
+Minimap
+Mod Features
+New Array
+Next Stage
+Npc Data Structures
+NPCs
+Pickups
+Pickups Specific
+Pickup Variants
+Pills
+Player Center
+Player Collectibles
+Player Data Structures
+Player Effects
+Player Health
+Player Index
+Players
+Player Trinkets
+Pocket Items
+Position Velocity
+Pressure Plate
+Projectiles
+Random
+Read Only
+Render
+Revive
+RNG
+Rock Alt
+Room Data
+Room Grid
+Rooms
+Room Shape
+Room Shape Walls
+Room Transition
+Run
+Seeds
+Serialization
+Set
+Slots
+Sort
+Sound
+Spawn Collectible
+Sprites
+Stage
+Stats
+Story Bosses
+String
+Table
+Tears
+Transformations
+Trinket Give
+Trinkets
+TSTL Class
+Types
+UI
+Utils
+Vector
+Versus Screen
+Weighted
+Extra Callbacks
+Extra Features
+Character Health Conversion
+Character Stats
+Collectible Item Pool Type
+Custom Hotkeys
+Custom Item Pools
+Custom Pickups
+Custom Stages
+Custom Trapdoors
+Debug Display
+Deploy JSON Room
+Disable All Sound
+Disable Inputs
+Eden Starting Stats Health
+Extra Console Commands
+Extra Console Commands (List)
+Fade In Remover
+Fast Reset
+Flying Detection
+Forgotten Switch
+Item Pool Detection
+Modded Element Detection
+Modded Element Sets
+No Siren Steal
+Pause
+Persistent Entities
+Pickup Index Creation
+Player Collectible Tracking
+Pony Detection
+Press Input
+Prevent Child Entities
+Prevent Grid Entity Respawn
+Rerun Detection
+Room Clear Frame
+Room History
+Run In N Frames
+Run Next Room
+Run Next Run
+Save Data Manager
+Spawn Rock Alt Rewards
+Stage History
+Start Ambush
+Tainted Lazarus Players
+Unlock Achievements Detection
+Other Miscellaneous Exports
+Classes
+DefaultMap
+ModFeature
+ModUpgraded
+Enums
+AmbushType
+CornerType
+HealthType
+ISCFeature
+LadderSubTypeCustom
+ModCallbackCustom
+MysteriousPaperEffect
+PlayerStat
+PocketItemType
+RockAltType
+SaveDataKey
+SerializationType
+SlotDestructionType
+Interfaces
+ChargeBarSprites
+Corner
+CustomStageTSConfig
+GridEntityCustomData
+JSONRoomsFile
+PlayerHealth
+PlayerStats
+PocketItemDescription
+RoomDescription
+SaveData
+StageHistoryEntry
+TrinketSituation
+TSTLClassMetatable
+Maps
+CardNameToTypeMap
+CharacterNameToTypeMap
+CollectibleNameToTypeMap
+PillNameToEffectMap
+RoomNameToTypeMap
+TransformationNameToPlayerFormMap
+TrinketNameToTypeMap
+Objects
+Colors
+KColors
+Types
+AddSubtract
+AllButFirst
+AllButLast
+AnyClass
+AnyEntity
+AnyFunction
+AnyGridEntity
+CompositionTypeSatisfiesEnum
+ConversionHeartSubType
+Decrement
+EntityID
+ERange
+FunctionTuple
+GridEntityID
+HasFunction
+Immutable
+Increment
+IRange
+LowercaseKeys
+NaturalNumbersLessThan
+NaturalNumbersLessThanOrEqualTo
+ObjectValues
+PickingUpItem
+PickupIndex
+PlayerIndex
+PossibleStatType
+PublicInterface
+ReadonlyMap
+ReadonlyRecord
+ReadonlySet
+StartsWithLowercase
+StartsWithUppercase
+TSTLClass
+Tuple
+TupleKeys
+TupleToIntersection
+TupleToUnion
+TupleWithLengthBetween
+TupleWithMaxLength
+UnionToIntersection
+UppercaseKeys
+WeightedArray
+WidenLiteral
+Writable
+Discord
+GitHub
+Select theme
+Dark
+Light
+Auto
+On this page
+Overview
+Functions
+addRoomDisplayFlag()
+clearFloorDisplayFlags()
+clearRoomDisplayFlags()
+getFloorDisplayFlags()
+getRoomDisplayFlags()
+hideRoomOnMinimap()
+isRoomVisible()
+setAllDisplayFlags()
+setFloorDisplayFlags()
+setRoomDisplayFlags()
+On this page
+Overview
+Functions
+addRoomDisplayFlag()
+clearFloorDisplayFlags()
+clearRoomDisplayFlags()
+getFloorDisplayFlags()
+getRoomDisplayFlags()
+hideRoomOnMinimap()
+isRoomVisible()
+setAllDisplayFlags()
+setFloorDisplayFlags()
+setRoomDisplayFlags()
+Minimap
+Functions
+Section titled 鈥淔unctions鈥?/span>
+addRoomDisplayFlag()
+Section titled 鈥渁ddRoomDisplayFlag()鈥?/span>
+addRoomDisplayFlag
+(
+roomGridIndex
+,
+displayFlag
+,
+updateVisibility?
+):
+void
+Defined in:
+packages/isaacscript-common/src/functions/minimap.ts:21
+Helper function to add a
+DisplayFlag
+to a particular room鈥檚 minimap display flags (e.g. whether
+it is visible and so on).
+This function automatically accounts for if MinimapAPI is being used.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+roomGridIndex
+Section titled 鈥渞oomGridIndex鈥?/span>
+int
+|
+undefined
+Set to undefined to use the current room index.
+displayFlag
+Section titled 鈥渄isplayFlag鈥?/span>
+DisplayFlagValue
+The
+DisplayFlag
+to set. (See the
+DisplayFlag
+enum.)
+updateVisibility?
+Section titled 鈥渦pdateVisibility?鈥?/span>
+boolean
+=
+true
+Optional. Whether to call the
+Level.UpdateVisibility
+method in order to
+make the changes immediately visible. Default is true.
+Returns
+Section titled 鈥淩eturns鈥?/span>
+void
+clearFloorDisplayFlags()
+Section titled 鈥渃learFloorDisplayFlags()鈥?/span>
+clearFloorDisplayFlags
+():
+void
+Defined in:
+packages/isaacscript-common/src/functions/minimap.ts:39
+Helper function to set the value of
+DisplayFlag
+for every room on the floor to 0.
+This function automatically accounts for if MinimapAPI is being used.
+This function automatically calls the
+Level.UpdateVisibility
+after setting the flags so that
+the changes will be immediately visible.
+Returns
+Section titled 鈥淩eturns鈥?/span>
+void
+clearRoomDisplayFlags()
+Section titled 鈥渃learRoomDisplayFlags()鈥?/span>
+clearRoomDisplayFlags
+(
+roomGridIndex
+):
+void
+Defined in:
+packages/isaacscript-common/src/functions/minimap.ts:55
+Helper function to set the value of
+DisplayFlag
+for a room 0.
+This function automatically accounts for if MinimapAPI is being used.
+This function automatically calls the
+Level.UpdateVisibility
+after setting the flags so that
+the changes will be immediately visible.
+Note that if you clear the display flags of a room but then the player travels to the room (or an
+adjacent room), the room will appear on the minimap again. If you want to permanently hide the
+room even in this circumstance, use the
+hideRoomOnMinimap
+helper function instead.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+roomGridIndex
+Section titled 鈥渞oomGridIndex鈥?/span>
+int
+Returns
+Section titled 鈥淩eturns鈥?/span>
+void
+getFloorDisplayFlags()
+Section titled 鈥済etFloorDisplayFlags()鈥?/span>
+getFloorDisplayFlags
+(
+minimapAPI?
+):
+ReadonlyMap
+<
+int
+,
+BitFlags
+<
+DisplayFlagValue
+>>
+Defined in:
+packages/isaacscript-common/src/functions/minimap.ts:67
+Helper function to get the minimap
+DisplayFlag
+value for every room on the floor. Returns a map
+that is indexed by the room鈥檚 safe grid index.
+This function automatically accounts for if MinimapAPI is being used.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+minimapAPI?
+Section titled 鈥渕inimapAPI?鈥?/span>
+boolean
+=
+true
+Optional. If MinimapAPI should be used, if present. Default is true.
+Returns
+Section titled 鈥淩eturns鈥?/span>
+ReadonlyMap
+<
+int
+,
+BitFlags
+<
+DisplayFlagValue
+>>
+getRoomDisplayFlags()
+Section titled 鈥済etRoomDisplayFlags()鈥?/span>
+getRoomDisplayFlags
+(
+roomGridIndex?
+,
+minimapAPI?
+):
+BitFlags
+<
+DisplayFlagValue
+>
+Defined in:
+packages/isaacscript-common/src/functions/minimap.ts:90
+Helper function to get a particular room鈥檚 minimap display flags (e.g. whether it is visible and
+so on).
+This function automatically accounts for if MinimapAPI is being used.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+roomGridIndex?
+Section titled 鈥渞oomGridIndex?鈥?/span>
+int
+Optional. Default is the current room index.
+minimapAPI?
+Section titled 鈥渕inimapAPI?鈥?/span>
+boolean
+=
+true
+Optional. If MinimapAPI should be used, if present. Default is true.
+Returns
+Section titled 鈥淩eturns鈥?/span>
+BitFlags
+<
+DisplayFlagValue
+>
+hideRoomOnMinimap()
+Section titled 鈥渉ideRoomOnMinimap()鈥?/span>
+hideRoomOnMinimap
+(
+roomGridIndex
+):
+void
+Defined in:
+packages/isaacscript-common/src/functions/minimap.ts:119
+Helper function to hide a specific room on the minimap.
+If you want the room to be permanently hidden, you must to call this function on every new room.
+This is because if the player enters into the room or walks into an adjacent room, the room will
+reappear on the minimap.
+This function automatically accounts for if MinimapAPI is being used.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+roomGridIndex
+Section titled 鈥渞oomGridIndex鈥?/span>
+int
+Returns
+Section titled 鈥淩eturns鈥?/span>
+void
+isRoomVisible()
+Section titled 鈥渋sRoomVisible()鈥?/span>
+isRoomVisible
+(
+roomGridIndexOrRoomDescriptor
+,
+minimapAPI?
+):
+boolean
+Defined in:
+packages/isaacscript-common/src/functions/minimap.ts:142
+Helper function to check if a given room is visible on the minimap.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+roomGridIndexOrRoomDescriptor
+Section titled 鈥渞oomGridIndexOrRoomDescriptor鈥?/span>
+int
+|
+RoomDescriptor
+The room to check.
+minimapAPI?
+Section titled 鈥渕inimapAPI?鈥?/span>
+boolean
+=
+true
+Optional. Whether MinimapAPI should be used, if present. Default is true.
+Returns
+Section titled 鈥淩eturns鈥?/span>
+boolean
+setAllDisplayFlags()
+Section titled 鈥渟etAllDisplayFlags()鈥?/span>
+setAllDisplayFlags
+(
+displayFlags
+):
+void
+Defined in:
+packages/isaacscript-common/src/functions/minimap.ts:162
+Helper function to set the minimap
+DisplayFlag
+value for every room on the floor at once.
+This function automatically calls the
+Level.UpdateVisibility
+after setting the flags so that
+the changes will be immediately visible.
+This function automatically accounts for if MinimapAPI is being used.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+displayFlags
+Section titled 鈥渄isplayFlags鈥?/span>
+BitFlags
+<
+DisplayFlagValue
+>
+Returns
+Section titled 鈥淩eturns鈥?/span>
+void
+setFloorDisplayFlags()
+Section titled 鈥渟etFloorDisplayFlags()鈥?/span>
+setFloorDisplayFlags
+(
+displayFlagsMap
+):
+void
+Defined in:
+packages/isaacscript-common/src/functions/minimap.ts:185
+Helper function to set the minimap
+DisplayFlag
+value for multiple rooms at once.
+This function automatically calls the
+Level.UpdateVisibility
+after setting the flags so that
+the changes will be immediately visible.
+This function automatically accounts for if MinimapAPI is being used.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+displayFlagsMap
+Section titled 鈥渄isplayFlagsMap鈥?/span>
+ReadonlyMap
+<
+int
+,
+BitFlags
+<
+DisplayFlagValue
+>>
+A map of the display flags that is indexed by the room鈥檚 safe grid index.
+Returns
+Section titled 鈥淩eturns鈥?/span>
+void
+setRoomDisplayFlags()
+Section titled 鈥渟etRoomDisplayFlags()鈥?/span>
+setRoomDisplayFlags
+(
+roomGridIndex
+,
+displayFlags
+,
+updateVisibility?
+):
+void
+Defined in:
+packages/isaacscript-common/src/functions/minimap.ts:213
+Helper function to set a particular room鈥檚 minimap display flags (e.g. whether it is visible and
+so on).
+This function automatically accounts for if MinimapAPI is being used.
+Parameters
+Section titled 鈥淧arameters鈥?/span>
+roomGridIndex
+Section titled 鈥渞oomGridIndex鈥?/span>
+int
+|
+undefined
+Set to undefined to use the current room index.
+displayFlags
+Section titled 鈥渄isplayFlags鈥?/span>
+BitFlags
+<
+DisplayFlagValue
+>
+The bit flags value to set. (See the
+DisplayFlag
+enum.)
+updateVisibility?
+Section titled 鈥渦pdateVisibility?鈥?/span>
+boolean
+=
+true
+Optional. Whether to call the
+Level.UpdateVisibility
+method in order to
+make the changes immediately visible. Default is true. Set this to false
+if you are doing a bunch of display flag setting and then manually call
+the
+Level.UpdateVisibility
+method after you are done.
+Returns
+Section titled 鈥淩eturns鈥?/span>
+void
+Previous
+Merge Tests
+Next
+Mod Features

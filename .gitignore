@@ -1,0 +1,15 @@
+# --- game artifacts (not for repo) ---
+_logs/
+_archive/
+_backup/
+
+# --- build artifacts ---
+tools/*.exe
+tools/node_modules/
+*.log
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp

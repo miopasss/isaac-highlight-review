@@ -1,0 +1,605 @@
+﻿EntitiesSaveState - BoI: REPENTOGON
+Skip to content
+BoI: REPENTOGON
+EntitiesSaveState
+Search
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Changes
+XML
+Example Mods
+Lua 5.4 Docs
+BoI: REPENTOGON
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+Achievement
+AddHealthType
+AnimRenderFlags
+AnnouncerVoiceMode
+AutocompleteType
+BagOfCraftingPickup
+BlendFactor
+BlendType
+BlendEquation
+BombCostumeLayer
+BossType
+ButtonActionBitwise
+CameraStyle
+CharacterMenuStatus
+ChargeType
+CompletionType
+CompletionStatus
+ConceptionFamiliarFlag
+ConsoleFont
+CustomCacheTag
+DebugFlag
+DeliriumCallbacks
+DialogButtons
+DialogIcons
+DialogReturn
+Dimension
+DipSubType
+DoorMask
+DwmWindowAttribute
+Ending
+EnemyTargetFlags
+EntityPoopVariant
+EntityTag
+EvaluateStatStage
+EventCounter
+ExtraHudStyle
+FadeoutTarget
+FollowerPriority
+GetCollectibleFlag
+GLSLType
+Giantbook
+GibFlag
+GridPoopVariant
+HealthType
+ImGuiCallback
+ImGuiColor
+ImGuiChildFlags
+ImGuiData
+ImGuiElement
+ImGuiNotificationType
+ImGuiWindowFlags
+ItemAnim
+KnifeSubType
+KnifeVariant
+Language
+LineCheckMode
+MainMenuType
+MinimapState
+ModCallbacks
+MouseButton
+NullPickupSubType
+PauseMenuStates
+PedestalType
+PillCardSlot
+PillEffectSubClass
+PlayerHUDLayout
+PlayerVariant
+PocketItemType
+PressurePlateVariant
+ProceduralEffectActionType
+ProceduralEffectConditionType
+ProjectileMode
+PurityState
+RetractingSpikesVariant
+RoomEventOutput
+RoomSubType
+ShaderType
+SlotVariant
+SpecialQuest
+SplitTearType
+StatusEffect
+StbGridType
+StbPoopSubType
+StbRailVariant
+StbRockSubType
+StbTeleporterSubType
+StbType
+TaintedMarksGroup
+TeleporterVariant
+TrinketSlot
+UseActiveItemResultFlag
+VertexAttributeFormat
+WaterClipFlag
+WeaponModifier
+WispSubType
+XMLNode
+Ambush
+Backdrop
+BossPool
+BossPool
+BossPool
+BossPoolManager
+Camera
+Capsule
+CcpContainer
+CcpContainer
+RoomConfigSet
+ChallengeParam
+Color
+ColorModifier
+ColorParams
+Console
+CostumeSpriteDesc
+DailyChallenge
+Debug
+Entity
+Entity
+Entity
+EntityBomb
+EntityDelirium
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPlayer
+EntityPickup
+EntityProjectile
+EntitySlot
+EntityTear
+EntityConfig
+EntityConfig
+EntityConfig
+EntityConfigBaby
+EntityConfigEntity
+EntityConfigPlayer
+EntityDesc
+EntitySaveStateManager
+Font
+FXLayers
+FXParams
+Game
+GenericPrompt
+GridEntity
+GridEntity
+GridEntity
+GridEntityDecoration
+GridEntityDoor
+GridEntityFire
+GridEntityGravity
+GridEntityLock
+GridEntityPressurePlate
+GridEntityRock
+GridEntityStairs
+GridEntityStatue
+GridEntityTeleporter
+GridEntityTrapDoor
+GridEntityWall
+GridEntityWeb
+History
+History
+History
+HistoryItem
+HUDs
+HUDs
+DebugRenderer
+HUD
+Minimap
+PlayerHUD
+PlayerHUDHeart
+ScoreSheet
+ImGui
+Isaac
+ItemConfig
+ItemConfig
+ItemConfig
+ItemConfig - Item
+ItemConfig - PillEffect
+ItemConfig - Card
+ItemConfig - Costume
+ItemOverlay
+ItemPool
+Input
+Level
+LevelGenerator
+LevelGenerator
+LevelGenerator
+LevelGeneratorEntry
+LevelGeneratorRoom
+LootList
+LootList
+LootList
+LootListEntry
+LRoomAreaDesc
+LRoomTileDesc
+Menus
+Menus
+MenuManager
+BestiaryMenu
+ChallengeMenu
+CharacterMenu
+CollectionMenu
+ControllerSelectMenu
+CustomChallengeMenu
+CutscenesMenu
+DailyChallengeMenu
+KeyConfigMenu
+MainMenu
+ModsMenu
+OptionsMenu
+PauseMenu
+SaveMenu
+SpecialSeedsMenu
+StatsMenu
+TitleMenu
+MultiShotParams
+MusicManager
+NightmareScene
+Options
+Pathfinder
+PersistentGameData
+PlayerManager
+Procedural Items
+Procedural Items
+ProceduralItemManager
+ProceduralEffect
+ProceduralItem
+PocketItem
+ProjectileParams
+RailManager
+Rendering
+Rendering
+Beam
+BlendMode
+DestinationQuad
+GLSLValue
+Image
+Pipeline
+Point
+Renderer
+RenderSet
+Shader
+SourceQuad
+Shape
+SurfaceRenderController
+Transformer
+Vertex
+VertexBuffer
+VertexDescriptor
+REPENTOGON
+RNG
+Room
+RoomConfig
+RoomConfig
+RoomConfig
+RoomConfigStage
+GridEntitiesSaveStateVector
+RoomConfigRoom
+RoomDescriptor
+EntitiesSaveState
+EntitiesSaveState
+On this page
+Functions
+GetB1 ()
+GetB2 ()
+GetDropSeed ()
+GetF1 ()
+GetF2 ()
+GetGridSpawnIdx ()
+GetI1 ()
+GetI2 ()
+GetI3 ()
+GetI4 ()
+GetI5 ()
+GetI6 ()
+GetI7 ()
+GetI8 ()
+GetInitSeed ()
+GetPos ()
+GetSpawnerType ()
+GetSpawnerVariant ()
+GetSubType ()
+GetType ()
+GetU1 ()
+GetVariant ()
+SetB1 ()
+SetB2 ()
+SetF1 ()
+SetF2 ()
+SetI1 ()
+SetI2 ()
+SetI3 ()
+SetI4 ()
+SetI5 ()
+SetI6 ()
+SetI7 ()
+SetI8 ()
+SetPos ()
+SetSubType ()
+SetType ()
+SetU1 ()
+SetVariant ()
+EntitiesSaveStateVector
+RoomTransition
+Seeds
+Sprite
+Sprite
+AnimationData
+AnimationFrame
+AnimationLayer
+LayerState
+NullFrame
+Sprite
+StageTransition
+TearParams
+Vector
+Weapon
+WeightedOutcomePicker
+XMLData
+Changes
+Changes
+General
+Debugging
+UI
+XML
+XML
+XML Overview
+XMLData
+achievements.xml
+ambush.xml
+backdrops.xml
+bosscolors.xml
+costumes.xml
+cutscenes.xml
+challenges.xml
+entities2.xml
+giantbook.xml
+items.xml
+itempools.xml
+pocketitems.xml
+players.xml
+stringtable.sta
+Example Mods
+Example Mods
+Capsules
+Deal Chance
+ImGui Menu
+Weighted Outcomes
+Beams
+Color Modifiers
+Lua 5.4 Docs
+On this page
+Functions
+GetB1 ()
+GetB2 ()
+GetDropSeed ()
+GetF1 ()
+GetF2 ()
+GetGridSpawnIdx ()
+GetI1 ()
+GetI2 ()
+GetI3 ()
+GetI4 ()
+GetI5 ()
+GetI6 ()
+GetI7 ()
+GetI8 ()
+GetInitSeed ()
+GetPos ()
+GetSpawnerType ()
+GetSpawnerVariant ()
+GetSubType ()
+GetType ()
+GetU1 ()
+GetVariant ()
+SetB1 ()
+SetB2 ()
+SetF1 ()
+SetF2 ()
+SetI1 ()
+SetI2 ()
+SetI3 ()
+SetI4 ()
+SetI5 ()
+SetI6 ()
+SetI7 ()
+SetI8 ()
+SetPos ()
+SetSubType ()
+SetType ()
+SetU1 ()
+SetVariant ()
+Class "EntitiesSaveState"
+鈿擄笌
+Functions
+鈿擄笌
+GetB1 ()
+鈿擄笌
+boolean GetB1 ( )
+鈿擄笌
+GetB2 ()
+鈿擄笌
+boolean GetB2 ( )
+鈿擄笌
+GetDropSeed ()
+鈿擄笌
+int GetDropSeed ( )
+鈿擄笌
+GetF1 ()
+鈿擄笌
+float GetF1 ( )
+鈿擄笌
+GetF2 ()
+鈿擄笌
+float GetF2 ( )
+鈿擄笌
+GetGridSpawnIdx ()
+鈿擄笌
+int GetGridSpawnIdx ( )
+鈿擄笌
+GetI1 ()
+鈿擄笌
+int GetI1 ( )
+鈿擄笌
+GetI2 ()
+鈿擄笌
+int GetI2 ( )
+鈿擄笌
+Used to store the charge of an active item pickup
+GetI3 ()
+鈿擄笌
+int GetI3 ( )
+鈿擄笌
+Used to store the shop price of pickups.
+GetI4 ()
+鈿擄笌
+int GetI4 ( )
+鈿擄笌
+Used to store the ShopItemId of pickups.
+GetI5 ()
+鈿擄笌
+int GetI5 ( )
+鈿擄笌
+GetI6 ()
+鈿擄笌
+int GetI6 ( )
+鈿擄笌
+GetI7 ()
+鈿擄笌
+int GetI7 ( )
+鈿擄笌
+GetI8 ()
+鈿擄笌
+int GetI8 ( )
+鈿擄笌
+GetInitSeed ()
+鈿擄笌
+int GetInitSeed ( )
+鈿擄笌
+GetPos ()
+鈿擄笌
+Vector
+GetPos ( )
+鈿擄笌
+GetSpawnerType ()
+鈿擄笌
+EntityType
+GetSpawnerType ( )
+鈿擄笌
+GetSpawnerVariant ()
+鈿擄笌
+int GetSpawnerVariant ( )
+鈿擄笌
+GetSubType ()
+鈿擄笌
+int GetSubType ( )
+鈿擄笌
+GetType ()
+鈿擄笌
+EntityType
+GetType ( )
+鈿擄笌
+GetU1 ()
+鈿擄笌
+int GetU1 ( )
+鈿擄笌
+GetVariant ()
+鈿擄笌
+int GetVariant ( )
+鈿擄笌
+SetB1 ()
+鈿擄笌
+void SetB1 ( boolean B1 )
+鈿擄笌
+SetB2 ()
+鈿擄笌
+void SetB2 ( boolean B2 )
+鈿擄笌
+SetF1 ()
+鈿擄笌
+void SetF1 ( float Num )
+鈿擄笌
+SetF2 ()
+鈿擄笌
+void SetF2 ( float Num )
+鈿擄笌
+SetI1 ()
+鈿擄笌
+void SetI1 ( int Num )
+鈿擄笌
+SetI2 ()
+鈿擄笌
+void SetI2 ( int Num )
+鈿擄笌
+Used to store the charge of an active item pickup
+SetI3 ()
+鈿擄笌
+void SetI3 ( int Num )
+鈿擄笌
+Used to store the shop price of pickups.
+SetI4 ()
+鈿擄笌
+void SetI4 ( int Num )
+鈿擄笌
+Used to store the ShopItemId of pickups.
+SetI5 ()
+鈿擄笌
+void SetI5 ( int Num )
+鈿擄笌
+SetI6 ()
+鈿擄笌
+void SetI6 ( int Num )
+鈿擄笌
+SetI7 ()
+鈿擄笌
+void SetI7 ( int Num )
+鈿擄笌
+SetI8 ()
+鈿擄笌
+void SetI8 ( int Num )
+鈿擄笌
+SetPos ()
+鈿擄笌
+void SetPos (
+Vector
+Pos )
+鈿擄笌
+SetSubType ()
+鈿擄笌
+void SetSubType ( int SubType )
+鈿擄笌
+SetType ()
+鈿擄笌
+void SetType (
+EntityType
+Type )
+鈿擄笌
+SetU1 ()
+鈿擄笌
+void SetU1 ( int Num )
+鈿擄笌
+SetVariant ()
+鈿擄笌
+void SetVariant ( int Variant )
+鈿擄笌
+Class
+Back to top
+Copyright © 2026 REPENTOGON developers
+Made with
+Zensical

@@ -1,0 +1,514 @@
+﻿RoomConfigStage - BoI: REPENTOGON
+Skip to content
+BoI: REPENTOGON
+RoomConfigStage
+Search
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Changes
+XML
+Example Mods
+Lua 5.4 Docs
+BoI: REPENTOGON
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+Achievement
+AddHealthType
+AnimRenderFlags
+AnnouncerVoiceMode
+AutocompleteType
+BagOfCraftingPickup
+BlendFactor
+BlendType
+BlendEquation
+BombCostumeLayer
+BossType
+ButtonActionBitwise
+CameraStyle
+CharacterMenuStatus
+ChargeType
+CompletionType
+CompletionStatus
+ConceptionFamiliarFlag
+ConsoleFont
+CustomCacheTag
+DebugFlag
+DeliriumCallbacks
+DialogButtons
+DialogIcons
+DialogReturn
+Dimension
+DipSubType
+DoorMask
+DwmWindowAttribute
+Ending
+EnemyTargetFlags
+EntityPoopVariant
+EntityTag
+EvaluateStatStage
+EventCounter
+ExtraHudStyle
+FadeoutTarget
+FollowerPriority
+GetCollectibleFlag
+GLSLType
+Giantbook
+GibFlag
+GridPoopVariant
+HealthType
+ImGuiCallback
+ImGuiColor
+ImGuiChildFlags
+ImGuiData
+ImGuiElement
+ImGuiNotificationType
+ImGuiWindowFlags
+ItemAnim
+KnifeSubType
+KnifeVariant
+Language
+LineCheckMode
+MainMenuType
+MinimapState
+ModCallbacks
+MouseButton
+NullPickupSubType
+PauseMenuStates
+PedestalType
+PillCardSlot
+PillEffectSubClass
+PlayerHUDLayout
+PlayerVariant
+PocketItemType
+PressurePlateVariant
+ProceduralEffectActionType
+ProceduralEffectConditionType
+ProjectileMode
+PurityState
+RetractingSpikesVariant
+RoomEventOutput
+RoomSubType
+ShaderType
+SlotVariant
+SpecialQuest
+SplitTearType
+StatusEffect
+StbGridType
+StbPoopSubType
+StbRailVariant
+StbRockSubType
+StbTeleporterSubType
+StbType
+TaintedMarksGroup
+TeleporterVariant
+TrinketSlot
+UseActiveItemResultFlag
+VertexAttributeFormat
+WaterClipFlag
+WeaponModifier
+WispSubType
+XMLNode
+Ambush
+Backdrop
+BossPool
+BossPool
+BossPool
+BossPoolManager
+Camera
+Capsule
+CcpContainer
+CcpContainer
+RoomConfigSet
+ChallengeParam
+Color
+ColorModifier
+ColorParams
+Console
+CostumeSpriteDesc
+DailyChallenge
+Debug
+Entity
+Entity
+Entity
+EntityBomb
+EntityDelirium
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPlayer
+EntityPickup
+EntityProjectile
+EntitySlot
+EntityTear
+EntityConfig
+EntityConfig
+EntityConfig
+EntityConfigBaby
+EntityConfigEntity
+EntityConfigPlayer
+EntityDesc
+EntitySaveStateManager
+Font
+FXLayers
+FXParams
+Game
+GenericPrompt
+GridEntity
+GridEntity
+GridEntity
+GridEntityDecoration
+GridEntityDoor
+GridEntityFire
+GridEntityGravity
+GridEntityLock
+GridEntityPressurePlate
+GridEntityRock
+GridEntityStairs
+GridEntityStatue
+GridEntityTeleporter
+GridEntityTrapDoor
+GridEntityWall
+GridEntityWeb
+History
+History
+History
+HistoryItem
+HUDs
+HUDs
+DebugRenderer
+HUD
+Minimap
+PlayerHUD
+PlayerHUDHeart
+ScoreSheet
+ImGui
+Isaac
+ItemConfig
+ItemConfig
+ItemConfig
+ItemConfig - Item
+ItemConfig - PillEffect
+ItemConfig - Card
+ItemConfig - Costume
+ItemOverlay
+ItemPool
+Input
+Level
+LevelGenerator
+LevelGenerator
+LevelGenerator
+LevelGeneratorEntry
+LevelGeneratorRoom
+LootList
+LootList
+LootList
+LootListEntry
+LRoomAreaDesc
+LRoomTileDesc
+Menus
+Menus
+MenuManager
+BestiaryMenu
+ChallengeMenu
+CharacterMenu
+CollectionMenu
+ControllerSelectMenu
+CustomChallengeMenu
+CutscenesMenu
+DailyChallengeMenu
+KeyConfigMenu
+MainMenu
+ModsMenu
+OptionsMenu
+PauseMenu
+SaveMenu
+SpecialSeedsMenu
+StatsMenu
+TitleMenu
+MultiShotParams
+MusicManager
+NightmareScene
+Options
+Pathfinder
+PersistentGameData
+PlayerManager
+Procedural Items
+Procedural Items
+ProceduralItemManager
+ProceduralEffect
+ProceduralItem
+PocketItem
+ProjectileParams
+RailManager
+Rendering
+Rendering
+Beam
+BlendMode
+DestinationQuad
+GLSLValue
+Image
+Pipeline
+Point
+Renderer
+RenderSet
+Shader
+SourceQuad
+Shape
+SurfaceRenderController
+Transformer
+Vertex
+VertexBuffer
+VertexDescriptor
+REPENTOGON
+RNG
+Room
+RoomConfig
+RoomConfig
+RoomConfig
+RoomConfigStage
+RoomConfigStage
+On this page
+Functions
+GetBackdrop ()
+GetBossSpot ()
+GetDisplayName ()
+GetID ()
+GetMusic ()
+GetPlayerSpot ()
+GetRoomSet ()
+GetSuffix ()
+GetXMLName ()
+IsLoaded ()
+SetBackdrop ()
+SetBossSpot ()
+SetDisplayName ()
+SetMusic ()
+SetPlayerSpot ()
+SetSuffix ()
+SetXMLName ()
+GridEntitiesSaveStateVector
+RoomConfigRoom
+RoomDescriptor
+EntitiesSaveState
+EntitiesSaveStateVector
+RoomTransition
+Seeds
+Sprite
+Sprite
+AnimationData
+AnimationFrame
+AnimationLayer
+LayerState
+NullFrame
+Sprite
+StageTransition
+TearParams
+Vector
+Weapon
+WeightedOutcomePicker
+XMLData
+Changes
+Changes
+General
+Debugging
+UI
+XML
+XML
+XML Overview
+XMLData
+achievements.xml
+ambush.xml
+backdrops.xml
+bosscolors.xml
+costumes.xml
+cutscenes.xml
+challenges.xml
+entities2.xml
+giantbook.xml
+items.xml
+itempools.xml
+pocketitems.xml
+players.xml
+stringtable.sta
+Example Mods
+Example Mods
+Capsules
+Deal Chance
+ImGui Menu
+Weighted Outcomes
+Beams
+Color Modifiers
+Lua 5.4 Docs
+On this page
+Functions
+GetBackdrop ()
+GetBossSpot ()
+GetDisplayName ()
+GetID ()
+GetMusic ()
+GetPlayerSpot ()
+GetRoomSet ()
+GetSuffix ()
+GetXMLName ()
+IsLoaded ()
+SetBackdrop ()
+SetBossSpot ()
+SetDisplayName ()
+SetMusic ()
+SetPlayerSpot ()
+SetSuffix ()
+SetXMLName ()
+Class "RoomConfigStage"
+鈿擄笌
+Info
+You can get this class by using the following function:
+RoomConfig.GetStage()
+Example Code
+1
+local
+roomConfigStage
+=
+RoomConfig
+.
+GetStage
+(
+StbType
+.
+BASEMENT
+)
+Functions
+鈿擄笌
+GetBackdrop ()
+鈿擄笌
+BackdropType
+GetBackdrop ( )
+鈿擄笌
+Returns the
+BackdropType
+used in default rooms on the stage.
+GetBossSpot ()
+鈿擄笌
+string GetBossSpot ( )
+鈿擄笌
+Returns the sprite path for the boss spot used in the boss intro.
+GetDisplayName ()
+鈿擄笌
+string GetDisplayName ( )
+鈿擄笌
+Returns the name of the stage.
+GetID ()
+鈿擄笌
+int GetID ( )
+鈿擄笌
+GetMusic ()
+鈿擄笌
+Music
+GetMusic ( )
+鈿擄笌
+Returns the
+Music
+used in default rooms on the stage.
+GetPlayerSpot ()
+鈿擄笌
+string GetPlayerSpot ( )
+鈿擄笌
+Returns the sprite path for the player spot used in the boss intro and nightmare transition.
+GetRoomSet ()
+鈿擄笌
+RoomConfigSet
+GetRoomSet ( int Mode )
+鈿擄笌
+Returns a
+RoomConfigSet
+, which contains every
+RoomConfigRoom
+in the stage.
+Mode
+is
+0
+for Normal Mode,
+1
+for Greed Mode
+GetSuffix ()
+鈿擄笌
+string GetSuffix ( )
+鈿擄笌
+Returns the suffix used by the stage for stage-unique sprites, such as the boss/player spot and unique variants for enemies.
+GetXMLName ()
+鈿擄笌
+string GetXMLName ( )
+鈿擄笌
+IsLoaded ()
+鈿擄笌
+boolean IsLoaded ( int mode = 0 )
+鈿擄笌
+SetBackdrop ()
+鈿擄笌
+void SetBackdrop (
+BackdropType
+Backdrop )
+鈿擄笌
+Sets the
+BackdropType
+used in default rooms on the stage.
+SetBossSpot ()
+鈿擄笌
+void SetBossSpot ( string PngFilename )
+鈿擄笌
+Sets the sprite path for the boss spot used in the boss intro.
+SetDisplayName ()
+鈿擄笌
+void SetDisplayName ( string Name )
+鈿擄笌
+Sets the name of the stage.
+SetMusic ()
+鈿擄笌
+void SetMusic (
+Music
+Music )
+鈿擄笌
+Sets the
+Music
+used in default rooms on the stage.
+SetPlayerSpot ()
+鈿擄笌
+void SetPlayerSpot ( string PngFilename )
+鈿擄笌
+Sets the sprite path for the player spot used in the boss intro and nightmare transition.
+SetSuffix ()
+鈿擄笌
+void SetSuffix ( string Suffix )
+鈿擄笌
+Sets the suffix used by the stage for stage-unique sprites, such as the boss/player spot and unique variants for enemies.
+SetXMLName ()
+鈿擄笌
+void SetXMLName ( string name )
+鈿擄笌
+Class
+Back to top
+Copyright © 2026 REPENTOGON developers
+Made with
+Zensical

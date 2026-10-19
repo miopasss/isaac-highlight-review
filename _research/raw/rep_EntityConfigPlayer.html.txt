@@ -1,0 +1,617 @@
+﻿EntityConfigPlayer - BoI: REPENTOGON
+Skip to content
+BoI: REPENTOGON
+EntityConfigPlayer
+Search
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Changes
+XML
+Example Mods
+Lua 5.4 Docs
+BoI: REPENTOGON
+TeamREPENTOGON/REPENTOGON
+Home
+Install
+Docs
+Docs
+Home
+Last visited
+Last visited
+Frequently used
+Frequently used
+Isaac
+Entity
+EntityPlayer
+EntityNPC
+EntityEffect
+Game
+Room
+Level
+ModCallbacks
+Enums
+Enums
+Achievement
+AddHealthType
+AnimRenderFlags
+AnnouncerVoiceMode
+AutocompleteType
+BagOfCraftingPickup
+BlendFactor
+BlendType
+BlendEquation
+BombCostumeLayer
+BossType
+ButtonActionBitwise
+CameraStyle
+CharacterMenuStatus
+ChargeType
+CompletionType
+CompletionStatus
+ConceptionFamiliarFlag
+ConsoleFont
+CustomCacheTag
+DebugFlag
+DeliriumCallbacks
+DialogButtons
+DialogIcons
+DialogReturn
+Dimension
+DipSubType
+DoorMask
+DwmWindowAttribute
+Ending
+EnemyTargetFlags
+EntityPoopVariant
+EntityTag
+EvaluateStatStage
+EventCounter
+ExtraHudStyle
+FadeoutTarget
+FollowerPriority
+GetCollectibleFlag
+GLSLType
+Giantbook
+GibFlag
+GridPoopVariant
+HealthType
+ImGuiCallback
+ImGuiColor
+ImGuiChildFlags
+ImGuiData
+ImGuiElement
+ImGuiNotificationType
+ImGuiWindowFlags
+ItemAnim
+KnifeSubType
+KnifeVariant
+Language
+LineCheckMode
+MainMenuType
+MinimapState
+ModCallbacks
+MouseButton
+NullPickupSubType
+PauseMenuStates
+PedestalType
+PillCardSlot
+PillEffectSubClass
+PlayerHUDLayout
+PlayerVariant
+PocketItemType
+PressurePlateVariant
+ProceduralEffectActionType
+ProceduralEffectConditionType
+ProjectileMode
+PurityState
+RetractingSpikesVariant
+RoomEventOutput
+RoomSubType
+ShaderType
+SlotVariant
+SpecialQuest
+SplitTearType
+StatusEffect
+StbGridType
+StbPoopSubType
+StbRailVariant
+StbRockSubType
+StbTeleporterSubType
+StbType
+TaintedMarksGroup
+TeleporterVariant
+TrinketSlot
+UseActiveItemResultFlag
+VertexAttributeFormat
+WaterClipFlag
+WeaponModifier
+WispSubType
+XMLNode
+Ambush
+Backdrop
+BossPool
+BossPool
+BossPool
+BossPoolManager
+Camera
+Capsule
+CcpContainer
+CcpContainer
+RoomConfigSet
+ChallengeParam
+Color
+ColorModifier
+ColorParams
+Console
+CostumeSpriteDesc
+DailyChallenge
+Debug
+Entity
+Entity
+Entity
+EntityBomb
+EntityDelirium
+EntityEffect
+EntityFamiliar
+EntityKnife
+EntityLaser
+EntityNPC
+EntityPlayer
+EntityPickup
+EntityProjectile
+EntitySlot
+EntityTear
+EntityConfig
+EntityConfig
+EntityConfig
+EntityConfigBaby
+EntityConfigEntity
+EntityConfigPlayer
+EntityConfigPlayer
+On this page
+Functions
+CanShoot ()
+GetAchievementID ()
+GetBirthrightDescription ()
+GetBlackHearts ()
+GetBombs ()
+GetBrokenHearts ()
+GetCard ()
+GetCoins ()
+GetCollectibles ()
+GetCostumeID ()
+GetCostumeSuffix ()
+GetExtraPortraitPath ()
+GetKeys ()
+GetModdedControlsSprite ()
+GetModdedCoopMenuSprite ()
+GetModdedGameOverSprite ()
+GetModdedMenuBackgroundSprite ()
+GetModdedMenuPortraitSprite ()
+GetName ()
+GetNameImagePath ()
+GetPill ()
+GetPlayerType ()
+GetPocketActive ()
+GetPortraitPath ()
+GetRedHearts ()
+GetSkinColor ()
+GetSkinPath ()
+GetSoulHearts ()
+GetTaintedCounterpart ()
+GetTrinket ()
+IsHidden ()
+IsTainted ()
+EntityDesc
+EntitySaveStateManager
+Font
+FXLayers
+FXParams
+Game
+GenericPrompt
+GridEntity
+GridEntity
+GridEntity
+GridEntityDecoration
+GridEntityDoor
+GridEntityFire
+GridEntityGravity
+GridEntityLock
+GridEntityPressurePlate
+GridEntityRock
+GridEntityStairs
+GridEntityStatue
+GridEntityTeleporter
+GridEntityTrapDoor
+GridEntityWall
+GridEntityWeb
+History
+History
+History
+HistoryItem
+HUDs
+HUDs
+DebugRenderer
+HUD
+Minimap
+PlayerHUD
+PlayerHUDHeart
+ScoreSheet
+ImGui
+Isaac
+ItemConfig
+ItemConfig
+ItemConfig
+ItemConfig - Item
+ItemConfig - PillEffect
+ItemConfig - Card
+ItemConfig - Costume
+ItemOverlay
+ItemPool
+Input
+Level
+LevelGenerator
+LevelGenerator
+LevelGenerator
+LevelGeneratorEntry
+LevelGeneratorRoom
+LootList
+LootList
+LootList
+LootListEntry
+LRoomAreaDesc
+LRoomTileDesc
+Menus
+Menus
+MenuManager
+BestiaryMenu
+ChallengeMenu
+CharacterMenu
+CollectionMenu
+ControllerSelectMenu
+CustomChallengeMenu
+CutscenesMenu
+DailyChallengeMenu
+KeyConfigMenu
+MainMenu
+ModsMenu
+OptionsMenu
+PauseMenu
+SaveMenu
+SpecialSeedsMenu
+StatsMenu
+TitleMenu
+MultiShotParams
+MusicManager
+NightmareScene
+Options
+Pathfinder
+PersistentGameData
+PlayerManager
+Procedural Items
+Procedural Items
+ProceduralItemManager
+ProceduralEffect
+ProceduralItem
+PocketItem
+ProjectileParams
+RailManager
+Rendering
+Rendering
+Beam
+BlendMode
+DestinationQuad
+GLSLValue
+Image
+Pipeline
+Point
+Renderer
+RenderSet
+Shader
+SourceQuad
+Shape
+SurfaceRenderController
+Transformer
+Vertex
+VertexBuffer
+VertexDescriptor
+REPENTOGON
+RNG
+Room
+RoomConfig
+RoomConfig
+RoomConfig
+RoomConfigStage
+GridEntitiesSaveStateVector
+RoomConfigRoom
+RoomDescriptor
+EntitiesSaveState
+EntitiesSaveStateVector
+RoomTransition
+Seeds
+Sprite
+Sprite
+AnimationData
+AnimationFrame
+AnimationLayer
+LayerState
+NullFrame
+Sprite
+StageTransition
+TearParams
+Vector
+Weapon
+WeightedOutcomePicker
+XMLData
+Changes
+Changes
+General
+Debugging
+UI
+XML
+XML
+XML Overview
+XMLData
+achievements.xml
+ambush.xml
+backdrops.xml
+bosscolors.xml
+costumes.xml
+cutscenes.xml
+challenges.xml
+entities2.xml
+giantbook.xml
+items.xml
+itempools.xml
+pocketitems.xml
+players.xml
+stringtable.sta
+Example Mods
+Example Mods
+Capsules
+Deal Chance
+ImGui Menu
+Weighted Outcomes
+Beams
+Color Modifiers
+Lua 5.4 Docs
+On this page
+Functions
+CanShoot ()
+GetAchievementID ()
+GetBirthrightDescription ()
+GetBlackHearts ()
+GetBombs ()
+GetBrokenHearts ()
+GetCard ()
+GetCoins ()
+GetCollectibles ()
+GetCostumeID ()
+GetCostumeSuffix ()
+GetExtraPortraitPath ()
+GetKeys ()
+GetModdedControlsSprite ()
+GetModdedCoopMenuSprite ()
+GetModdedGameOverSprite ()
+GetModdedMenuBackgroundSprite ()
+GetModdedMenuPortraitSprite ()
+GetName ()
+GetNameImagePath ()
+GetPill ()
+GetPlayerType ()
+GetPocketActive ()
+GetPortraitPath ()
+GetRedHearts ()
+GetSkinColor ()
+GetSkinPath ()
+GetSoulHearts ()
+GetTaintedCounterpart ()
+GetTrinket ()
+IsHidden ()
+IsTainted ()
+Class "EntityConfigPlayer"
+鈿擄笌
+Info
+You can get this class by using the following functions:
+EntityConfig.GetPlayer()
+Example Code
+1
+local
+cainConfig
+=
+EntityConfig
+.
+GetPlayer
+(
+PlayerType
+.
+PLAYER_CAIN
+)
+Functions
+鈿擄笌
+CanShoot ()
+鈿擄笌
+boolean CanShoot ( )
+鈿擄笌
+GetAchievementID ()
+鈿擄笌
+Achievement
+GetAchievementID ( )
+鈿擄笌
+Returns -1 if the character is not locked behind a vanilla achievement (or -2 for "hidden" vanilla characters).
+GetBirthrightDescription ()
+鈿擄笌
+string GetBirthrightDescription ( )
+鈿擄笌
+GetBlackHearts ()
+鈿擄笌
+int GetBlackHearts ( )
+鈿擄笌
+GetBombs ()
+鈿擄笌
+int GetBombs ( )
+鈿擄笌
+GetBrokenHearts ()
+鈿擄笌
+int GetBrokenHearts ( )
+鈿擄笌
+GetCard ()
+鈿擄笌
+Card
+GetCard ( )
+鈿擄笌
+Returns 0 if the character does not start with any vanilla card.
+Does not include starting cards obtained via unlocks.
+Does not include cards added by mods.
+GetCoins ()
+鈿擄笌
+int GetCoins ( )
+鈿擄笌
+GetCollectibles ()
+鈿擄笌
+CollectibleType
+[] GetCollectibles ( )
+鈿擄笌
+Returns a table of
+CollectibleType
+s for the character's starting items.
+GetCostumeID ()
+鈿擄笌
+int GetCostumeID ( )
+鈿擄笌
+Returns -1 if the character does not have any XML-defined starting costume (like Maggy's hair).
+GetCostumeSuffix ()
+鈿擄笌
+string GetCostumeSuffix ( )
+鈿擄笌
+Directory suffix used for character-specific costume sprites.
+GetExtraPortraitPath ()
+鈿擄笌
+string GetExtraPortraitPath ( )
+鈿擄笌
+Path to a
+.anm2
+file displayed on top of the character's level transition and boss VS screen portrait.
+GetKeys ()
+鈿擄笌
+int GetKeys ( )
+鈿擄笌
+GetModdedControlsSprite ()
+鈿擄笌
+Sprite
+GetModdedControlsSprite ( )
+鈿擄笌
+Returns the Sprite used for a modded character's starting room controls.
+Note that this Sprite is shared by other characters from the same mod - there is an animation with the same name as this character.
+Returns nil for vanilla characters, or characters with no corresponding animation.
+GetModdedCoopMenuSprite ()
+鈿擄笌
+Sprite
+GetModdedCoopMenuSprite ( )
+鈿擄笌
+Returns the Sprite used for a modded character's icon in the co-op character select wheel.
+Note that this Sprite is shared by other characters from the same mod - there is an animation with the same name as this character.
+Returns nil for vanilla characters, or characters with no corresponding animation.
+GetModdedGameOverSprite ()
+鈿擄笌
+Sprite
+GetModdedGameOverSprite ( )
+鈿擄笌
+Returns the Sprite used for a modded character's game over screen (ie, their name).
+Note that this Sprite is shared by other characters from the same mod - there is an animation with the same name as this character.
+Returns nil for vanilla characters, or characters with no corresponding animation.
+GetModdedMenuBackgroundSprite ()
+鈿擄笌
+Sprite
+GetModdedMenuBackgroundSprite ( )
+鈿擄笌
+Returns the Sprite used for a modded character's character select screen.
+Note that this Sprite is shared by other characters from the same mod - there is an animation with the same name as this character.
+Returns nil for vanilla characters, or characters with no corresponding animation.
+GetModdedMenuPortraitSprite ()
+鈿擄笌
+Sprite
+GetModdedMenuPortraitSprite ( )
+鈿擄笌
+Returns the Sprite used for a modded character's character select portrait.
+Note that this Sprite is shared by other characters from the same mod - there is an animation with the same name as this character.
+Returns nil for vanilla characters, or characters with no corresponding animation.
+GetName ()
+鈿擄笌
+string GetName ( )
+鈿擄笌
+GetNameImagePath ()
+鈿擄笌
+string GetNameImagePath ( )
+鈿擄笌
+Path to the PNG file used for the character's name on the boss VS screen.
+GetPill ()
+鈿擄笌
+PillColor
+GetPill ( )
+鈿擄笌
+Does not include starting pills obtained via unlocks.
+GetPlayerType ()
+鈿擄笌
+int GetPlayerType ( )
+鈿擄笌
+GetPocketActive ()
+鈿擄笌
+CollectibleType
+GetPocketActive ( )
+鈿擄笌
+Does not include items added by mods.
+GetPortraitPath ()
+鈿擄笌
+string GetPortraitPath ( )
+鈿擄笌
+Path to the PNG file used for the character's main level transition and boss VS screen portrait.
+GetRedHearts ()
+鈿擄笌
+int GetRedHearts ( )
+鈿擄笌
+GetSkinColor ()
+鈿擄笌
+SkinColor
+GetSkinColor ( )
+鈿擄笌
+GetSkinPath ()
+鈿擄笌
+string GetSkinPath ( )
+鈿擄笌
+Path to the PNG file used for the character's primary sprite sheet.
+GetSoulHearts ()
+鈿擄笌
+int GetSoulHearts ( )
+鈿擄笌
+GetTaintedCounterpart ()
+鈿擄笌
+EntityConfigPlayer
+GetTaintedCounterpart ( )
+鈿擄笌
+For non-tainted characters, returns their tainted counterpart, or returns nil if there is none.
+For tainted characters, returns their non-tainted counterpart.
+GetTrinket ()
+鈿擄笌
+TrinketType
+GetTrinket ( )
+鈿擄笌
+Does not include starting trinkets obtained via unlocks.
+Does not include trinkets added by mods.
+IsHidden ()
+鈿擄笌
+boolean IsHidden ( )
+鈿擄笌
+Returns true if the character is not visible/selectable from the character select screen.
+Doesn't include characters who are only hidden until unlocked.
+IsTainted ()
+鈿擄笌
+boolean IsTainted ( )
+鈿擄笌
+Class
+Back to top
+Copyright © 2026 REPENTOGON developers
+Made with
+Zensical
