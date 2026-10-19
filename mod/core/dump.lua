@@ -81,11 +81,12 @@ function dump.itemNames(log, limit)
     for id = 1, limit do
         local okc, cfg = pcall(function() return ic:GetCollectible(id) end)
         if okc and cfg then
-            local name, gfx, q = "", "", ""
+            local name, gfx, q, raw = "", "", "", ""
             pcall(function()
                 q = tostring(cfg.Quality)
                 gfx = tostring(cfg.Gfx or "")
                 local key = cfg.Name
+                if type(key) == "string" then raw = key end
                 if type(key) == "string" then
                     local okl, loc = pcall(function() return Isaac.GetLocalizedString(key) end)
                     if okl and loc ~= nil then
@@ -94,7 +95,9 @@ function dump.itemNames(log, limit)
                     end
                 end
             end)
-            log(string.format("[DUMP] NAME\t%d\t%s\t%s\t%s", id, q, gfx, name))
+            -- 原始 Name 里若有制表符/换行会破坏格式，清掉
+            raw = (raw:gsub("[\t\r\n]", " "))
+            log(string.format("[DUMP] NAME\t%d\t%s\t%s\t%s\t%s", id, q, gfx, raw, name))
             n = n + 1
         end
     end

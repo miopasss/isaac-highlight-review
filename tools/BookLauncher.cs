@@ -33,7 +33,7 @@ class BookLauncher
         }
 
         var psi = new ProcessStartInfo("powershell.exe");
-        psi.Arguments = "-NoProfile -ExecutionPolicy Bypass -File " + Quote(script) + extra;
+        psi.Arguments = "-NoProfile -ExecutionPolicy Bypass -File " + Quote(script) + " -Open" + extra;
         psi.UseShellExecute = false;
 
         Process p = Process.Start(psi);

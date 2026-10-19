@@ -103,13 +103,13 @@ for _, s in ipairs(saves) do
         totalRooms = totalRooms + e.rooms
     end
 
-    -- 完整册子：只解最近一局（演示"按需解码"）
-    local last = store.index[#store.index]
-    if last then
-        local run = fmt.decodeRun(store, last)
+    -- 每局都出一本册子（房间多的排后面，方便先翻最近的）
+    for ri = 1, #store.index do
+        local entry = store.index[ri]
+        local run = fmt.decodeRun(store, entry)
         local book = hl.analyze(run, CFG)
         report[#report + 1] = "\n" .. text.book(book, {
-            title = "高光回顾 · 最近一局",
+            title = string.format("高光回顾 · 第 %d 局", ri),
             resultName = hl.resultName(book.result),
             roomName = hl.roomName,
             curseNames = hl.curseNames,

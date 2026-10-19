@@ -7,7 +7,7 @@
 # 注意：册子的**内容逻辑**在 mod/core/highlight.lua + mod/core/text_render.lua，
 # 游戏内册子将来调用的是同一份 highlight.lua，所以这里验证过的行为不会走样。
 # =============================================================================
-param([switch]$Demo)
+param([switch]$Demo, [switch]$Open)
 
 $ErrorActionPreference = "Stop"
 $Root = Split-Path $PSScriptRoot -Parent
@@ -36,4 +36,12 @@ if ($latest) {
     Write-Host ""
     Write-Host ("最新报告: {0}" -f $latest.FullName) -ForegroundColor Green
     Write-Host ("  {0:N0} 字节 / 修改于 {1}" -f $latest.Length, $latest.LastWriteTime) -ForegroundColor DarkGray
+    if ($Open) {
+        try {
+            Invoke-Item $latest.FullName
+            Write-Host ("已打开: " + $latest.FullName) -ForegroundColor Green
+        } catch {
+            Write-Host ("自动打开失败（{0}），请手动打开: {1}" -f $_.Exception.Message, $latest.FullName) -ForegroundColor Yellow
+        }
+    }
 }

@@ -40,6 +40,13 @@ local function deltaStr(d)
 end
 
 --- book: highlight.analyze 的输出；opts: { title=... }
+--- id → 显示文本：有名字用"名字(id)"，没名字就只写 id
+local function label(id, opts)
+    local nm = opts and opts.itemName and opts.itemName(id)
+    if nm then return string.format("%s(%d)", nm, id) end
+    return tostring(id)
+end
+
 function text.book(book, opts)
     opts = opts or {}
     local out = {}
@@ -88,10 +95,11 @@ function text.book(book, opts)
                 (h.hgo or 0) + (h.het or 0), (h.hgoo or 0) + (h.heto or 0)))
             if h.ts then
                 w(string.format("     六维  伤害 %.2f   攻速 %.2f   弹速 %.2f   射程 %.1f   移速 %.2f   幸运 %.0f",
-                    h.dv or 0, h.ts or 0, h.ss or 0, h.rg or 0, h.mv or 0, h.lk or 0))
+                    h.dv or 0, h.ts or 0, h.ss or 0, (h.rg or 0) / 40, h.mv or 0, h.lk or 0))
             end
             w(string.format("     口袋  金 %d→%d   弹 %d→%d   钥 %d→%d",
                 h.c or 0, h.co or 0, h.bmb or 0, h.bmbo or 0, h.key or 0, h.keyo or 0))
+
 
             local items = {}
             for k = 1, #h.it do
@@ -136,7 +144,7 @@ function text.book(book, opts)
             f.dmg, f.powerIn, f.powerOut, deltaStr(f.gain)))
         if #f.items > 0 then
             local ids = {}
-            for i = 1, #f.items do ids[i] = tostring(f.items[i]) end
+            for i = 1, #f.items do ids[i] = label(f.items[i], opts) end
             w("  道具：" .. table.concat(ids, ", "))
         end
         if #f.trinkets > 0 then
@@ -159,7 +167,11 @@ function text.book(book, opts)
                     opts.roomName and opts.roomName(h.type) or ("型" .. h.type),
                     h.p, h.po, deltaStr(h.delta), pctStr(h.pct),
                     opts.duration and opts.duration(h.ms) or "",
-                    (#h.it > 0) and ("道具 " .. table.concat(h.it, ",") .. "  ") or "",
+                    (#h.it > 0) and ("道具 " .. (function()
+                        local t2 = {}
+                        for k = 1, #h.it do t2[k] = label(h.it[k], opts) end
+                        return table.concat(t2, ", ")
+                    end)() .. "  ") or "",
                     (#h.tro > #h.tri) and "饰品+" or ""))
             end
         end
