@@ -15,7 +15,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$Game = "D:\LenovoSoftstore\Install\Steam\steamapps\common\The Binding of Isaac Rebirth"
+. "$PSScriptRoot\_paths.ps1"
+$Game = $IsaacDir
 if (-not $DataDir)    { $DataDir    = Join-Path $Game "data\highlight-review" }
 $Root = Split-Path $PSScriptRoot -Parent
 if (-not $ArchiveDir) { $ArchiveDir = Join-Path $Root "_archive" }

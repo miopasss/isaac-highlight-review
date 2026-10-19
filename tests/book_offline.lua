@@ -6,8 +6,10 @@
 --
 -- 运行：tools\book.ps1
 -- =============================================================================
-local ROOT     = "D:/00000/aiStudy/issacmod/"
-local DATA_DIR = "D:/LenovoSoftstore/Install/Steam/steamapps/common/The Binding of Isaac Rebirth/data/highlight-review/"
+local ROOT = (os and os.getenv and os.getenv("HLR_ROOT")) or "D:/00000/aiStudy/issacmod/"
+if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
+local DATA_DIR = (os and os.getenv and os.getenv("HLR_DATA")) or "data/highlight-review"
+if DATA_DIR:sub(-1) ~= "/" and DATA_DIR:sub(-1) ~= "\\" then DATA_DIR = DATA_DIR .. "/" end
 
 local function loadmod(path)
     local chunk, err = loadfile(ROOT .. path)

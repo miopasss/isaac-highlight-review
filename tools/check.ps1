@@ -9,7 +9,8 @@ param([int]$Session = 1, [switch]$All, [int]$Tail = 40)
 
 $ErrorActionPreference = "Stop"
 $Docs = Join-Path $env:USERPROFILE "Documents\My Games\Binding of Isaac Repentance"
-$Game = "D:\LenovoSoftstore\Install\Steam\steamapps\common\The Binding of Isaac Rebirth"
+. "$PSScriptRoot\_paths.ps1"
+$Game = $IsaacDir
 $DataDir = Join-Path $Game "data\highlight-review"
 
 function Show-Head($text) { Write-Host ""; Write-Host "== $text ==" -ForegroundColor Cyan }

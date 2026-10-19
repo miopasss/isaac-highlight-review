@@ -10,7 +10,8 @@
 param([Parameter(Mandatory = $true)][string]$File)
 
 $ErrorActionPreference = "Stop"
-$GameDir = "D:\LenovoSoftstore\Install\Steam\steamapps\common\The Binding of Isaac Rebirth"
+. "$PSScriptRoot\_paths.ps1"
+$GameDir = $IsaacDir
 $Dll = Join-Path $GameDir "Lua5.4.dll"
 
 if (-not (Test-Path $Dll)) { Write-Host "找不到 $Dll"; exit 2 }
@@ -53,6 +54,10 @@ public static class LuaRun {
     }
 }
 "@
+# 把路径传给 Lua（Lua 里不准硬编码路径）
+$env:HLR_ROOT = $ProjectRoot
+$env:HLR_DATA = Join-Path $IsaacDir "data\highlight-review"
+
 Add-Type -TypeDefinition $src
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8

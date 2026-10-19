@@ -10,7 +10,8 @@
 param([string[]]$Paths)
 
 $ErrorActionPreference = "Stop"
-$GameDir = "D:\LenovoSoftstore\Install\Steam\steamapps\common\The Binding of Isaac Rebirth"
+. "$PSScriptRoot\_paths.ps1"
+$GameDir = $IsaacDir
 $Dll     = Join-Path $GameDir "Lua5.4.dll"
 
 if (-not (Test-Path $Dll)) { Write-Host "找不到 $Dll"; exit 2 }

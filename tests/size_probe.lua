@@ -1,4 +1,5 @@
-local ROOT = "D:/00000/aiStudy/issacmod/"
+local ROOT = (os and os.getenv and os.getenv("HLR_ROOT")) or "D:/00000/aiStudy/issacmod/"
+if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
 local schema = loadfile(ROOT.."mod/core/schema.lua")()
 local fmt = loadfile(ROOT.."mod/core/fmt.lua")()
 fmt.setSchema(schema)

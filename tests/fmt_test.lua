@@ -2,7 +2,8 @@
 -- fmt_test.lua —— v2 格式的离线单测（不启动游戏）
 --   tools\luarun.ps1 tests\fmt_test.lua
 -- =============================================================================
-local ROOT = "D:/00000/aiStudy/issacmod/"
+local ROOT = (os and os.getenv and os.getenv("HLR_ROOT")) or "D:/00000/aiStudy/issacmod/"
+if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
 
 local function loadmod(path)
     local chunk, err = loadfile(ROOT .. path)

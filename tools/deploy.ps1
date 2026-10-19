@@ -10,7 +10,8 @@
 param([switch]$Clean)
 
 $ErrorActionPreference = "Stop"
-$GameDir  = "D:\LenovoSoftstore\Install\Steam\steamapps\common\The Binding of Isaac Rebirth"
+. "$PSScriptRoot\_paths.ps1"
+$GameDir = $IsaacDir
 $ModName  = "highlight-review"
 $Source   = Join-Path (Split-Path $PSScriptRoot -Parent) "mod"
 $Target   = Join-Path $GameDir "mods\$ModName"

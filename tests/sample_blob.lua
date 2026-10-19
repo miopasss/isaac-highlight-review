@@ -2,7 +2,8 @@
 -- sample_blob.lua —— 生成一份"假想存档"，用来直观展示落盘后文件长什么样
 -- 运行：tools\luarun.ps1 tests\sample_blob.lua
 -- =============================================================================
-local ROOT = "D:/00000/aiStudy/issacmod/"
+local ROOT = (os and os.getenv and os.getenv("HLR_ROOT")) or "D:/00000/aiStudy/issacmod/"
+if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
 
 local fmt = loadfile(ROOT .. "mod/core/fmt.lua")()
 

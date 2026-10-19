@@ -3,7 +3,8 @@
 -- 目的：验证 ★ 高光段、Top-N、战力曲线在有数据时的排版
 -- 运行：tools\luarun.ps1 tests\book_demo.lua
 -- =============================================================================
-local ROOT = "D:/00000/aiStudy/issacmod/"
+local ROOT = (os and os.getenv and os.getenv("HLR_ROOT")) or "D:/00000/aiStudy/issacmod/"
+if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
 local function loadmod(p) return loadfile(ROOT .. p)() end
 
 local hl = loadmod("mod/core/highlight.lua")

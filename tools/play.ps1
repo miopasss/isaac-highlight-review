@@ -17,7 +17,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$Game = "D:\LenovoSoftstore\Install\Steam\steamapps\common\The Binding of Isaac Rebirth"
+. "$PSScriptRoot\_paths.ps1"
+$Game = $IsaacDir
 $Archive = Join-Path $PSScriptRoot "archive.ps1"
 
 function Invoke-Archive([string]$why) {
