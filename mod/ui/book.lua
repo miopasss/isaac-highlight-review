@@ -1,0 +1,594 @@
+-- ============================================================================
+-- ui/book.lua —— 游戏内册子（羊皮纸 · MCM 式结构）
+--
+-- F5 开关。页序：Overview → 亮点回顾（战力 Top3 / 四级 / 零级）→ 各层。
+--
+-- 三条硬规则（都是踩坑换来的）：
+--   1. 界面上**只能出现 ASCII**。游戏位图字体没有中文，中文会变乱码。
+--   2. 线段/图标的位置**按实际字宽算**，不要用硬编码坐标（字体一变就错位）。
+--   3. 道具图标用 ReplaceSpritesheet(sheetId=1, png)，之后必须 LoadGraphics()。
+-- ============================================================================
+local book = {}
+
+local deps = nil
+local isOpen = false
+local page = 1
+local selRun = 1
+local cache = {}
+local paper, paperTried = nil, false
+local iconCache = {}
+local holdNext = 0
+
+local RES_NAME = { [0] = "DEAD", [1] = "WIN", [2] = "UNFINISHED" }
+
+local INK     = { 0.24, 0.19, 0.14 }
+local INK_DIM = { 0.45, 0.39, 0.30 }
+local INK_RED = { 0.52, 0.17, 0.12 }
+local INK_UP  = { 0.16, 0.40, 0.18 }
+local INK_DN  = { 0.55, 0.12, 0.10 }
+local BAR_ON  = { 0.36, 0.52, 0.26 }
+local BAR_OFF = { 0.62, 0.58, 0.50 }
+local BAR_BASE = { 0.55, 0.36, 0.18 }   -- 原有属性（棕）
+local BAR_GAIN = { 0.26, 0.60, 0.28 }   -- 本房增加（绿）
+
+local bodyFont, titleFont, fontTried = nil, nil, false
+local cjkFont, cjkTried = nil, false
+
+-- 借用 EID 的中文字体（EID 没装就回退英文）
+local CJK_CANDIDATES = {
+    "../mods/external item descriptions_836319872/resources/font/eid_cn_default.fnt",
+    "../mods/external item descriptions/resources/font/eid_cn_default.fnt",
+    "font/eid_cn_default.fnt",
+}
+
+--- 中文探针：游戏自带的 mplus 字体带日文汉字，可能覆盖部分中文
+local function getCJK()
+    if cjkTried then return cjkFont end
+    cjkTried = true
+    for i = 1, #CJK_CANDIDATES do
+        local ok, f = pcall(function()
+            local ff = Font()
+            ff:Load(CJK_CANDIDATES[i])
+            return ff
+        end)
+        if ok and f then
+            cjkFont = f
+            if deps and deps.log then deps.log("[CJK] 使用字体: " .. CJK_CANDIDATES[i]) end
+            return cjkFont
+        end
+    end
+    if deps and deps.log then deps.log("[CJK] 没找到中文字体，回退英文") end
+    return nil
+end
+
+--- 画一段中文（没有中文字体时返回 false）
+local function txtCN(str, x, y, scale, col)
+    local f = getCJK()
+    if not f then return false end
+    local k = scale * 1.45
+    local ok = pcall(function()
+        f:DrawStringUTF8(str, x, y, KColor(col[1], col[2], col[3], 1), 0, false)
+    end)
+    return ok
+end
+
+function book.init(d) deps = d end
+
+-- ---------------------------------------------------------------- 基础设施
+
+local function scr()
+    return Isaac.GetScreenWidth(), Isaac.GetScreenHeight(), (Isaac.GetScreenHeight() / 270)
+end
+
+local function loadFonts()
+    if fontTried then return end
+    fontTried = true
+    pcall(function() local f = Font(); f:Load("font/teammeatfont12.fnt"); bodyFont = f end)
+    pcall(function() local f = Font(); f:Load("font/teammeatfontextended16bold.fnt"); titleFont = f end)
+end
+
+local function getPaper()
+    if paperTried then return paper end
+    paperTried = true
+    local ok, sp = pcall(function()
+        local s = Sprite(); s:Load("gfx/ui/hl_paper.anm2"); s:Play("Idle"); return s
+    end)
+    if ok and sp then paper = sp end
+    return paper
+end
+
+local function rect(x, y, w, h, r, g, b, a)
+    local p = getPaper()
+    if not p or w <= 0 or h <= 0 then return end
+    p.Scale = Vector(w / 256.0, h / 256.0)
+    p.Color = Color(r or 1, g or 1, b or 1, a or 1, 0, 0, 0)
+    p:Render(Vector(x, y))
+end
+
+local cjkErrLogged = false
+local function hasNonAscii(str) return str:find("[\128-\255]") ~= nil end
+
+--- 统一文字出口：
+---   纯 ASCII → 游戏位图字体（teammeat）
+---   含非 ASCII → 中文位图字体（借 EID 的），没有就降级成 ?
+local function txt(s, x, y, scale, col, isTitle)
+    loadFonts()
+    col = col or INK
+    local k = scale * 1.45
+    local k1 = k
+    local str = tostring(s)
+
+    if hasNonAscii(str) then
+        local cf = getCJK()
+        if cf then
+            -- EID 用的就是这个带缩放的 UTF8 版本（eid_api.lua 里大量出现）
+            local ok, err = pcall(function()
+                cf:DrawStringScaledUTF8(str, x, y, k1, k1, KColor(col[1], col[2], col[3], 1), 0, false)
+            end)
+            if ok then return end
+            if deps and deps.log and not cjkErrLogged then
+                cjkErrLogged = true
+                deps.log("[CJK] DrawStringScaledUTF8 失败：" .. tostring(err))
+            end
+        end
+        str = str:gsub("[\128-\255]+", "?")
+    end
+
+    local f = isTitle and titleFont or bodyFont
+    if f then
+        f:DrawStringScaled(str, x, y, k, k, KColor(col[1], col[2], col[3], 1), 0, false)
+    else
+        Isaac.RenderScaledText(str, x, y, col[1], col[2], col[3], 1, k, k)
+    end
+end
+
+--- 一段文字的像素宽度（用于动态排版）
+local function textW(str, scale)
+    loadFonts()
+    local k = scale * 1.45
+    str = tostring(str)
+    local f
+    if hasNonAscii(str) then
+        f = getCJK() or bodyFont
+    else
+        f = bodyFont
+    end
+    if f then
+        local ok, w = pcall(function() return f:GetStringWidth(str) end)
+        if ok and w then return w * k end
+    end
+    return #str * 6 * k
+end
+
+--- 道具图标（32×32）。sheetId=1 是实测可用的写法。
+local iconDbg = 0
+local function dbg(msg)
+    iconDbg = iconDbg + 1
+    if iconDbg <= 8 and deps and deps.log then deps.log("[ICON] " .. msg) end
+end
+
+--- 道具图标：字段名是 GfxFileName（不是 Gfx），sheet id 用 1
+local function itemIcon(id)
+    local e = iconCache[id]
+    if e ~= nil then return e or nil end
+
+    local cfg
+    local okc = pcall(function() cfg = Isaac.GetItemConfig():GetCollectible(id) end)
+    if not okc or not cfg then dbg(tostring(id) .. " GetCollectible 失败"); iconCache[id] = false; return nil end
+
+    local path = cfg.GfxFileName
+    if not path or path == "" then
+        dbg(tostring(id) .. " GfxFileName 为空")
+        iconCache[id] = false
+        return nil
+    end
+
+    -- GfxFileName 可能是 "collectibles_xxx.png"，也可能已经带目录
+    local candidates = { path }
+    if not path:find("/") then
+        candidates[2] = "gfx/items/collectibles/" .. path
+    end
+
+    for ci = 1, #candidates do
+        local ok, sp = pcall(function()
+            local s = Sprite()
+            s:Load("gfx/ui/hl_icon.anm2", true)
+            s:ReplaceSpritesheet(1, candidates[ci])
+            s:LoadGraphics()
+            s:Play("Idle")
+            return s
+        end)
+        if ok and sp then
+            dbg(string.format("%d OK  %s", id, candidates[ci]))
+            iconCache[id] = sp
+            return sp
+        end
+        dbg(string.format("%d FAIL %s", id, candidates[ci]))
+    end
+
+    iconCache[id] = false
+    return nil
+end
+--- 分段条
+--- 双色分段条：棕色 = 原有属性，绿色 = 本房增加
+local function segBar2(x, y, w, h, fracBase, fracTotal, n)
+    n = n or 20
+    local gap = 0.9
+    local bw = (w - gap * (n - 1)) / n
+    if bw <= 0 then return end
+    if fracTotal < fracBase then fracTotal = fracBase end
+    for i = 1, n do
+        local mid = ((i - 1) / n + i / n) / 2
+        local col, a
+        if mid <= fracBase then col, a = BAR_BASE, 0.85
+        elseif mid <= fracTotal then col, a = BAR_GAIN, 0.95
+        else col, a = BAR_OFF, 0.25 end
+        rect(x + (i - 1) * (bw + gap), y, bw, h, col[1], col[2], col[3], a)
+    end
+end
+
+local function segBar(x, y, w, h, frac, onCol, offCol, n)
+    n = n or 20               -- 段数翻倍 = 每格宽度减半
+    local gap = 0.9
+    local bw = (w - gap * (n - 1)) / n
+    if bw <= 0 then return end
+    local filled = math.floor((frac or 0) * n + 0.5)
+    if filled < 0 then filled = 0 elseif filled > n then filled = n end
+    for i = 1, n do
+        local on = (i <= filled)
+        local c = on and onCol or offCol
+        rect(x + (i - 1) * (bw + gap), y, bw, h, c[1], c[2], c[3], on and 0.9 or 0.26)
+    end
+end
+
+local function sortedRuns()
+    local store = deps.getStore()
+    local list = {}
+    if not store then return list end
+    for i = 1, #store.index do list[#list + 1] = store.index[i] end
+    table.sort(list, function(a, b) return (a.seq or 0) > (b.seq or 0) end)
+    return list
+end
+
+local function analyzed(entry)
+    if not entry then return nil end
+    local key = entry.seq or 0
+    if cache[key] ~= nil then return cache[key] or nil end
+    local ok, res = pcall(function()
+        local run = deps.fmt.decodeRun(deps.getStore(), entry)
+        return deps.hl.analyze(run, deps.config)
+    end)
+    cache[key] = ok and res or false
+    if not ok then return nil end
+    return res
+end
+
+-- ---------------------------------------------------------------- 输入
+
+local function trig(k) return Input.IsButtonTriggered(k, 0) end
+local function held(k) return Input.IsButtonPressed(k, 0) end
+
+local function navStep(down)
+    local k = down and Keyboard.KEY_DOWN or Keyboard.KEY_UP
+    if trig(k) then holdNext = holdNext + 1; return 1 end
+    if held(k) then
+        holdNext = holdNext + 1
+        if holdNext > 14 and holdNext % 3 == 0 then return 1 end
+    end
+    return 0
+end
+
+local function update()
+    if trig(Keyboard.KEY_F5) then
+        isOpen = not isOpen
+        if isOpen then
+            page, cache, holdNext, lastDiag = 1, {}, 0, ""
+            local l0 = sortedRuns()
+            if #l0 == 0 then
+                isOpen = false
+            elseif deps and deps.log then
+                deps.log(string.format("[UI] 打开册子：%d 局  cjk=%s", #l0, (getCJK() and "yes" or "no")))
+            end
+        end
+        return
+    end
+    if not isOpen then holdNext = 0; return end
+    if not (held(Keyboard.KEY_UP) or held(Keyboard.KEY_DOWN)) then holdNext = 0 end
+
+    local list = sortedRuns()
+    local bk = analyzed(list[selRun])
+    local total = bk and bk.pageCount or 1
+
+    -- 第 1 页：↑↓ 换局；→/Enter 进书；← 也进书（避免"右边没反应"的错觉）
+    if page == 1 then
+        local d, u = navStep(true), navStep(false)
+        if d > 0 and selRun < #list then selRun = selRun + 1 end
+        if u > 0 and selRun > 1 then selRun = selRun - 1 end
+        if (trig(Keyboard.KEY_ENTER) or trig(Keyboard.KEY_RIGHT)) and #list > 0 then page = 2 end
+        if trig(Keyboard.KEY_ESCAPE) then isOpen = false end
+    else
+        if trig(Keyboard.KEY_RIGHT) and page < total then page = page + 1 end
+        if trig(Keyboard.KEY_LEFT)  and page > 1 then page = page - 1 end
+        if trig(Keyboard.KEY_ESCAPE) then page = 1 end
+    end
+end
+
+-- ---------------------------------------------------------------- 版面
+
+local PADW, PADH, FOOTH = 360, 200, 20
+local PADX, PADY, FOOTY = 60, 24, 230
+
+local function layout(s)
+    local sw = Isaac.GetScreenWidth() / s
+    local sh = Isaac.GetScreenHeight() / s
+    PADX = (sw - PADW) / 2
+    PADY = math.max(6, (sh - (PADH + FOOTH + 6)) / 2)
+    FOOTY = PADY + PADH + 6
+end
+
+local function drawPaper(s)
+    rect((PADX + 1.5) * s, (PADY + 2) * s, PADW * s, PADH * s, 0.05, 0.03, 0.02, 0.42)
+    rect(PADX * s, PADY * s, PADW * s, PADH * s)
+    local b = 0.32
+    rect((PADX + 3) * s, (PADY + 3) * s, (PADW - 6) * s, 1.1 * s, 0.45, 0.36, 0.20, b)
+    rect((PADX + 3) * s, (PADY + PADH - 4) * s, (PADW - 6) * s, 1.1 * s, 0.45, 0.36, 0.20, b)
+    rect((PADX + 3) * s, (PADY + 3) * s, 1.1 * s, (PADH - 6) * s, 0.45, 0.36, 0.20, b)
+    rect((PADX + PADW - 4) * s, (PADY + 3) * s, 1.1 * s, (PADH - 6) * s, 0.45, 0.36, 0.20, b)
+    rect((PADX + 1.5) * s, (FOOTY + 1.5) * s, PADW * s, FOOTH * s, 0.05, 0.03, 0.02, 0.38)
+    rect(PADX * s, FOOTY * s, PADW * s, FOOTH * s, 0.96, 0.93, 0.85, 1)
+end
+
+local function title(s, text, right)
+    txt(text, (PADX + 12) * s, (PADY + 8) * s, s * 0.72, INK_RED, true)
+    rect((PADX + 12) * s, (PADY + 21) * s, 170 * s, 1.4 * s, 0.50, 0.16, 0.12, 0.5)
+    if right then
+        txt(right, (PADX + PADW - 22) * s, (PADY + 9) * s, s * 0.62, INK_DIM, true)
+    end
+end
+
+local function footer(s, text)
+    txt(text, (PADX + 10) * s, (FOOTY + 4) * s, s * 0.6, INK_DIM)
+end
+
+--- 六维行（标签 + 数值 + 分段条 + 增量），返回下一行的 y（单位：480 空间）
+--- 位置全部按字宽算，避免条压字
+local function statRow(s, y, st, mx, mn, x0, colWidth)
+    local sc = s * 0.56
+    local label = (getCJK() and st.label) or st.labelEn or st.label
+    txt(label, x0 * s, y * s, sc, INK)
+    local wLab = textW(label, sc) / s
+
+    local valStr = string.format("%.2f", st.outV)
+    local xVal = x0 + wLab + 5
+    txt(valStr, xVal * s, y * s, sc, INK)
+    local wVal = textW(valStr, sc) / s
+
+    local xBar = xVal + wVal + 5
+    local barW = math.max(30, colWidth - (xBar - x0) - 42)
+    local span = (mx or 0) - (mn or 0)
+    if span <= 0 then span = 1 end
+    local fb = ((st.inV or 0) - (mn or 0)) / span
+    local ft = ((st.outV or 0) - (mn or 0)) / span
+    segBar2(xBar * s, (y + 2.2) * s, barW * s, 5.5 * s, fb, ft, 20)
+
+    local dStr = string.format("%+.2f", st.delta)
+    txt(dStr, (xBar + barW + 5) * s, y * s, sc,
+        st.delta > 0.005 and INK_UP or (st.delta < -0.005 and INK_DN or INK_DIM))
+    return y + 11
+end
+
+-- ---------------------------------------------------------------- 各页
+
+local function drawOverview(s, bk, entry)
+    title(s, (getCJK() and "总览") or "Overview", string.format("1/%d", bk.pageCount))
+    local y = PADY + 27
+    txt(string.format("%s   %s   %dF   %d rooms",
+        tostring(entry.id), RES_NAME[bk.result] or "?", bk.maxFloor, #bk.rooms),
+        (PADX + 12) * s, y * s, s * 0.64, INK_DIM)
+    y = y + 12
+    local growth = (bk.base > 0) and ((bk.final - bk.base) / bk.base * 100) or 0
+    txt(string.format("POWER  %.2f > %.2f    %+.2f   (%+.1f%%)",
+        bk.base, bk.final, bk.final - bk.base, growth),
+        (PADX + 12) * s, y * s, s * 0.68, INK_UP)
+
+    local maxP = 0
+    for i = 1, #bk.floors do if bk.floors[i].powerOut > maxP then maxP = bk.floors[i].powerOut end end
+    if maxP <= 0 then maxP = 1 end
+
+    local x0 = PADX + 12
+    local colW = PADW - 40
+    y = y + 15
+    for i = 1, math.min(#bk.floors, 10) do
+        local f = bk.floors[i]
+        local sc = s * 0.6
+        local lab = string.format("Floor %d", f.i)
+        txt(lab, x0 * s, y * s, sc, INK)
+        local wLab = textW(lab, sc) / s
+
+        local valStr = string.format("%.2f", f.powerOut)
+        local xVal = x0 + wLab + 8
+        txt(valStr, xVal * s, y * s, sc, INK)
+        local wVal = textW(valStr, sc) / s
+
+        local gainStr = string.format("%+.2f", f.gain)
+        local wGain = textW(gainStr, sc) / s
+        local durStr = deps.hl.durationEn(f.ms)
+        local wDur = textW(durStr, s * 0.52) / s
+        local durX = PADX + PADW - 14 - wDur
+        local gainX = durX - 8 - wGain
+        local xBar = xVal + wVal + 8
+        local barW = math.max(30, gainX - 8 - xBar)
+        segBar2(xBar * s, (y + 2.2) * s, barW * s, 6 * s,
+            f.powerIn / maxP, f.powerOut / maxP, 40)
+
+        txt(gainStr, gainX * s, y * s, sc, f.gain >= 0 and INK_UP or INK_DN)
+        txt(durStr, durX * s, y * s, s * 0.52, INK_DIM)
+        y = y + 14.5
+    end
+    -- 中文探针：验证游戏自带字体能否显示汉字
+    local cf = getCJK()
+    if cf then
+        pcall(function()
+            txt("[CJK probe] ->", (PADX + 12) * s, (PADY + PADH - 16) * s, s * 0.5, INK_DIM)
+            cf:DrawStringUTF8("伤害攻速射程宝箱房", (PADX + 58) * s, (PADY + PADH - 16) * s,
+                KColor(0.5, 0.1, 0.1, 1), 0, false)
+        end)
+    else
+        txt("CJK font: NOT FOUND", (PADX + 12) * s, (PADY + PADH - 16) * s, s * 0.5, INK_DN)
+    end
+    footer(s, "UP/DOWN Run   ENTER/RIGHT Open   LEFT/RIGHT Page   F5 Close")
+end
+
+local function drawHighlight(s, bk, idx)
+    local p = bk.pages[idx]
+    if not p then footer(s, "empty"); return end
+    local r = p.room
+
+    local kindName
+    if getCJK() then
+        kindName = (p.kind == "power" and "战力提升") or (p.kind == "q4" and "四级道具") or "零级道具"
+    else
+        kindName = (p.kind == "power" and "POWER UP") or (p.kind == "q4" and "QUALITY 4") or "QUALITY 0"
+    end
+    local label = string.format("%s  #%d", kindName, p.rank)
+    title(s, label, string.format("%d/%d", 1 + idx, bk.pageCount))
+
+    local y = PADY + 26
+    txt(string.format("Floor %d   room %.0f   %s%s", r.floor, r.idx,
+        (getCJK() and deps.hl.roomName(r.type)) or deps.hl.roomNameEn(r.type),
+        r.first and "" or "   (revisit)"),
+        (PADX + 12) * s, y * s, s * 0.6, INK_DIM)
+    y = y + 12
+
+    txt(string.format("%.2f > %.2f     %+.2f   (%+.1f%%)", r.p, r.po, r.delta, r.pct),
+        (PADX + 12) * s, y * s, s * 0.66, r.delta >= 0 and INK_UP or INK_DN)
+    y = y + 12
+
+    txt(string.format("%s   damage %d   enemies %d",
+        deps.hl.durationEn(r.ms), r.dmg, r.foes), (PADX + 12) * s, y * s, s * 0.58, INK_DIM)
+    y = y + 15
+
+    for i = 1, #r.stats do
+        local k = r.stats[i].key
+        y = statRow(s, y, r.stats[i], bk.statMax[k] or 0, bk.statMin[k] or 0, PADX + 12, PADW - 40)
+    end
+
+    if #r.it > 0 then
+        y = y + 4
+        txt("ITEMS", (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
+        local wLab = textW("ITEMS", s * 0.54) / s
+        local xIcon = PADX + 12 + wLab + 8
+        for k = 1, math.min(#r.it, 10) do
+            local sp = itemIcon(r.it[k])
+            if sp then
+                sp.Scale = Vector(s * 0.7, s * 0.7)
+                sp:Render(Vector((xIcon + (k - 1) * 30) * s, (y - 3) * s))
+            else
+                txt(tostring(r.it[k]), (xIcon + (k - 1) * 30) * s, y * s, s * 0.5, INK_DIM)
+            end
+        end
+    end
+    footer(s, "LEFT/RIGHT Page   ESC Back   F5 Close")
+end
+
+local function drawFloor(s, bk, idx)
+    local f = bk.floors[idx]
+    if not f then footer(s, "empty"); return end
+
+    title(s, string.format((getCJK() and "第 %d 层") or "Floor %d", f.i),
+        string.format("%d/%d", 1 + #bk.pages + idx, bk.pageCount))
+
+    local y = PADY + 26
+    txt(string.format("%s   damage %d   %.2f > %.2f  (%+.2f)",
+        deps.hl.durationEn(f.ms), f.dmg, f.powerIn, f.powerOut, f.gain),
+        (PADX + 12) * s, y * s, s * 0.62, INK)
+
+    local curses = getCJK() and deps.hl.curseNames(f.curse) or deps.hl.curseNamesEn(f.curse)
+    if #curses > 0 then
+        y = y + 12
+        txt((getCJK() and "诅咒  " or "CURSE  ") .. table.concat(curses, " "),
+            (PADX + 12) * s, y * s, s * 0.56, INK_RED)
+    end
+
+    -- 六维
+    y = y + 15
+    if f.stats then
+        for i = 1, #f.stats do
+            local k = f.stats[i].key
+            y = statRow(s, y, f.stats[i], bk.statMax[k] or 0, bk.statMin[k] or 0, PADX + 12, PADW - 40)
+        end
+    end
+
+    -- 道具图标网格
+    y = y + 4
+    txt(string.format("ITEMS  %d", #f.items), (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
+    local wLab = textW(string.format("ITEMS  %d", #f.items), s * 0.54) / s
+    local xIcon = PADX + 12 + wLab + 8
+    y = y + 11
+    local perRow, shown = 10, math.min(#f.items, 20)
+    for k = 1, shown do
+        local row = math.floor((k - 1) / perRow)
+        local col = (k - 1) % perRow
+        local sp = itemIcon(f.items[k])
+        if sp then
+            sp.Scale = Vector(s * 0.62, s * 0.62)
+            sp:Render(Vector((xIcon + col * 26) * s, (y + row * 24) * s))
+        else
+            txt(tostring(f.items[k]), (xIcon + col * 26) * s, (y + row * 24) * s, s * 0.5, INK_DIM)
+        end
+    end
+    if #f.items > 20 then
+        txt(string.format("+%d", #f.items - 20),
+            (xIcon + (shown % perRow) * 26) * s,
+            (y + math.floor(shown / perRow) * 24) * s, s * 0.54, INK_DIM)
+    end
+    footer(s, "LEFT/RIGHT Page   ESC Back   F5 Close")
+end
+
+-- ---------------------------------------------------------------- 主渲染
+
+local lastDiag = ""
+local function diag(bk, entry)
+    local key = tostring(selRun) .. ":" .. tostring(page)
+    if key == lastDiag then return end
+    lastDiag = key
+    if not (deps and deps.log) then return end
+    local nIcon, nFail = 0, 0
+    for _, v in pairs(iconCache) do
+        if v == false then nFail = nFail + 1 else nIcon = nIcon + 1 end
+    end
+    local sw, sh, sc = scr()
+    deps.log(string.format("[UI] page=%d/%d pages=%d floors=%d cjk=%s icons=%d fail=%d screen=%dx%d scale=%.2f",
+        page, bk.pageCount, #bk.pages, #bk.floors,
+        (getCJK() and "yes" or "no"), nIcon, nFail, sw, sh, sc))
+end
+
+local function render()
+    if not isOpen then return end
+    local _, _, s = scr()
+    local list = sortedRuns()
+    if #list == 0 then isOpen = false; return end
+    if selRun > #list then selRun = #list end
+
+    layout(s)
+    drawPaper(s)
+
+    local bk = analyzed(list[selRun])
+    if not bk then isOpen = false; return end
+    if page > bk.pageCount then page = bk.pageCount end
+    diag(bk, list[selRun])
+
+    if page == 1 then
+        drawOverview(s, bk, list[selRun])
+    elseif page <= 1 + #bk.pages then
+        drawHighlight(s, bk, page - 1)
+    else
+        drawFloor(s, bk, page - 1 - #bk.pages)
+    end
+end
+
+book.update = update
+book.render = render
+book.isOpen = function() return isOpen end
+
+return book

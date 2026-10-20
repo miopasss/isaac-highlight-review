@@ -1,36 +1,74 @@
 -- ============================================================================
--- highlight.lua —— 册子的“内容层”（纯 Lua，不依赖游戏 API，也不含任何渲染）
+-- highlight.lua —— 册子的"内容层"（纯 Lua，不依赖游戏 API，也不含渲染）
 --
--- 这是**唯一的一处真相**：
---   离线册子  → tests/book_offline.lua 调用它 → core/text_render.lua 出文本
---   游戏内册子 → ui/*.lua 调用它           → 画成图形
--- 两边拿到的是同一个结构，所以离线验证过的排版，游戏内不会走样。
+-- 这是唯一真相：
+--   离线册子  → tests/book_offline.lua → core/text_render.lua 出文本
+--   游戏内册子 → ui/book.lua            → 画成羊皮纸界面
 --
--- 输入：一局（fmt.decodeRun 的输出：floors[] + rooms[]）
--- 输出：册子结构（见文件末尾说明）
+-- 页结构（v2）：
+--   1. Overview
+--   2. 亮点回顾：战力提升 Top3（按房间）+ 四级道具（时间顺序，同房合并，最多 3 页）
+--                + 零级道具最早 1 个
+--   3. 楼层页：每层一行汇总 + 诅咒 + 道具列表
 -- ============================================================================
 local highlight = {}
 
 local DEFAULT_CFG = {
-    relPct      = 15,    -- 相对涨幅阈值 %
-    absDelta    = 0.5,   -- 绝对增幅阈值
-    perFloorMax = 3,     -- 每层最多收录几条
-    topK        = 5,     -- 全局强制收录 Top-K
+    powerTopN  = 3,      -- 战力提升收录几条
+    q4MaxPages = 3,      -- 四级道具最多几页
+    absDelta   = 0.5,    -- 战力变化的绝对门槛
+    relPct     = 15,     -- 战力变化的相对门槛（百分比）
 }
 
--- 房型名字（只在文本渲染里用得更多，这里给个通用表）
 highlight.ROOM_NAMES = {
-    [1] = "普通", [2] = "商店", [4] = "宝箱", [5] = "Boss", [6] = "小Boss",
-    [7] = "密室", [8] = "超密", [9] = "街机", [10] = "诅咒", [11] = "挑战",
-    [12] = "图书馆", [13] = "祭坛", [14] = "恶魔", [15] = "天使", [16] = "地牢",
-    [17] = "BossRush", [18] = "以撒房", [20] = "宝箱房", [21] = "骰子房",
+    [1] = "普通房", [2] = "商店", [4] = "宝箱房", [5] = "Boss房", [6] = "小Boss",
+    [7] = "密室", [8] = "超密室", [9] = "街机房", [10] = "诅咒房",
+    [11] = "挑战房", [12] = "图书馆", [13] = "祭坛房", [14] = "恶魔房",
+    [15] = "天使房", [16] = "地牢房", [17] = "BossRush", [18] = "以撒房",
+    [20] = "星象房", [21] = "骰子房", [22] = "传送房", [23] = "洁净室",
 }
 
 function highlight.roomName(t)
     return highlight.ROOM_NAMES[t] or ("型" .. tostring(t))
 end
 
--- 结局
+-- 游戏内字体是 ASCII 位图字，中文会变乱码，所以另给一套英文名
+highlight.ROOM_NAMES_EN = {
+    [1] = "NORMAL", [2] = "SHOP", [4] = "TREASURE", [5] = "BOSS", [6] = "MINIBOSS",
+    [7] = "SECRET", [8] = "SUPERSECRET", [9] = "ARCADE", [10] = "CURSE",
+    [11] = "CHALLENGE", [12] = "LIBRARY", [13] = "SACRIFICE", [14] = "DEVIL",
+    [15] = "ANGEL", [16] = "DUNGEON", [17] = "BOSSRUSH", [18] = "ISAAC",
+    [20] = "STAR", [21] = "DICE", [22] = "TELEPORTER", [23] = "CLEAN",
+}
+
+function highlight.roomNameEn(t)
+    return highlight.ROOM_NAMES_EN[t] or ("T" .. tostring(t))
+end
+
+--- 时长（ASCII 版）：3m48s / 48s
+function highlight.durationEn(ms)
+    local sec = math.floor((tonumber(ms) or 0) / 1000)
+    local m, s = math.floor(sec / 60), sec % 60
+    if m > 0 then return string.format("%dm%02ds", m, s) end
+    return string.format("%ds", s)
+end
+
+highlight.CURSE_BITS_EN = {
+    { bit = 1, name = "DARK" }, { bit = 2, name = "LABYRINTH" },
+    { bit = 4, name = "LOST" }, { bit = 8, name = "UNKNOWN" },
+    { bit = 16, name = "CURSED" }, { bit = 32, name = "MAZE" },
+    { bit = 64, name = "BLIND" }, { bit = 128, name = "GIANT" },
+}
+
+function highlight.curseNamesEn(mask)
+    mask = tonumber(mask) or 0
+    local out = {}
+    for _, c in ipairs(highlight.CURSE_BITS_EN) do
+        if math.floor(mask / c.bit) % 2 == 1 then out[#out + 1] = c.name end
+    end
+    return out
+end
+
 highlight.RESULT_NAMES = { [0] = "死亡", [1] = "通关", [2] = "未完成" }
 
 function highlight.resultName(r)
@@ -45,16 +83,11 @@ local function fmtDuration(ms)
 end
 highlight.duration = fmtDuration
 
---- 层诅咒位掩码 → 名字列表
 highlight.CURSE_BITS = {
-    { bit = 1,   name = "黑暗" },
-    { bit = 2,   name = "迷宫" },
-    { bit = 4,   name = "迷失" },
-    { bit = 8,   name = "未知" },
-    { bit = 16,  name = "诅咒" },
-    { bit = 32,  name = "迷阵" },
-    { bit = 64,  name = "失明" },
-    { bit = 128, name = "巨大" },
+    { bit = 1,   name = "黑暗" }, { bit = 2,   name = "迷宫" },
+    { bit = 4,   name = "迷失" }, { bit = 8,   name = "未知" },
+    { bit = 16,  name = "诅咒" }, { bit = 32,  name = "迷阵" },
+    { bit = 64,  name = "失明" }, { bit = 128, name = "巨大" },
 }
 
 function highlight.curseNames(mask)
@@ -63,157 +96,184 @@ function highlight.curseNames(mask)
     local out = {}
     for i = 1, #highlight.CURSE_BITS do
         local c = highlight.CURSE_BITS[i]
-        -- 位与：Lua 5.3+ 有 // 但为了兼容直接用取模拆位
         if math.floor(mask / c.bit) % 2 == 1 then out[#out + 1] = c.name end
     end
     return out
 end
 
+-- 六维定义：进房 / 出房字段名 + 显示缩放
+highlight.STATS = {
+    { key = "dv", label = "伤害", labelEn = "DMG",  inKey = "dv",  outKey = "dvo", scale = 1.0    },
+    { key = "ts", label = "攻速", labelEn = "TEAR", inKey = "tso", outKey = "ts",  scale = 1.0    },
+    { key = "ss", label = "弹速", labelEn = "SHOT", inKey = "sso", outKey = "ss",  scale = 1.0    },
+    { key = "rg", label = "射程", labelEn = "RNG",  inKey = "rgo", outKey = "rg",  scale = 1 / 40 },
+    { key = "mv", label = "移速", labelEn = "SPD",  inKey = "mvo", outKey = "mv",  scale = 1.0    },
+    { key = "lk", label = "幸运", labelEn = "LUCK", inKey = "lko", outKey = "lk",  scale = 1.0    },
+}
+
 -- ---------------------------------------------------------------- 核心分析
 
---- 把一局分析成册子结构。cfg 可选（默认见 DEFAULT_CFG）
+local function num(v) return tonumber(v) or 0 end
+
+--- 把一局分析成册子结构
 function highlight.analyze(run, cfg)
-    cfg = cfg or DEFAULT_CFG
+    cfg = cfg or {}
+    for k, v in pairs(DEFAULT_CFG) do
+        if cfg[k] == nil then cfg[k] = v end
+    end
     local book = {
-        runId   = run.id or "?",
-        result  = run.res or 2,
-        maxFloor= run.max or 0,
-        base    = run.base or 0,
-        final   = run.final or 0,
-        floors  = {},
-        highlights = {},
-        curve   = {},      -- 每层末的战力，给折线用
-        rooms   = {},      -- 展平后的房间（带计算好的 delta）
+        runId = run.id or "?", result = run.res or 2,
+        maxFloor = run.max or 0, base = run.base or 0, final = run.final or 0,
+        floors = {}, rooms = {}, pages = {},
+        statMax = {}, statMin = {}, curve = {},
     }
 
-    -- 1) 展平房间 + 计算派生值
+    -- 1) 展平房间 + 六维进出
     local rooms = {}
     for i = 1, #(run.rooms or {}) do
         local r = run.rooms[i]
-        local delta = (r.po or 0) - (r.p or 0)
-        local pct = (r.p and r.p > 0) and (delta / r.p * 100) or 0
+        local delta = num(r.po) - num(r.p)
+        local pct = (num(r.p) > 0) and (delta / num(r.p) * 100) or 0
+
+        local stats = {}
+        for _, sd in ipairs(highlight.STATS) do
+            local vin  = num(r[sd.inKey])  * sd.scale
+            local vout = num(r[sd.outKey]) * sd.scale
+            stats[#stats + 1] = {
+                key = sd.key, label = sd.label, labelEn = sd.labelEn,
+                inV = vin, outV = vout, delta = vout - vin,
+            }
+            local mx = book.statMax[sd.key] or 0
+            if vout > mx then mx = vout end
+            if vin > mx then mx = vin end
+            book.statMax[sd.key] = mx
+            local mn = book.statMin[sd.key]
+            if mn == nil then mn = math.min(vin, vout) end
+            if vin < mn then mn = vin end
+            if vout < mn then mn = vout end
+            book.statMin[sd.key] = mn
+        end
+
         rooms[#rooms + 1] = {
-            floor = r.f or 1, idx = r.i or 0,
-            type  = r.t or 0, shape = r.s or 0,
-            p     = r.p or 0, po = r.po or 0,
-            delta = delta, pct = pct,
-            hp    = r.hp, hs = r.hs, hb = r.hb,
-            hbl   = r.hbl, hgo = r.hgo, het = r.het, hrt = r.hrt,
-            hpo   = r.hpo, hso = r.hso, hbo = r.hbo,
-            hblo  = r.hblo, hgoo = r.hgoo, heto = r.heto, hrto = r.hrto,
-            mxhp  = r.mxhp, mxhpo = r.mxhpo,
-            ts    = r.ts, ss = r.ss, rg = r.rg, mv = r.mv, lk = r.lk,
-            dv    = r.dv, mu = r.mu, fm = r.fm,
-            ms    = r.ms or 0, dmg = r.dmg or 0, first = r.first,
-            foes  = r.foes or 0,
-            c     = r.c or 0, co = r.co or 0,
-            bmb   = r.bmb or 0, bmbo = r.bmbo or 0,
-            key   = r.key or 0, keyo = r.keyo or 0,
-            boss  = r.boss or 0, cleared = r.clr,
-            it    = r.it or {}, iq = r.iq or {},
-            tri   = r.tri or {}, tro = r.tro or {},
-            clr   = r.clr,
+            floor = num(r.f), idx = num(r.i),
+            type = num(r.t), shape = num(r.s),
+            p = num(r.p), po = num(r.po), delta = delta, pct = pct,
+            ms = num(r.ms), dmg = num(r.dmg), foes = num(r.foes),
+            first = r.first and true or false,
+            hp = num(r.hp), hpo = num(r.hpo), mxhp = num(r.mxhp), mxhpo = num(r.mxhpo),
+            hs = num(r.hs), hso = num(r.hso), hb = num(r.hb), hbo = num(r.hbo),
+            it = r.it or {}, iq = r.iq or {},
+            stats = stats,
         }
     end
-    -- 品质信号：只标注"这间房拿到了 Q4 / Q0"，不直接判定起飞或封盘。
-    -- 真正的性质由实际战力变化决定（见 tag）。
-    for i = 1, #rooms do
-        local r = rooms[i]
-        local q4, q0 = 0, 0
-        for k = 1, #r.iq do
-            local q = r.iq[k]
-            if q >= 4 then q4 = q4 + 1 end
-            if q == 0 then q0 = q0 + 1 end
-        end
-        r.q4, r.q0 = q4, q0
-        if q4 > 0 then r.qtag = "Q4" elseif q0 > 0 then r.qtag = "Q0" end
-        -- 性质：只看战力变化
-        if r.delta >= cfg.absDelta then r.tag = "up"
-        elseif r.delta <= -cfg.absDelta then r.tag = "down" end
-    end
-
     book.rooms = rooms
 
-    -- 2) 层汇总
-    local floorMap = {}
+    -- 2) 楼层汇总
+    local map = {}
     for i = 1, #(run.floors or {}) do
         local f = run.floors[i]
-        floorMap[f.i] = {
-            i = f.i, stage = f.stage, stageType = f.type,
-            curse = f.curse or 0, alt = f.alt or 0,
-            rooms = 0, firstRooms = 0, items = {}, trinkets = {},
-            powerIn = nil, powerOut = 0, gain = 0, ms = 0, dmg = 0,
+        map[num(f.i)] = {
+            i = num(f.i), stage = f.stage, curse = num(f.curse),
+            rooms = 0, firstRooms = 0, items = {}, ms = 0, dmg = 0,
+            powerIn = nil, powerOut = 0, gain = 0,
         }
     end
     for i = 1, #rooms do
         local r = rooms[i]
-        local fs = floorMap[r.floor]
-        if not fs then
-            fs = { i = r.floor, rooms = 0, firstRooms = 0, items = {}, trinkets = {}, gain = 0, ms = 0, dmg = 0 }
-            floorMap[r.floor] = fs
+        local f = map[r.floor]
+        if not f then
+            f = { i = r.floor, curse = 0, rooms = 0, firstRooms = 0,
+                  items = {}, ms = 0, dmg = 0, gain = 0 }
+            map[r.floor] = f
         end
-        fs.rooms = fs.rooms + 1
-        if r.first then fs.firstRooms = (fs.firstRooms or 0) + 1 end
-        fs.ms = fs.ms + r.ms
-        fs.dmg = fs.dmg + r.dmg
-        if fs.powerIn == nil then fs.powerIn = r.p end
-        fs.powerOut = r.po
-        for k = 1, #r.it do fs.items[#fs.items + 1] = r.it[k] end
-        for k = 1, #r.tro do
-            local seen = false
-            for j = 1, #fs.trinkets do if fs.trinkets[j] == r.tro[k] then seen = true end end
-            if not seen then fs.trinkets[#fs.trinkets + 1] = r.tro[k] end
+        f.rooms = f.rooms + 1
+        f.ms = f.ms + r.ms
+        f.dmg = f.dmg + r.dmg
+        if r.first then f.firstRooms = f.firstRooms + 1 end
+        if f.powerIn == nil then f.powerIn = r.p end
+        f.powerOut = r.po
+        for k = 1, #r.it do f.items[#f.items + 1] = r.it[k] end
+    end
+    local order = {}
+    for i in pairs(map) do order[#order + 1] = i end
+    table.sort(order)
+    for k = 1, #order do
+        local f = map[order[k]]
+        f.powerIn = f.powerIn or 0
+        f.gain = f.powerOut - f.powerIn
+        -- 楼层六维：取本层最后一间房的出房值，增量相对本层第一间的进房值
+        local firstR, lastR
+        for ri = 1, #rooms do
+            if rooms[ri].floor == f.i then
+                if not firstR then firstR = rooms[ri] end
+                lastR = rooms[ri]
+            end
         end
+        if lastR then
+            f.stats = {}
+            for si = 1, #lastR.stats do
+                local outS = lastR.stats[si]
+                local inV = firstR and firstR.stats[si].inV or outS.inV
+                f.stats[si] = {
+                    key = outS.key, label = outS.label, labelEn = outS.labelEn,
+                    inV = inV, outV = outS.outV, delta = outS.outV - inV,
+                }
+            end
+        end
+        book.floors[#book.floors + 1] = f
+        book.curve[#book.curve + 1] = { floor = f.i, power = f.powerOut }
     end
 
-    -- 排序 + 算 gain + 曲线
-    local floorOrder = {}
-    for i in pairs(floorMap) do floorOrder[#floorOrder + 1] = i end
-    table.sort(floorOrder)
-    for k = 1, #floorOrder do
-        local fs = floorMap[floorOrder[k]]
-        fs.powerIn = fs.powerIn or 0
-        fs.gain = fs.powerOut - fs.powerIn
-        book.floors[#book.floors + 1] = fs
-        book.curve[#book.curve + 1] = { floor = fs.i, power = fs.powerOut }
+    -- 3) 亮点 ①：战力提升 Top3（按房间进出差值）
+    local pool = {}
+    for i = 1, #rooms do
+        if rooms[i].delta > 0 then pool[#pool + 1] = rooms[i] end
+    end
+    table.sort(pool, function(a, b) return a.delta > b.delta end)
+    for i = 1, math.min(cfg.powerTopN, #pool) do
+        book.pages[#book.pages + 1] = {
+            kind = "power", rank = i, room = pool[i], title = "战力提升",
+        }
     end
 
-    -- 3) 高光判定：绝对 + 相对双门槛
-    local cand = {}
+    -- 4) 亮点 ②：四级道具（时间顺序，同房合并）
+    local seenRoom = {}
+    local q4Count = 0
     for i = 1, #rooms do
         local r = rooms[i]
-        if r.delta >= cfg.absDelta and r.pct >= cfg.relPct then
-            cand[#cand + 1] = r
+        local ids = {}
+        for k = 1, #r.it do
+            if num(r.iq[k]) >= 4 then ids[#ids + 1] = r.it[k] end
+        end
+        if #ids > 0 and q4Count < cfg.q4MaxPages then
+            local key = r.floor .. ":" .. r.idx
+            if not seenRoom[key] then
+                seenRoom[key] = true
+                q4Count = q4Count + 1
+                book.pages[#book.pages + 1] = {
+                    kind = "q4", rank = q4Count, room = r,
+                    items = ids, title = "四级道具",
+                }
+            end
         end
     end
 
-    -- 每层最多 perFloorMax 条（按 delta 降序取）
-    table.sort(cand, function(a, b) return a.delta > b.delta end)
-    local perFloor, picked = {}, {}
-    for i = 1, #cand do
-        local r = cand[i]
-        local n = perFloor[r.floor] or 0
-        if n < cfg.perFloorMax then
-            perFloor[r.floor] = n + 1
-            picked[#picked + 1] = r
-        end
-    end
-
-    -- 全局按时间序排（册子正文按时间读）
-    table.sort(picked, function(a, b)
-        if a.floor ~= b.floor then return a.floor < b.floor end
-        return a.idx < b.idx
-    end)
-    book.highlights = picked
-    book.topK = {}
-    for i = 1, math.min(cfg.topK, #cand) do book.topK[i] = cand[i] end
-
-    -- 品质信号房：不看阈值，全部强制收录（Q4 / Q0）
-    book.mustSee = {}
+    -- 5) 亮点 ③：零级道具（最早拿到的那个）
     for i = 1, #rooms do
-        if rooms[i].qtag then book.mustSee[#book.mustSee + 1] = rooms[i] end
+        local r = rooms[i]
+        local ids = {}
+        for k = 1, #r.it do
+            if num(r.iq[k]) == 0 then ids[#ids + 1] = r.it[k] end
+        end
+        if #ids > 0 then
+            book.pages[#book.pages + 1] = {
+                kind = "q0", rank = 1, room = r, items = ids, title = "零级道具",
+            }
+            break
+        end
     end
 
+    book.pageCount = 1 + #book.pages + #book.floors
     return book
 end
 

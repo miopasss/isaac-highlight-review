@@ -408,3 +408,190 @@ core/highlight.lua      ← 唯一真相：判定 + 组织册子结构（纯 Lua
 **已知局限**
 - 册子里显示的是**道具 id**，不是名字 —— 因为 `ItemConfig.Name` 给的是本地化 key（`#THE_D6_NAME`），要显示中文得再查一次本地化表（扩展点 E23）
 - Q0 ≠ 负收益，只是"官方认为没有收益"。如果真实数据里出现 Q0 但战力上涨，册子会同时显示两个信号，正好用来验证官方评分和实测的差异
+---
+
+# 第 12 轮 · 游戏内册子 UI（2026-10-20 07:xx）
+
+**目标**：把离线册子搬进游戏，做成 MCM / DSS 菜单那种结构。
+
+## 已实现
+
+| 部分 | 内容 |
+|---|---|
+| 入口 | **F5** 开关（原先 F1，作者要求改 F5） |
+| 模式 1 | 局列表，↑↓ 选择（支持长按连发）、Enter 进入 |
+| 模式 2 | 书页，←→ 翻页、↑↓ 滚动房间、Esc 返回 |
+| 第 1 页 | 本局封面 + 每层战力条（真矩形） |
+| 第 2~n 页 | 每层房间表（`^` 涨 / `v` 跌） |
+| 背景 | 程序生成的 256×256 羊皮纸（噪点 + 污渍 + 暗边），24,858 B |
+| 字体 | 游戏自带 `teammeatfontextended16bold.fnt` + `teammeatfont12.fnt` |
+
+## 三次踩坑（都值得记住）
+
+**① `Sprite:Load(path, loadGraphics)` —— 第二个参数不是"是不是 anm2"**
+
+```lua
+-- 游戏自带 resources/scripts/main.lua(645)
+function META:Load(path, loadGraphics)
+    Sprite_Load(self, path, loadGraphics ~= false)
+end
+```
+
+`Sprite` **只接受 anm2**。喂 PNG 会让引擎按 XML 解析 → 原生断言 → **进程直接退出，`pcall` 挡不住**。
+
+**② anm2 是 Version 5 结构，我写成了旧版**
+
+- 错：`<Info Version="1"/>` + `<FrameAnimations><FrameAnimation .../>`
+- 对：`<Info Version="5" Fps="30"/>` + `<LayerAnimations><LayerAnimation LayerId="0"><Frame .../>`
+
+对照物：`mods/!!difflib_.../resources/gfx/ui/ex/difficulty_widget.anm2`（一个能用的最小 UI anm2）。
+
+**③ 输入必须在 `MC_POST_RENDER` 里读**
+
+放在 `MC_POST_UPDATE` 里读 `Input.IsButtonTriggered` 会**大量漏触发**，表现为"要按很多下才出来"。
+参考 `mods/boss butch_3297246061/butch_scripts/dss/dssmenucore.lua`（Dead Sea Scrolls 菜单框架）——它的 `post_render` 同时负责输入和绘制。
+
+**④ 字体颜色要 `KColor`，不是 `Color`**
+
+```
+bad argument #7 to 'Font_DrawStringScaled' (KColor expected, got userdata)
+```
+
+`Color()` 给 Sprite 用，`Font:DrawStringScaled` 要 `KColor(r,g,b,a)`。
+
+## 被否决的视觉特性（记录以免重复讨论）
+
+| 特性 | 否决理由 |
+|---|---|
+| 房间图（像素级） | 引擎没有 framebuffer readback，只能手工铺贴图，成本 1~2 周 |
+| 房间网格布局（`██` 格子） | 玩家认不出房间 |
+| 房间轮廓（形状 + 门位） | 同上，纯视觉噪音 |
+
+**结论**：册子的价值在"数字和因果"，不在画图。
+
+## 其他
+
+- 游戏内不再有任何 STB / 静态房间数据的依赖
+- 面板缺少时会退化成纯文字（`getPaper()` 失败 → `rect()` 空操作）
+---
+
+# 第 13 轮 · 游戏内册子 v2（结构重做）（2026-10-20 08:xx）
+
+**作者定的结构**
+```
+第 1 页    Overview
+第 2..N    亮点回顾：战力提升 Top3（3 页）+ 四级道具 Top3（时间顺序，同房合并）
+                      + 零级道具 1 个（最早那一个）
+最后       楼层页：时长 · 受伤 · 战力变化 · 诅咒 · 六维 · 道具图标网格
+```
+
+**同时删掉**：房间逐条明细（"没人喜欢看房间明细"）。
+
+## 数据层
+
+- 新增六维**进房值** `tso / sso / rgo / mvo / lko`，出房伤害 `dvo`
+  （原来六维只在出房记一次，算不出"进房→出房"的提升）
+- `highlight.analyze` 输出改为：`pages[]`（有序的亮点页）+ `floors[].stats`（楼层六维）
+- 六维归一化基准：**本局各维度最大值**（先试这个，效果不好再上对数）
+
+## 三次踩坑
+
+**① 中文字符串直接进游戏字体 → 乱码**
+
+```
+Floor 9  room 21  Ã©Ã...     ← 宝箱房
+228ç§                       ← 3分48秒
+```
+
+游戏位图字体只有 ASCII。所有进游戏 UI 的文本必须走英文：
+新增 `roomNameEn()` / `durationEn()` / `curseNamesEn()`，`book.lua` 只用这套。
+`text_render.lua`（离线）继续用中文，两边各取所需。
+
+**② `ReplaceSpritesheet` 的 sheet id 是 1，不是 0**
+
+anm2 里 `<Spritesheet Id="1">` + `<Layer SpritesheetId="1">`，然后
+`sprite:ReplaceSpritesheet(1, png路径)` + `sprite:LoadGraphics()`。
+（照 DSS/EID 的写法；id=0 时图标贴不上）
+
+**③ 硬编码坐标在换字体后必然错位**
+
+字宽变了，条就压到字上。改成**先量字宽再摆条**：
+
+```lua
+local wLab = textW(label, sc) / s
+local xVal = x0 + wLab + 8
+local wVal = textW(valStr, sc) / s
+local xBar = xVal + wVal + 8
+```
+
+`textW` 用 `Font:GetStringWidth()`。
+
+## 其他
+
+- 纸加宽到 **360**（原 252 / 300），底条加高到 20
+- 第 1 页也能用 →/Enter 进书（原来只有 Enter，导致"右边没反应"的错觉）
+- `highlight.analyze` 现在会**合并默认配置**，避免调用方漏传键时 `math.min(nil)` 崩
+
+## 仍未做
+
+- 房型图标（皇冠/骷髅头）：还没找到小地图图标资源路径
+- ImGui 配置页仍是空壳（已挂上菜单，只有一行占位文字）
+---
+
+# 第 14 轮 · 图标修好 + 中文尝试 + 诊断埋点（2026-10-20 09:xx）
+
+## 图标终于出来了
+
+根因：**字段名是 `GfxFileName`，不是 `Gfx`**。
+
+```lua
+-- EID features/eid_api.lua:1276-1279
+spriteDummy:Load("gfx/eid_inline_icons.anm2", true)
+spriteDummy:ReplaceSpritesheet(0, backgroundImage)
+spriteDummy:ReplaceSpritesheet(1, item.GfxFileName)   -- ← 关键
+spriteDummy:LoadGraphics()
+```
+
+我们的 dump 里 `Gfx` 恒为 `-`，就是因为读错了字段名。改正后：
+`[UI] icons=8 fail=0` —— 8 个道具图标全部成功。
+
+## 中文：还在试，但路径已明确
+
+- 游戏自带 `mplus_12b.fnt` **没有汉字字形**（探针只出 `[CJK probe] ->`，右边空白）
+- EID 自带 4 套中文字体（`eid_cn_default.fnt` 388 KB + 对应 png 599 KB），且自己用
+  `"../mods/<folder>/resources/font/..."` 这种**跨 mod 相对路径**加载 → 我们照抄
+- **`cjk=yes` 已经打出来了**，说明字体加载成功，问题在**绘制方法**：
+  EID 用的是 `Font:DrawStringScaledUTF8(str, x, y, sx, sy, color, 0, false)`，
+  我们一开始用的 `DrawStringUTF8` 什么都不画
+
+## 诊断埋点（一次做全）
+
+每次打开册子 / 每次翻页各打一条：
+
+```
+[UI] 打开册子：6 局  cjk=yes
+[UI] page=1/16 pages=6 floors=9 cjk=yes icons=8 fail=0 screen=479x247 scale=0.91
+```
+
+| 字段 | 用途 |
+|---|---|
+| `page=x/y` | 当前页 / 总页数 |
+| `pages` / `floors` | 亮点页数 / 楼层数 |
+| `cjk` | 中文字体是否可用 |
+| `icons` / `fail` | 图标成功 / 失败数 |
+| `screen` / `scale` | 分辨率与缩放比（排版问题一看便知） |
+
+另有 `[CJK] 使用字体: <路径>`、`[CJK] DrawStringScaledUTF8 失败：<err>`、
+`[ICON] <id> OK/FAIL <路径>`、`[册子 UI render 出错：...]`。
+
+## 重复犯的错（第 3 次）
+
+替换代码块时用「从 A 到 B」的区间删除，结果**吞掉了夹在中间的无关函数**：
+- 第 1 次吞掉 `txt()`
+- 第 2 次吞掉 `segBar2()`
+
+**教训**：改这个文件必须用精确的整行/整段替换，禁止区间删除。
+
+## 流程约定（作者要求，长期有效）
+
+> 每次代码修改都要：① 更新 CHANGELOG ② git commit 一下。

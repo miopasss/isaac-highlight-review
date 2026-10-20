@@ -34,6 +34,9 @@ local schema = tryRequire("core.schema", "core/schema")
 local fmt    = tryRequire("core.fmt", "core/fmt")
 local power  = tryRequire("core.power", "core/power")
 local config = tryRequire("config")
+local highlight = include("core.highlight")
+local bookui = include("ui.book")
+local configui = include("ui.config")
 local dump   = tryRequire("core.dump", "core/dump")
 
 if not schema or not fmt or not power or not config then
@@ -449,6 +452,8 @@ local function beginRoom(player)
         firstIn = firstVisitNow(),
         bossIn  = bossIdNow(),
         dmgIn   = snap.damage, muIn = snap.multiShot, fmIn = snap.form,
+        stIn    = { dv = snap.damage, ts = snap.tears, ss = snap.shotspeed,
+                    rg = snap.rangeStat, mv = snap.movespeed, lk = snap.luck },
         tIn = nowMs(),
         dmg = 0,
         cleared = false,
@@ -499,6 +504,10 @@ local function settleRoom(player)
         hblo = snap.black, hgoo = snap.gold, heto = snap.eternal, hrto = snap.rotten,
         ts = snap.tears, ss = snap.shotspeed, rg = snap.rangeStat,
         mv = snap.movespeed, lk = snap.luck,
+        dvo = snap.damage,
+        tso = (p.stIn and p.stIn.ts) or 0, sso = (p.stIn and p.stIn.ss) or 0,
+        rgo = (p.stIn and p.stIn.rg) or 0, mvo = (p.stIn and p.stIn.mv) or 0,
+        lko = (p.stIn and p.stIn.lk) or 0,
         p = p.p, po = snap.power,
         ms = math.floor(nowMs() - p.tIn),
         dmg = math.floor(p.dmg + 0.5),
@@ -608,6 +617,33 @@ local function add(event, fn)
     if event == nil then return end
     mod:AddCallback(event, fn)
 end
+
+-- ---------------------------------------------------------------- 册子 UI
+bookui.init({
+    getStore = function() return state.store end,
+    fmt      = fmt,
+    hl       = highlight,
+    config   = { powerTopN = 3, q4MaxPages = 3, absDelta = 0.5, relPct = 15 },
+    log      = log,
+})
+
+local uiErrs = 0
+local function uiGuard(what, fn)
+    local ok, e = pcall(fn)
+    if not ok and uiErrs < 3 then
+        uiErrs = uiErrs + 1
+        err("册子 UI " .. what .. " 出错：" .. safeToString(e))
+    end
+end
+
+-- 输入必须在 POST_RENDER 里读：POST_UPDATE 里读 IsButtonTriggered 会漏触发
+add(ModCallbacks.MC_POST_RENDER, function()
+    uiGuard("update", bookui.update)
+    uiGuard("render", bookui.render)
+end)
+
+configui.init({})
+if configui.isReady() then log("ImGui 配置菜单已挂上") else log("ImGui 不可用（或挂载失败），跳过配置菜单") end
 
 add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
     state.store = nil
