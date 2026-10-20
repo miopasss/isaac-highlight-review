@@ -381,13 +381,11 @@ local function statRow(s, y, st, mx, mn, x0, colWidth)
     segBar2(xBar * s, (y + 2.2) * s, barW * s, 5.5 * s, fb, ft, 20)
 
     local dStr
-        if st.inV and math.abs(st.inV) > 0.005 then
-            dStr = string.format("%+.1f%%", st.delta / st.inV * 100)
-        elseif st.delta ~= 0 then
-            dStr = string.format("%+.2f", st.delta)
-        else
-            dStr = "0%"
-        end
+    if st.inV and math.abs(st.inV) > 0.005 then
+        dStr = string.format("%+.1f%%", st.delta / st.inV * 100)
+    else
+        dStr = "0%"          -- 进房值为 0 时比例无意义，统一显示 0%
+    end
     txt(dStr, (xBar + barW + 5) * s, y * s, sc,
         st.delta > 0.005 and INK_UP or (st.delta < -0.005 and INK_DN or INK_DIM))
     return y + 11
