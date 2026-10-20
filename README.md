@@ -1,141 +1,142 @@
 # Highlight Review · 高光回顾
 
-记录《以撒的结合》每一局的战力跳变：**哪一层、哪个房间、拿到了什么、涨了多少**。
-打完能翻开一本册子复盘。
+打《以撒的结合》的时候，你大概都想知道：**这局的战力是哪一层、哪个房间涨起来的？**
+这个 mod 就干这件事——记录每一间房的战力变化，打完能翻成一本可以复盘的小册子。
 
-> 依赖 **REPENTOGON**。当前目标环境：Repentance **1.7.9b.J835** + REPENTOGON **1.0.8c**。
+> 依赖 **REPENTOGON**。目标环境：Repentance 1.7.9b.J835 + REPENTOGON 1.0.12e。
 
 ---
 
-## 文档
+## 现在能做什么
 
-| 文件 | 内容 |
+### 📖 册子（默认按 **F5**）
+
+翻开是一本羊皮纸册子，键盘操作，一页一页看。
+
+**操作**
+
+| 按键 | 作用 |
 |---|---|
-| [AGENTS.md](AGENTS.md) | **给 Agent 的操作说明书**：怎么自己启动游戏 → 进存档 → 按 F5 → 看截图判断 |
-| [DESIGN.md](DESIGN.md) | **设计文档**：已定决策、不变量、未定项、扩展点仓库（§12） |
-| [FORMAT.md](FORMAT.md) | **数据格式规范 v1**：这是最贵的东西，改动规则在 §5 |
-| [damage-formula-verdict.md](damage-formula-verdict.md) | 伤害/攻速公式核对结论（带来源） |
-| [_research/](_research/) | 三轮技术调研的原始结论 |
+| `F5` | 开 / 关册子 |
+| `↑` `↓` | 在第 1 页切换要看哪一局 |
+| `←` `→` | 翻页 |
+| `Enter` | 从第 1 页进入这一局 |
+| `Esc` | 返回上一页 / 关册子 |
 
-> ⚠️ **	ools/ 和 	ests/ 是开发工具，不随 mod 发布。**
-> 玩家只需要 mod/ 一个目录。发布时把 	ools/、	ests/、_logs/、_archive/、_backup/ 全部排除。
-
-## 目录
+**页面顺序**
 
 ```
-mod/                   mod 本体（同步到游戏的 mods/highlight-review）
-  main.lua             回调接线 + 采集
-  config.lua           运行期配置
-  core/schema.lua      字段唯一真相（加需求只改这里）
-  core/fmt.lua         数据格式编解码（纯 Lua，可离线测）
-  core/power.lua       战力公式（纯函数）
-  core/highlight.lua   册子内容层（判定+组织，唯一真相）
-  core/text_render.lua 册子文本渲染（离线用）
-tests/fmt_test.lua     离线单测
-tools/deploy.ps1       同步到游戏目录
-tools/check.ps1         一键体检（mod 有没有加载 / 采集行 / 报错 / 存档）
-tools/strip-log.ps1     生成去噪日志副本（原文件只读，头部记账）
-tools/luacheck.ps1     语法校验（借游戏自带 Lua5.4.dll）
-tools/luarun.ps1       离线执行 Lua（借同一个 DLL）
-tools/verify.ps1       自动进游戏自检：启动 → 进存档 → 按 F5 → 截图 + 查日志
-tools/_win.ps1         verify 的底层：找窗口 / 发键盘扫描码 / 截窗口图 / DPI + 窗口归位
-tools/fix-bom.ps1      把 tools\*.ps1 重新存成 UTF-8 with BOM
+第 1 页   总览       这一局的种子、结局、总战力变化、每层涨幅
+第 2 页   终极Boss与终极道具  打了哪些终极 Boss（各自多久、挨了几下）+ 本局四/零级道具
+第 3~5 页 战力提升 Top3   涨得最猛的三间房，附六维变化
+之后     楼层明细     每层用了多久、挨了几下、战力怎么变、诅咒、六维、拿到的道具图标
 ```
 
-## 离线跑测试（不用启动游戏）
+**六维**（伤害 / 攻速 / 弹速 / 射程 / 移速 / 幸运）显示成**双色条**：
 
-游戏的 `Lua5.4.dll` 是 32 位，所以要用 **32 位** PowerShell 宿主：
+- **棕色** = 进这间房时已有的值
+- **绿色** = 这间房涨出来的部分
+- 右侧百分比 = 相对进房时涨了百分之几
 
-```powershell
-# 语法校验全部 .lua
-C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe -NoProfile `
-  -ExecutionPolicy Bypass -File tools\luacheck.ps1
+**终极 Boss 识别**：Hush、Boss Rush、超级撒旦、老干妈（Mother）、祸兽、百变怪。
+只统计**打完**的（房间清空才计入）。
 
-# 跑单测
-C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe -NoProfile `
-  -ExecutionPolicy Bypass -File tools\luarun.ps1 tests\fmt_test.lua
-```
+### ⭐ 道具评级与权重（默认按 **F6**）
 
-> 两个 .ps1 都是 **UTF-8 with BOM** 保存的（Windows PowerShell 5.1 只认带 BOM 的 UTF-8）。
-> 改完记得重新加 BOM，否则中文注释会把脚本解析炸掉。
+嫌官方品质不准？可以给任意道具单独打分，**册子里的「四级道具 / 零级道具」判定改用你的分数**（EID 的评级不受影响）。
 
-## 进游戏验（可以全自动）
+窗口里三个入口并列：
 
-一条命令跑完「部署 → 启动 → 进存档 → 按 F5 开册子 → 截图 → 查日志」：
+- **搜索**：输入数字按 id 找，输入字母按英文名找
+- **已获得道具**：只列你现在身上有的，点一下就能改
+- **已修改**：已经改过的那些，点一下继续改
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\verify.ps1 -Deploy -Launch -Enter -F5
-```
+可以改两样东西：
 
-跑完看 `_logs\verify\<时间戳>\`：
-
-| 文件 | 内容 |
+| 项 | 说明 |
 |---|---|
-| `01-menu.png` | 主菜单（确认游戏真的起来了） |
-| `02-run.png` | 进存档后的画面 |
-| `03-book.png` | 按 F5 之后的册子 |
-| `summary.txt` | 结论：mod 是否加载 / Lua 报错 / 引擎断言 / 关键日志 |
+| **评级** | 0.00 ~ 4.00，两位小数。**向下取整判四级**（3.75 算 3 级，不算四级） |
+| **权重** | 1.00 = 原样，0 = 直接不出现，0.5 = 出现率减半 |
 
-退出码：`0` 正常，`1` 有 Lua 报错，`2` 环境问题（没进程/没窗口/超时），
-`3` 按键前窗口被别的程序抢走（已中止，不会把按键误发到别处）。
+- **`状态：启用 / 停用`** 按钮：停用只是关掉这条覆盖，数值还在，随时能开回来
+- **`删除此条`**：彻底丢掉这条，回退到官方评级
+- 第二页「已修改」是纯展示，把改过的全部列出来
 
-- 游戏已经开着：`-Enter -F5` 就行，会复用当前实例，不再启动。
-- `-Fresh`：收拾"进程还在但窗口没了"的僵尸进程（关游戏时卡住的常见形态）。
-- `-Close`：跑完优雅关掉游戏（游戏自己会把存档写盘）。
-- 启动默认走 Steam（`steam.exe -applaunch 250900`，Steam 会给游戏加上
-  `-popupwindow -borderless -nostartupmovies`）；40 秒没进程就报错退出，不会傻等。
-  `REPENTOGONLauncher.exe` 会卡在 "Checking for update..."，不用；直接开 `isaac-ng.exe`
-  在这台机器上会挂死（steam_api 初始化卡住），所以只在 Steam 完全没开时才用它。
-- 按键是 **SendInput 发扫描码**（不是 SendKeys），游戏能收到；发之前会确认窗口在前台。
+> ⚠️ **权重目前只能降低，不能提高**（填 > 1 会提示暂不生效）。
+> 原因是"提高"要绕过游戏的抽道具逻辑，风险太高，留到以后做。
 
-### 截图为什么曾经缺一条边（已修）
+### ⚙️ 设置（菜单 `Highlight Review → 设置`）
 
-两个原因叠在一起，和册子的排版无关：
+- **绑热键**：点右边的框，再按你想用的键。册子和评级窗口都能改成别的键
+- 改完立刻存盘，下次启动直接生效
 
-1. **PowerShell 默认 DPI-unaware**。主屏是 1920×1080 @125%，所以 `GetClientRect` 拿到的是
-   1536×864 这种**逻辑**值，而 `CopyFromScreen` 抓的是**物理**像素 → 只截到窗口左上角 1/1.25，
-   右边自然被切。修法：脚本启动时把进程切成 per-monitor-v2 感知（`_win.ps1` 的 `Enable-DpiAwareness`）。
-2. **游戏窗口本身出界**。几何存在 `options.ini`（`WindowWidth/Height`、`WindowPosX/Y`，物理像素），
-   这台机器上是 `1919×989 @ (201,230)` → 右下角都在屏幕外。修法两层：
-   启动前把 ini 里放不下的几何改成 16:9 居中；画完主菜单后再量一次，还在界外就用 `SetWindowPos` 挪回来。
+---
 
-现在截图尺寸 = 窗口客户区的物理像素（例如 1600×900），册子右边缘 / 分页角标都完整。
+## 装在哪
 
-> 顺带：`tools\fix-bom.ps1` 会把 `tools\*.ps1` 重新存成 UTF-8 with BOM。
-> 任何编辑器/工具把 BOM 弄丢之后跑一下，否则 5.1 会按 GBK 解析中文注释直接炸。
-
-手动验还是老办法：
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy.ps1
-```
-
-然后启动游戏 → 进一局打几个房间 → 看
-`%USERPROFILE%\Documents\My Games\Binding of Isaac Repentance\log.txt` 里的 `[HIGHLIGHT]`。
-
-采集正常的话，每离开一个房间会打一行：
+把 `mod/` 里的内容放进：
 
 ```
-[HIGHLIGHT] F1-48 型01 形6    12.89 ->   12.89  d  +0.00 (  +0.0%)  红1→1 魂0→0 骨0→0  道具1    0.3s  伤0  [tears 伤害4.72 弹幕1]
+<游戏目录>\mods\highlight-review\
 ```
+
+然后在游戏里启用 mod（REPENTOGON 是前置）。
 
 ## 数据存在哪
 
 ```
-<游戏目录>\data\highlight-review\save1.dat     ← 存档槽 1
-                                save2.dat     ← 存档槽 2
-                                save3.dat     ← 存档槽 3
+<游戏目录>\data\highlight-review\save1.dat   ← 存档槽 1
+                               save2.dat   ← 存档槽 2
+                               save3.dat   ← 存档槽 3
 ```
 
-纯文本，可以直接用记事本打开看（这也是玩家"手动导出"的唯一途径——沙箱里没有 `io`）。
+**纯文本**，可以直接用记事本打开。里面三类行：
 
-## 当前进度
-
-| 版本 | 状态 |
+| 开头 | 内容 |
 |---|---|
-| v0.1 采集器（无 UI，按最终格式落盘） | ✅ 代码完成，语法/单测通过，**待进游戏验证** |
-| v0.2 存档 + 纯文字册 | ⬜ |
-| v0.3 封面折线图 + 主菜单入口 | ⬜ |
-| v0.4 宝宝折算 + 需求比例 + 双语 → 发工坊 | ⬜ |
+| `MRV2` | 文件头 |
+| `R` / `F` / `M` | 局 / 楼层 / 房间的采集数据 |
+| `Q=...` | 你的道具评级（JSON，一行） |
+| `C=...` | 你的设置（热键，JSON，一行） |
 
-- 	ools/Rooms.exe —— 双击导出每局全部房间明细到 _logs/rooms-*.txt（调试用）
+### 局外工具（可选，玩游戏用不到）
+
+| 工具 | 用途 |
+|---|---|
+| `tools\exe\Book.exe` | 双击生成一份可读的册子文本 |
+| `tools\exe\Rooms.exe` | 双击导出每局**每个房间**的全部明细 |
+| `tools\exe\ParseSave.exe` | 把存档导出成 JSON |
+| `tools\rating.ps1` | 列出各存档槽的道具评级 |
+| `tools\sync-rating.ps1 -From 3` | 把 3 号槽的评级同步到另外两个槽 |
+
+> 评级是**按存档槽**存的（游戏只允许写当前槽）。想三个槽共用一套，用同步脚本。
+
+---
+
+## 已知限制
+
+- **只看得到"进房 / 出房"两个时刻**，房间里的过程不记录
+- **道具权重只能降低**，不能提高
+- **评级按存档槽存**，不是全局（用同步脚本解决）
+- 遇上「书套」这种**随机多发弹幕**的道具时，战力会在两档之间跳——那是真实现象，不是 bug
+- 编辑器窗口不能显示道具图标（REPENTOGON 的 ImGui 没有图片控件）
+
+## 当前版本
+
+| 版本 | 内容 |
+|---|---|
+| v0.2 | 册子 UI、双色条、道具图标、中文显示 |
+| **v0.3** | **道具评级与权重、设置界面（热键可绑）、采集修复** |
+
+---
+
+## 给开发者
+
+开发/调试文档在别处，不参与发布：
+
+- `AGENTS.md` —— 怎么自动跑进游戏验证
+- `DESIGN.md` —— 设计决策与待办
+- `FORMAT.md` —— 数据格式规范
+- `CHANGELOG.md` —— 每一轮改动记录
+
+`tools/` 和 `tests/` 都是开发工具，发布 mod 时不需要。
