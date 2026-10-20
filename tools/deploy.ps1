@@ -25,9 +25,9 @@ if ($Clean -and (Test-Path $Target)) {
 }
 if (-not (Test-Path $Target)) { New-Item -ItemType Directory -Path $Target | Out-Null }
 
-# 只同步 .lua / .xml / .txt，跳过测试与工具
+# 同步 mod 需要的全部资源类型（含字体 .fnt），跳过测试与工具
 $items = Get-ChildItem -Path $Source -Recurse -File |
-    Where-Object { $_.Extension -in @(".lua", ".xml", ".txt", ".png", ".anm2") }
+    Where-Object { $_.Extension -in @(".lua", ".xml", ".txt", ".png", ".anm2", ".fnt", ".ttf", ".ogg", ".wav", ".json") }
 
 $copied = 0
 foreach ($f in $items) {

@@ -1,197 +1,165 @@
 -- ============================================================================
--- text_render.lua —— 把 highlight 产出的册子结构渲染成**纯文本**
+-- text_render.lua —— 离线册子的文本渲染（与 ui/book.lua 结构保持一致）
 --
--- 这是"离线册子"的渲染器。游戏内的渲染器（以后 ui/*.lua）消费**同一个结构**，
--- 所以这里验证过的排版、顺序、取舍，游戏内不会走样。
---
--- 纯字符串拼接，不依赖游戏 API，也不依赖 io。
+-- 两边的页序完全相同：Overview → 亮点回顾 → 各层。
+-- 内容层都来自 core/highlight.lua，所以离线验证过的取舍，游戏内不会走样。
 -- ============================================================================
 local text = {}
 
-
-local W = 62
+local W = 64
 
 local function line(ch) return string.rep(ch or "─", W) end
-
 local function center(s)
     local pad = math.max(0, math.floor((W - #s) / 2))
     return string.rep(" ", pad) .. s
 end
-
-local function pad(s, n)
-    s = tostring(s)
-    if #s >= n then return s end
-    return s .. string.rep(" ", n - #s)
-end
-
-local function padLeft(s, n)
-    s = tostring(s)
-    if #s >= n then return s end
-    return string.rep(" ", n - #s) .. s
-end
-
 local function pctStr(p)
     if p >= 0 then return string.format("+%.1f%%", p) end
     return string.format("%.1f%%", p)
 end
-
 local function deltaStr(d)
     if d >= 0 then return string.format("+%.2f", d) end
     return string.format("%.2f", d)
 end
+local function bar(frac, n)
+    n = n or 16
+    local f = math.floor(frac * n + 0.5)
+    if f < 0 then f = 0 end
+    if f > n then f = n end
+    return string.rep("█", f) .. string.rep("░", n - f)
+end
 
---- book: highlight.analyze 的输出；opts: { title=... }
---- id → 显示文本：有名字用"名字(id)"，没名字就只写 id
-local function label(id, opts)
+--- 道具：优先名字，其次 id
+local function itemLabel(id, opts)
     local nm = opts and opts.itemName and opts.itemName(id)
     if nm then return string.format("%s(%d)", nm, id) end
     return tostring(id)
 end
 
+local function title(text, right)
+    local pad = math.max(1, W - #text - #(right or "") - 1)
+    return "  " .. text .. string.rep(" ", pad) .. (right or "")
+end
+
+--- book: highlight.analyze 的输出
 function text.book(book, opts)
     opts = opts or {}
     local out = {}
     local function w(s) out[#out + 1] = s end
 
-    -- 封面
+    -- ── Overview ───────────────────────────────────────────────
     w(line("═"))
     w(center(opts.title or "高光回顾"))
     w("")
-    local total = 0
-    for i = 1, #book.floors do total = total + book.floors[i].ms end
-    local growth = (book.base and book.base > 0) and ((book.final - book.base) / book.base * 100) or 0
+    w(title("Overview", string.format("1/%d", book.pageCount)))
+    local rn = opts.resultName
+    local rtext = (type(rn) == "function") and rn(book.result) or (rn or tostring(book.result))
+    w(string.format("  %s   %s   %dF   %d rooms",
+        book.runId, rtext, book.maxFloor, #book.rooms))
+    local growth = (book.base > 0) and ((book.final - book.base) / book.base * 100) or 0
+    local fin = book.pages and book.pages[1]
+    if fin and fin.q4 and #fin.q4 > 0 then
+        local ids = {}
+        for k = 1, math.min(#fin.q4, 8) do ids[k] = itemLabel(fin.q4[k], opts) end
+        local more = (#fin.q4 > 8) and string.format("  +%d", #fin.q4 - 8) or ""
+        w(string.format("  四级道具（%d）：%s%s", #fin.q4, table.concat(ids, ", "), more))
+    end
+    if book.bossSummary and #book.bossSummary > 0 then
+        w("  终极Boss：" .. table.concat(book.bossSummary, " · "))
+    end
+    w(string.format("  POWER  %.2f > %.2f    %+.2f   (%s)",
+        book.base, book.final, book.final - book.base, pctStr(growth)))
+    w("")
 
-    w(string.format("  %s   ·   %s   ·   %d 层   ·   总用时 %s",
-        book.runId, opts.resultName or ("res" .. tostring(book.result)),
-        book.maxFloor, opts.duration and opts.duration(total) or ""))
-    w(string.format("  战力  %.2f → %.2f   （%s，%s）",
-        book.base, book.final, deltaStr(book.final - book.base), pctStr(growth)))
+    local maxP = 0
+    for i = 1, #book.floors do if book.floors[i].powerOut > maxP then maxP = book.floors[i].powerOut end end
+    if maxP <= 0 then maxP = 1 end
+    for i = 1, #book.floors do
+        local f = book.floors[i]
+        w(string.format("  Floor%-2d %8.2f  %s  %+.2f %s",
+            f.i, f.powerOut, bar(f.powerOut / maxP, 16), f.gain,
+            opts.duration and opts.duration(f.ms) or ""))
+    end
     w(line("═"))
 
-    -- 品质信号房：房间明细卡（Q4 / Q0 不看阈值，全部列出）
-    if book.mustSee and #book.mustSee > 0 then
-        w("")
-        w("【品质信号 · 房间明细】")
-        for i = 1, #book.mustSee do
-            local h = book.mustSee[i]
-            local dir = "持平"
-            if h.delta >= 0.5 then dir = "↑ 起飞"
-            elseif h.delta <= -0.5 then dir = "↓ 下跌" end
+    -- ── 亮点回顾 ───────────────────────────────────────────────
+    for pi = 1, #book.pages do
+        local p = book.pages[pi]
 
+        -- 终局页：终极 Boss + 四级 + 零级
+        if p.kind == "finale" then
             w("")
-            w(string.format("  ── F%d-%02d %s房  ·  %s",
-                h.floor, h.idx,
-                opts.roomName and opts.roomName(h.type) or ("型" .. h.type),
-                h.first and "首次访问" or "回访"))
-            w(string.format("     战力  %.2f → %.2f   %s %s (%s)",
-                h.p, h.po, deltaStr(h.delta), dir, pctStr(h.pct)))
-            w(string.format("     停留  %s   受伤 %d   进门敌人 %d   %s",
-                opts.duration and opts.duration(h.ms) or "", h.dmg, h.foes,
-                (h.foes or 0) == 0 and "无敌人" or (h.cleared and "已清房" or "未清房")))
-            local mx1, mx2 = h.mxhp or 0, h.mxhpo or 0
-            w(string.format("     血量  红 %d/%d → %d/%d   魂 %d→%d   黑 %d→%d   骨 %d→%d   金 %d→%d",
-                h.hp or 0, mx1, h.hpo or 0, mx2,
-                h.hs or 0, h.hso or 0, h.hbl or 0, h.hblo or 0,
-                h.hb or 0, h.hbo or 0,
-                (h.hgo or 0) + (h.het or 0), (h.hgoo or 0) + (h.heto or 0)))
-            if h.ts then
-                w(string.format("     六维  伤害 %.2f   攻速 %.2f   弹速 %.2f   射程 %.1f   移速 %.2f   幸运 %.0f",
-                    h.dv or 0, h.ts or 0, h.ss or 0, (h.rg or 0) / 40, h.mv or 0, h.lk or 0))
-            end
-            w(string.format("     口袋  金 %d→%d   弹 %d→%d   钥 %d→%d",
-                h.c or 0, h.co or 0, h.bmb or 0, h.bmbo or 0, h.key or 0, h.keyo or 0))
-
-
-
-            local items = {}
-            for k = 1, #h.it do
-                local nm = opts.itemName and opts.itemName(h.it[k]) or nil
-                if nm then
-                    items[#items + 1] = string.format("%s(%s, Q%s)", nm, tostring(h.it[k]), tostring(h.iq[k] or "?"))
-                else
-                    items[#items + 1] = string.format("%d(Q%s)", h.it[k], tostring(h.iq[k] or "?"))
+            w(title(p.title or "终极Boss与终极道具", string.format("%d/%d", 1 + pi, book.pageCount)))
+            if p.bosses and #p.bosses > 0 then
+                for bi = 1, math.min(#p.bosses, 4) do
+                    local b = p.bosses[bi]
+                    w(string.format("  %-10s %8s   受伤 %d",
+                        (opts.bossName and opts.bossName(b.ub, false)) or ("boss" .. tostring(b.ub)), (opts.duration and opts.duration(b.ms)) or "", b.dmg or 0))
                 end
+            else
+                w("  （本局未击败终极Boss）")
             end
-            if #items > 0 then
-                w("     道具  " .. table.concat(items, "  "))
+            if p.q4 and #p.q4 > 0 then
+                local ids = {}
+                for k = 1, #p.q4 do ids[k] = itemLabel(p.q4[k], opts) end
+                w("  四级道具：" .. table.concat(ids, ", "))
             end
-            if (h.type == 5 or h.type == 6) and h.boss and h.boss > 0 then
-                w("     Boss  id " .. tostring(h.boss))
+            if p.q0 and #p.q0 > 0 then
+                local ids = {}
+                for k = 1, #p.q0 do ids[k] = itemLabel(p.q0[k], opts) end
+                w("  零级道具：" .. table.concat(ids, ", "))
             end
-        end
-    end
-    -- 全局 Top-N
-    if book.topK and #book.topK > 0 then
+        else
+        local r = p.room
+        local label = string.format("%s  #%d",
+            (p.kind == "power" and "战力提升") or (p.kind == "q4" and "四级道具") or "零级道具",
+            p.rank)
+
         w("")
-        w("【本局最强跳变】")
-        for i = 1, #book.topK do
-            local h = book.topK[i]
-            w(string.format("  #%d  F%d-%02d %-6s  %7.2f → %7.2f   %s (%s)",
-                i, h.floor, h.idx, opts.roomName and opts.roomName(h.type) or ("型" .. h.type),
-                h.p, h.po, deltaStr(h.delta), pctStr(h.pct)))
+        w(title(label, string.format("%d/%d", 1 + pi, book.pageCount)))
+        w(string.format("  Floor %d   第 %.0f 间   %s%s", r.floor, r.idx,
+            (opts.roomName and opts.roomName(r.type)) or tostring(r.type),
+            r.first and "" or "（回访）"))
+        w(string.format("  战力  %.2f > %.2f   %s  (%s)",
+            r.p, r.po, deltaStr(r.delta), pctStr(r.pct)))
+        w(string.format("  停留 %s   受伤 %d   进门敌人 %d",
+            (opts.duration and opts.duration(r.ms)) or "", r.dmg, r.foes))
+
+        for si = 1, #r.stats do
+            local st = r.stats[si]
+            local mx = book.statMax[st.key] or 0
+            local frac = (mx > 0) and (st.outV / mx) or 0
+            w(string.format("  %-3s %7.2f  %s  %s",
+                st.label, st.outV, bar(frac, 12), deltaStr(st.delta)))
         end
+
+        if #r.it > 0 then
+            local items = {}
+            for k = 1, #r.it do
+                items[k] = string.format("%s(Q%s)", itemLabel(r.it[k], opts), tostring(r.iq[k] or "?"))
+            end
+            w("  道具  " .. table.concat(items, "  "))
+        end
+        end   -- else（非终局页）
     end
 
-    -- 按层分章
+    -- ── 楼层页 ────────────────────────────────────────────────
     for fi = 1, #book.floors do
         local f = book.floors[fi]
         w("")
-        w(string.format("【层 %d】  %s", f.i, (opts.stageName and opts.stageName(f) or "")))
-        if f.curse and f.curse ~= 0 and opts.curseNames then
-            local names = opts.curseNames(f.curse)
-            if #names > 0 then w("  诅咒：" .. table.concat(names, "、")) end
-        end
-        w(string.format("  %d 间房（首次 %d）  ·  %s  ·  受伤 %d  ·  战力 %.2f → %.2f  (%s)",
-            f.rooms, f.firstRooms or 0, opts.duration and opts.duration(f.ms) or "",
-            f.dmg, f.powerIn, f.powerOut, deltaStr(f.gain)))
+        w(title(string.format("Floor %d", f.i),
+            string.format("%d/%d", 1 + #book.pages + fi, book.pageCount)))
+        w(string.format("  %s   ·   受伤 %d   ·   战力 %.2f > %.2f  (%s)",
+            (opts.duration and opts.duration(f.ms)) or "", f.dmg, f.powerIn, f.powerOut,
+            deltaStr(f.gain)))
+        local curses = opts.curseNames and opts.curseNames(f.curse) or {}
+        if #curses > 0 then w("  诅咒：" .. table.concat(curses, "、")) end
         if #f.items > 0 then
-            local ids = {}
-            for i = 1, #f.items do ids[i] = label(f.items[i], opts) end
-            w("  道具：" .. table.concat(ids, ", "))
-        end
-        if #f.trinkets > 0 then
-            local ids = {}
-            for i = 1, #f.trinkets do ids[i] = tostring(f.trinkets[i]) end
-            w("  饰品：" .. table.concat(ids, ", "))
-        end
-
-        -- 本层高光（正文按时间序）
-        local hits = {}
-        for i = 1, #book.highlights do
-            if book.highlights[i].floor == f.i then hits[#hits + 1] = book.highlights[i] end
-        end
-        if #hits > 0 then
-            w("")
-            for i = 1, #hits do
-                local h = hits[i]
-                w(string.format("  ★ %02d %-6s %7.2f → %7.2f  %s (%s)  %s  %s%s",
-                    h.idx,
-                    opts.roomName and opts.roomName(h.type) or ("型" .. h.type),
-                    h.p, h.po, deltaStr(h.delta), pctStr(h.pct),
-                    opts.duration and opts.duration(h.ms) or "",
-                    (#h.it > 0) and ("道具 " .. (function()
-                        local t2 = {}
-                        for k = 1, #h.it do t2[k] = label(h.it[k], opts) end
-                        return table.concat(t2, ", ")
-                    end)() .. "  ") or "",
-                    (#h.tro > #h.tri) and "饰品+" or ""))
-            end
-        end
-    end
-
-    -- 战力曲线（文本版）
-    if book.curve and #book.curve > 0 then
-        w("")
-        w(line("─"))
-        w("战力曲线（每层末）")
-        local maxP = 0
-        for i = 1, #book.curve do
-            if book.curve[i].power > maxP then maxP = book.curve[i].power end
-        end
-        for i = 1, #book.curve do
-            local c = book.curve[i]
-            local bars = (maxP > 0) and math.floor(c.power / maxP * 40 + 0.5) or 0
-            w(string.format("  层%-2d %7.2f %s", c.floor, c.power, string.rep("█", bars)))
+            local items = {}
+            local n = math.min(#f.items, 16)
+            for k = 1, n do items[k] = itemLabel(f.items[k], opts) end
+            local more = (#f.items > 16) and string.format("  +%d", #f.items - 16) or ""
+            w(string.format("  道具（%d）：%s%s", #f.items, table.concat(items, ", "), more))
         end
     end
 

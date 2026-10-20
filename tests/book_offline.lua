@@ -37,7 +37,7 @@ local text    = loadmod("mod/core/text_render.lua")
 fmt.setSchema(schema)
 
 -- 与 config.lua 的默认值保持一致
-local CFG = { relPct = 15, absDelta = 0.5, perFloorMax = 3, topK = 5 }
+local CFG = { powerTopN = 3, q4MaxPages = 3, absDelta = 0.5, relPct = 15 }
 
 local function readAll(path)
     local f = io.open(path, "rb")

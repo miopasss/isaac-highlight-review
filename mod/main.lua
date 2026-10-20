@@ -34,6 +34,9 @@ local schema = tryRequire("core.schema", "core/schema")
 local fmt    = tryRequire("core.fmt", "core/fmt")
 local power  = tryRequire("core.power", "core/power")
 local config = tryRequire("config")
+local highlight = include("core.highlight")
+local bookui = include("ui.book")
+local configui = include("ui.config")
 local dump   = tryRequire("core.dump", "core/dump")
 
 if not schema or not fmt or not power or not config then
@@ -274,6 +277,42 @@ local function firstVisitNow()
     return v
 end
 
+-- 终极 Boss 识别（调研确认的号码，见 CHANGELOG）
+--   房间 GetBossID() 返回的是"房间 subtype"，不是实体类型：
+--     Hush 63 / 超级撒旦 55 / 老干妈 88 / 百变怪 70
+--   两个特例必须靠实体类型认：
+--     祸兽（The Beast）房间返回 0，实体 Type 951
+--     Boss Rush 没有 bossID，靠房型 17
+local UB = { HUSH = 1, BOSSRUSH = 2, MEGASATAN = 3, MOTHER = 4, BEAST = 5, DELIRIUM = 6 }
+
+local function ultimateBossNow()
+    local code = 0
+    pcall(function()
+        local room = Game():GetRoom()
+        if num(room:GetType()) == 17 then code = UB.BOSSRUSH; return end
+
+        local bid = num(room:GetBossID())
+        if bid == 63 then code = UB.HUSH
+        elseif bid == 55 then code = UB.MEGASATAN
+        elseif bid == 88 then code = UB.MOTHER
+        elseif bid == 70 then code = UB.DELIRIUM end
+
+        if code == 0 then
+            local es = room:GetEntities()
+            for i = 1, #es do
+                local t = num(es[i].Type)
+                if t == 407 then code = UB.HUSH
+                elseif t == 951 then code = UB.BEAST
+                elseif t == 912 then code = UB.MOTHER
+                elseif t == 274 then code = UB.MEGASATAN
+                elseif t == 412 then code = UB.DELIRIUM end
+                if code ~= 0 then break end
+            end
+        end
+    end)
+    return code
+end
+
 local function bossIdNow()
     local v = 0
     pcall(function() v = num(Game():GetRoom():GetBossID()) end)
@@ -448,7 +487,10 @@ local function beginRoom(player)
         hblIn   = snap.black, hgoIn = snap.gold, hetIn = snap.eternal, hrtIn = snap.rotten,
         firstIn = firstVisitNow(),
         bossIn  = bossIdNow(),
+        ubIn    = ultimateBossNow(),
         dmgIn   = snap.damage, muIn = snap.multiShot, fmIn = snap.form,
+        stIn    = { dv = snap.damage, ts = snap.tears, ss = snap.shotspeed,
+                    rg = snap.rangeStat, mv = snap.movespeed, lk = snap.luck },
         tIn = nowMs(),
         dmg = 0,
         cleared = false,
@@ -499,6 +541,10 @@ local function settleRoom(player)
         hblo = snap.black, hgoo = snap.gold, heto = snap.eternal, hrto = snap.rotten,
         ts = snap.tears, ss = snap.shotspeed, rg = snap.rangeStat,
         mv = snap.movespeed, lk = snap.luck,
+        dvo = snap.damage,
+        tso = (p.stIn and p.stIn.ts) or 0, sso = (p.stIn and p.stIn.ss) or 0,
+        rgo = (p.stIn and p.stIn.rg) or 0, mvo = (p.stIn and p.stIn.mv) or 0,
+        lko = (p.stIn and p.stIn.lk) or 0,
         p = p.p, po = snap.power,
         ms = math.floor(nowMs() - p.tIn),
         dmg = math.floor(p.dmg + 0.5),
@@ -511,7 +557,7 @@ local function settleRoom(player)
         c = p.pockets and p.pockets.c or 0, co = pok.c,
         bmb = p.pockets and p.pockets.b or 0, bmbo = pok.b,
         key = p.pockets and p.pockets.k or 0, keyo = pok.k,
-        boss = bossId, first = firstVisit,
+        boss = bossId, ub = p.ubIn or 0, first = firstVisit,
         tri = firstRoom and (p.trOut or {}) or (p.trIn or {}),
         tro = p.trOut or {},
         pd = "",
@@ -536,6 +582,12 @@ local function finishRun(result, player)
     run.res = result
     if player then run.final = snapshot(player).power end
     state.current = nil
+    -- 换层检查点已经把这局写进去过一份，先撤掉，否则同一局会存两条
+    -- （旧那条 res=2 会被 UI 当成"未完成"，正是"死亡却显示 UNFINISHED"的原因）
+    if state.currentEntry then
+        fmt.removeEntry(state.store, state.currentEntry)
+        state.currentEntry = nil
+    end
     fmt.appendRun(state.store, run)
     state.currentEntry = nil
     log(string.format("收局 %s  res=%d  层=%d  房间=%d  终战力=%.2f",
@@ -609,6 +661,41 @@ local function add(event, fn)
     mod:AddCallback(event, fn)
 end
 
+-- ---------------------------------------------------------------- 册子 UI
+bookui.init({
+    getStore = function() return state.store end,
+    fmt      = fmt,
+    hl       = highlight,
+    config   = { powerTopN = 3, q4MaxPages = 3, absDelta = 0.5, relPct = 15 },
+    log      = log,
+})
+
+-- 字体/纸背景在这里预加载（mod 加载阶段），不能留到 POST_RENDER 里懒加载：
+-- 渲染回调里首次加载资源会留下不平衡的 render target，
+-- 之后每帧刷 "[ASSERT] - PushRenderTarget: stack overflow!"（详见 CHANGELOG 第 15 轮）
+if bookui.preload then
+    local okPre, ePre = pcall(bookui.preload)
+    if not okPre then err("册子预加载失败：" .. safeToString(ePre)) end
+end
+
+local uiErrs = 0
+local function uiGuard(what, fn)
+    local ok, e = pcall(fn)
+    if not ok and uiErrs < 3 then
+        uiErrs = uiErrs + 1
+        err("册子 UI " .. what .. " 出错：" .. safeToString(e))
+    end
+end
+
+-- 输入必须在 POST_RENDER 里读：POST_UPDATE 里读 IsButtonTriggered 会漏触发
+add(ModCallbacks.MC_POST_RENDER, function()
+    uiGuard("update", bookui.update)
+    uiGuard("render", bookui.render)
+end)
+
+configui.init({})
+if configui.isReady() then log("ImGui 配置菜单已挂上") else log("ImGui 不可用（或挂载失败），跳过配置菜单") end
+
 add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
     state.store = nil
     state.loaded = false
@@ -635,6 +722,28 @@ add(ModCallbacks.MC_POST_NEW_ROOM, function()
         dump.room(log)
         log("数据面板完成，道具 " .. tostring(n) .. " 条")
     end
+end)
+
+-- Boss 房补采：进房瞬间 Boss 还没生成，GetBossID() 会返回 0。
+-- 每帧检查一次，读到非 0 就停（只在 Boss 房 / Boss Rush 房做）。
+add(ModCallbacks.MC_POST_UPDATE, function()
+    local p = state.pending
+    if not p then return end
+
+    -- 敌人数量：进房瞬间还没生成，这里补到第一次非 0
+    if (p.foes or 0) == 0 then
+        pcall(function() p.foes = countFoes() end)
+    end
+
+    -- Boss id / 终极 Boss：同理，Boss 生成之后才读得到
+    if (p.bossIn or 0) ~= 0 and (p.ubIn or 0) ~= 0 then return end
+    pcall(function()
+        local room = Game():GetRoom()
+        local t = num(room:GetType())
+        if t ~= 5 and t ~= 17 then return end
+        if (p.bossIn or 0) == 0 then p.bossIn = bossIdNow() end
+        if (p.ubIn or 0) == 0 then p.ubIn = ultimateBossNow() end
+    end)
 end)
 
 add(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function()
@@ -679,7 +788,20 @@ add(ModCallbacks.MC_ENTITY_TAKE_DMG, function(...)
 end)
 
 add(ModCallbacks.MC_POST_GAME_END, function(isGameOver)
-    finishRun(isGameOver and 0 or 1, getPlayer())
+    -- 收局诊断：isGameOver 到底靠不靠得住，靠这几个值判断
+    local p = getPlayer()
+    local info = "?"
+    pcall(function()
+        info = string.format("victoryLap=%s hearts=%s soul=%s stage=%s roomType=%s hpRef=%s",
+            tostring(Game():GetVictoryLap()),
+            tostring(p and p:GetHearts() or -1),
+            tostring(p and p:GetSoulHearts() or -1),
+            tostring(Game():GetLevel():GetStage()),
+            tostring(Game():GetRoom():GetType()),
+            tostring(p and p:GetMaxHearts() or -1))
+    end)
+    log("收局诊断 isGameOver=" .. tostring(isGameOver) .. "  " .. info)
+    finishRun(isGameOver and 0 or 1, p)
 end)
 
 add(ModCallbacks.MC_PRE_GAME_EXIT, function()

@@ -1,0 +1,18 @@
+Font attribution
+================
+Files in this folder:
+  eid_cn_default.fnt
+  eid_cn_default_0.png
+  eid_cn_fix_0.png
+
+Origin: "External Item Descriptions" (EID) mod for The Binding of Isaac: Repentance
+        by wofsauge and contributors.
+Mod folder: external item descriptions_836319872
+Path in that mod: resources/font/
+Upstream: https://github.com/wofsauge/External-Item-Descriptions
+
+These are CJK (Chinese) bitmap fonts. They are redistributed here unmodified so that
+Highlight Review can render Chinese text in its in-game book UI; the game's built-in
+bitmap fonts contain no CJK glyphs. EID is free and open source.
+
+If you are the rights holder and want this removed, please open an issue.
