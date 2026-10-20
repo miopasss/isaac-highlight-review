@@ -17,3 +17,6 @@ desktop.ini
 # REPENTOGON Æô¶¯Ê±°´ CWD Ğ´µÄÁ½¸öÎÄ¼ş£¨²»¸Ã½ø²Ö¿â£©
 REPENTOGONUpdater_Base.exe
 savedatapath.txt
+
+# GitHub tokenï¼ˆä¸è¿›ä»“åº“ï¼špush protection ä¼šæ‹’ç»ï¼Œä¸” secret scanning ä¼šè‡ªåŠ¨æ’¤é”€ï¼‰
+tools/.gh_token
