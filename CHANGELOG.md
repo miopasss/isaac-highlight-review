@@ -1161,3 +1161,30 @@ git tag v0.2.0
 
 **与公司规范的差异**：重写已推送的 main 属于**不合规操作**（保护分支禁止 force push）。
 本次是单人仓库、无其他克隆，作为一次性过渡；此后 main 只接受 squash merge。
+## 工具：tools\pr.ps1（2026-10-20 14:0x）
+
+一条命令走完「功能分支 → PR → squash 合并」。
+
+```powershell
+# 只建 PR
+.\tools\pr.ps1 -Branch feature/xxx -Title "增加XX（feature/xxx）"
+
+# 建 PR 并立即 squash 合并 + 删远端分支
+.\tools\pr.ps1 -Branch feature/xxx -Title "增加XX（feature/xxx）" -Merge -DeleteBranch
+
+# 看现有 PR
+.\tools\pr.ps1 -List
+
+# 只合并已有 PR
+.\tools\pr.ps1 -MergeOnly 3
+```
+
+**token**：`tools\.gh_token`（明文一行）。该文件已进 `.gitignore` ——
+不是怕泄露（作者说仓库不重要），而是 **GitHub 的 secret scanning 会自动撤销
+公开仓库里检测到的 token**，提交上去脚本就失效了。
+
+**踩到的坑**：`git push` 把进度写到 stderr，在 `$ErrorActionPreference = "Stop"`
+下会被当成终止性错误。已加 `GitOut` 封装把 git 输出当普通文本收。
+
+**验证**：PR #2 建成功（随后关闭）、PR #3 建成功并 squash 合并、分支删除成功。
+本脚本自己也是用它合并进 main 的。
