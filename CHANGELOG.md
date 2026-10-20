@@ -1139,3 +1139,25 @@ if (p.bossIn or 0) ~= 0 and (p.ubIn or 0) ~= 0 then return end
 - `boss` 房型 subtype（Boss 生成后补采）
 - `ub` 终极 Boss 代码
 - `foes` 进房敌人数（终于不会是 0 了）
+## 版本管理：UI 改动合并为单一提交（2026-10-20 13:4x）
+
+作者要求：main 上每个功能只占**一个节点**，细节留在功能分支里。
+
+**操作**（一次性 bootstrap，此后再不对 main 重写历史）：
+
+```
+git tag pre-squash-20261020 c57b3ce        # 备份锚点
+git branch feature/ui-v0.2 c57b3ce         # 保留 20 个真实提交
+git reset --hard c552266                   # main 退回 UI 之前
+git merge --squash feature/ui-v0.2         # 压成一个提交
+git commit -m "增加UI（feature/ui-v0.2）"
+git tag v0.2.0
+```
+
+**结果**：
+- `main`：`c552266` → `增加UI（feature/ui-v0.2）`，只多一个节点
+- `feature/ui-v0.2`：20 个提交完整保留，可逐步查看
+- `v0.2.0` tag 打在合并提交上
+
+**与公司规范的差异**：重写已推送的 main 属于**不合规操作**（保护分支禁止 force push）。
+本次是单人仓库、无其他克隆，作为一次性过渡；此后 main 只接受 squash merge。
