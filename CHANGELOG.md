@@ -1463,3 +1463,35 @@ function R.save(store)
 ### README 新增「创意工坊发布清单」
 
 明确写清只打包 `mod/`，**不带** `tools/`（含 exe）、`tests/`、`_logs/`、`_archive/`、`_backup/`、`*.md`。
+## 修「从菜单打开编辑器时已获得道具为空」+ 评级上限 4.99（2026-10-21 05:3x）
+
+### 问题
+
+从 ImGui 菜单 `Highlight Review → 道具评级` 打开窗口时，`已获得道具` 是空的。
+
+根因：列表只在 **F6 那条路**（`E.toggle` → `E.refresh`）里刷新过；
+菜单入口是 `LinkWindowToElement` 直接把窗口显示出来，**不经过 toggle**，所以从来没刷过。
+
+### 修法
+
+不做周期刷新（作者明确否掉），改成**可见性变化触发一次**：
+
+```lua
+local lastVisible = false
+function E.watch()
+    local vis = ImGui.IsVisible(WIN)
+    if vis and not lastVisible then E.refresh() end   -- 刚变可见 → 刷一次
+    lastVisible = vis
+end
+```
+
+主循环每帧调 `ratingEditor.watch()`。开销只有一次 `ImGui.IsVisible` 查询。
+
+### 评级上限
+
+`0.00 ~ 4.00` → **`0.00 ~ 4.99`**。向下取整判四级，所以 4.99 仍算四级。
+
+### 实测
+
+进入 1 号档 → 打开编辑器（菜单/F6 都走 `watch`）→
+`已获得道具` 显示 `105 The D6`，`已修改` 显示 `1 The Sad Onion 评级 4...` ✅

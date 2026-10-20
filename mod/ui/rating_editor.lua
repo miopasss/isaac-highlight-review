@@ -292,10 +292,10 @@ local function build()
     tryStep("信息", function() ImGui.AddText(TAB_EDIT, "", false, S_INFO) end)
 
     tryStep("评级输入", function()
-        ImGui.AddInputFloat(TAB_EDIT, S_RATING, "评级（0.00 ~ 4.00）", function(a, b)
+        ImGui.AddInputFloat(TAB_EDIT, S_RATING, "评级（0.00 ~ 4.99）", function(a, b)
             local v = pickNum(a, b)
             if not curId or not v then return end
-            if v < 0 then v = 0 elseif v > 4 then v = 4 end
+            if v < 0 then v = 0 elseif v > 4.99 then v = 4.99 end
             deps.rating.set(curId, v, nil, nil)
             pushValues(); refreshInfo(); refreshLists()
         end, 0.0, 0.01, 0.05, "%.2f")
@@ -356,6 +356,25 @@ end
 
 function E.isReady() return READY end
 function E.isOpen() return opened end
+
+--- 打开状态下由主循环每帧调用：低频刷新"已获得道具"
+--- 为什么需要：列表只在打开时刷新，若在进局前打开就一直是空的
+--- 每帧调用：窗口从"不可见"变成"可见"时刷一次列表。
+--- 为什么需要：从菜单 Highlight Review → 道具评级 打开窗口时，不走 F6 那条路，
+--- 列表就一直是空的（作者报的 bug）。这里用可见性变化来补刷新，不做周期刷新。
+local lastVisible = false
+function E.watch()
+    if not READY then return end
+    local vis = false
+    pcall(function() vis = ImGui.IsVisible(WIN) end)
+    if vis and not lastVisible then
+        opened = true
+        E.refresh()
+    elseif not vis then
+        opened = false
+    end
+    lastVisible = vis
+end
 
 function E.refresh()
     if not READY then return end

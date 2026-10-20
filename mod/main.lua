@@ -748,6 +748,7 @@ add(ModCallbacks.MC_POST_RENDER, function()
     if ratingui and ratingui.isReady() and Input.IsButtonTriggered(f6, 0) then
         ratingui.toggle()
     end
+    if ratingui and ratingui.watch then ratingui.watch() end
     uiGuard("update", bookui.update)
     uiGuard("render", bookui.render)
 end)
