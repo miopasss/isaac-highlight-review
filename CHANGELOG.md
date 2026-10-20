@@ -1197,3 +1197,90 @@ git tag v0.2.0
 - token：`tools\.gh_token`，必须 gitignore（push protection 会拒、secret scanning 会撤销）
 - 不设审批（作者自己不能 approve 自己的 PR）
 - 提交身份 `piiiika`/`miopasss` 不一致，作者决定不改
+---
+
+# v0.3 · 自定义道具评级 + 权重（2026-10-20）
+
+## 新增模块
+
+| 文件 | 职责 |
+|---|---|
+| `core/jsonmini.lua` | 只服务评级表的最小 JSON 编解码（不依赖 `require("json")`，离线测试也能跑） |
+| `core/rating.lua` | 评级/权重数据层 + `_G.HLR` 对外接口（未来拆 mod 的边界） |
+| `core/rating_data.lua` | 默认表（写在代码里，**真全局**） |
+| `core/itemwatch.lua` | 每帧监视 `GetCollectiblesList`，修采集盲区 |
+| `core/pool.lua` | 权重快照 + `MC_POST_GET_COLLECTIBLE` 按倍数重掷 |
+| `ui/rating_editor.lua` | ImGui 编辑器（**F6** 打开） |
+
+## 数据结构
+
+存档里新增一行：
+
+```
+Q={"v":1,"e":{"118":{"q":3.5,"w":2}}}
+```
+
+- `q` 评级 0.0–4.0，**向下取整**判四级（3.5 → 3，不算四级）
+- `w` 权重倍数，1 = 不变，0 = 不出
+- `on` 省略即启用
+
+**局外解析**：`tools\rating.ps1`（`ConvertFrom-Json` 直接读）
+**跨槽同步**：`tools\sync-rating.ps1 -From 3`（把 3 号槽的评级复制到另外两槽，自动备份）
+
+## 读取优先级
+
+```
+saveN.dat 的用户覆盖  >  rating_data.lua 默认表  >  原版 ItemConfig.Quality
+```
+
+## 采集修复（itemwatch）
+
+每帧比对 `player:GetCollectiblesList()`（REPENTOGON），修掉两个盲区：
+
+- **同房内"获得又失去"**：净差为 0 → 漏记（例：小麦种子 → 小麦苗 → 成熟小麦）
+- **跨房/换层瞬间获得**：落进新房间基线 → 永远不算获得
+
+第一间房仍不记"获得"（起始道具不是获得的，是初始配置）。
+
+## 权重实现
+
+`MC_POST_GET_COLLECTIBLE` + 确定性重掷（照抄 Revelations 的做法）：
+
+```lua
+rng:SetSeed(seed, 35)
+if rng:NextFloat() < (1 - mul) then 重掷 end
+```
+
+- **v1 只支持 mul < 1（降低/禁用）**
+- mul > 1（提高）**未实现**：POST 阶段只能"强行替换"，会绕过 NO!/神圣宝珠等内建逻辑，风险高
+- 不调用 `RemoveCollectible`，不删除池子条目
+- 回调优先级 `CallbackPriority.LATE`：别人算完我们再微调
+
+## 目录重排
+
+```
+tools\exe\        Book.exe / ParseSave.exe / Rooms.exe / build.ps1
+tools\exe\src\    三个 Launcher.cs + LauncherCommon.cs（统一的根目录定位）
+tools\*.ps1       所有 PowerShell 脚本
+```
+
+启动器改用 `RootFinder`（向上找 `tests`/`mod` 目录），不再假设与 .ps1 同目录。
+重新编译：`.\tools\exe\build.ps1`
+
+## 已知限制
+
+| 项 | 说明 |
+|---|---|
+| 全局配置 | **做不到**。`mod:SaveData` 与 `Isaac.SaveModData` 是同一个按槽文件，用 `sync-rating.ps1` 局外同步 |
+| ImGui 图标 | 无 `AddImage`，编辑器只显示名字 |
+| 1750 项列表 | 无滚动列表控件，用过滤 Combobox |
+| 权重提高 | v1 不支持 |
+| 控件持久化 | ImGui 不存盘，每次渲染从 rating 表推回 |
+
+## 验证
+
+- `tests\rating_test.lua`：**20/20 通过**（含 JSON 往返、向下取整、停用/启用、坏数据容错）
+- `tests\identity_test.lua`：20/20 通过
+- `tests\fmt_test.lua`：通过
+- luacheck：16 个文件 0 失败
+- **按要求没有启动游戏验证**
