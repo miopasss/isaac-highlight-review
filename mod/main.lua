@@ -633,6 +633,14 @@ bookui.init({
     log      = log,
 })
 
+-- 字体/纸背景在这里预加载（mod 加载阶段），不能留到 POST_RENDER 里懒加载：
+-- 渲染回调里首次加载资源会留下不平衡的 render target，
+-- 之后每帧刷 "[ASSERT] - PushRenderTarget: stack overflow!"（详见 CHANGELOG 第 15 轮）
+if bookui.preload then
+    local okPre, ePre = pcall(bookui.preload)
+    if not okPre then err("册子预加载失败：" .. safeToString(ePre)) end
+end
+
 local uiErrs = 0
 local function uiGuard(what, fn)
     local ok, e = pcall(fn)

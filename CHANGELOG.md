@@ -769,3 +769,73 @@ local CJK_CANDIDATES = {
     "font/eid_cn_alt.fnt",
 }
 ```
+
+---
+
+# 第 15 轮 · 让 AI 自己进游戏点 F5（2026-10-20 09:3x）
+
+**作者的要求**：改完 mod 不要每次都喊人进游戏点一遍，你自己进去按 F5 看功能对不对。
+
+## 结论：可以，做成了一条命令
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\verify.ps1 -Deploy -Launch -Enter -F5
+```
+
+跑完在 `_logs\verify\<时间戳>\` 拿到 `01-menu.png` / `02-run.png` / `03-book.png`
+和 `summary.txt`（mod 是否加载、Lua 报错、引擎断言、关键日志）。
+退出码 0/1/2/3 分别是 正常 / 有错 / 环境问题 / 键盘被抢已中止。
+
+## 这条路踩到的四个坑（下次别再踩）
+
+| 坑 | 现象 | 解法 |
+|---|---|---|
+| `SendKeys` 不够用 | 游戏（SDL2+D3D）收不到"贴"进去的按键 | **SendInput 发键盘扫描码**（`_win.ps1` 的 `Send-GameKey`） |
+| 窗口句柄会变 | 切全屏/换分辨率后重建窗口，`Process.MainWindowHandle` 变成 0，脚本以为"没窗口" | 用 `EnumWindows` 按 PID 枚举可见窗口，取面积最大的 |
+| 前台锁 | `SetForegroundWindow` 返回 true 但其实没提到前台，按键会打进别的程序 | `AttachThreadInput` + `SetForegroundWindow` + **按前再确认一次前台**，不成就中止（退出码 3） |
+| 启动器联网卡死 | `REPENTOGONLauncher.exe` 停在 "Checking for update..."，游戏永远不启动 | 默认走 **Steam**（`steam://rungameid/250900`）；launcher 只作 `-ViaLauncher` 备用 |
+
+另外两个"什么时候算准备好了"的判据：
+
+- mod 加载完：日志出现 `[HIGHLIGHT] loaded`
+- 主菜单画出来了：**窗口标题不再含 `LuaEngine Initialized`**（启动阶段标题会带这个后缀）
+
+进存档要按 **3 次** Enter：标题画面 → 存档槽（1/2/3）→ 存档内菜单（默认停在「继续游戏」）。
+脚本就是这么连按的，看到日志出现 `[HIGHLIGHT] F\d|开局` 就停手。
+
+## 第一次自动跑，抓到的问题（含一次自己的误判）
+
+### ① 日志被 `[ASSERT] - PushRenderTarget: stack overflow!` 刷爆 —— 凶手不是我们
+
+- 频率约 **190 行/秒（5.5 KB/s）**，一旦开始就**不停**（关掉册子也不停）
+- 一开始我按"F5 前后的增量"判读，误以为是册子引起的；**用行号一对就翻案了**：
+
+```
+4103  第一条 Pair 日志        ← reverie_2538556220 打出来的
+4802  第一条 PushRenderTarget ← 比册子早 200 多行
+4824  我们的 F1 房间记录
+5023  [UI] 打开册子
+```
+
+- 结论：**reverie（东方组合，`scripts/items/th14/d_flip.lua`）**在某个房间开始刷这个断言，
+  我们的册子只是恰好在同一局里被打开。历史日志最高 45,825 条、单会话 2.8 MB 也是它。
+- 顺带做的改动：字体/纸背景的加载提到 `book.preload()`（EID 同款做法）。
+  它没治断言（本来也不是它的锅），但"别在渲染回调里加载资源"这条仍然成立，保留。
+- `verify.ps1` 现在把断言单列成**提示**，不影响退出码（否则每次都会被第三方 mod 判红）。
+
+### ② 册子右半边被切掉
+
+当前窗口 1550×829（≈1.87:1），日志里 `screen=479x247 scale=0.91`。
+`layout()` 用 `GetScreenWidth()/s` 居中、`PADW=360`，算出来右边界超出了画布 →
+纸上内容在右边缘被裁。要按实际宽高比算，或者给 `PADW` 加上限。
+
+## 又一次踩到 BOM
+
+`.ps1` 写完没 BOM，Windows PowerShell 5.1 按 GBK 解析中文注释，
+整份脚本 `Unexpected token` 直接炸。**新建/改完 .ps1 必须确认前三个字节是 `EF BB BF`。**
+
+## 给下一次的提示
+
+- 我可以自己跑这一轮并把截图**看懂**（`read_image`），不需要人描述画面。
+- 想让我"进存档"，前提是**有可续的局**；没有的话最多到主菜单，脚本会提示。
+- 每次循环约 2 分钟（60+ 个 mod 的加载时间是大头），所以别为了改一行文案去跑全套。

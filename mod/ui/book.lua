@@ -134,6 +134,16 @@ local function getPaper()
     return paper
 end
 
+--- 预加载：**必须在 mod 加载阶段**调用（main.lua 顶层），不要等到 POST_RENDER。
+--- 在渲染回调里首次做 Font:Load / Sprite:Load 会在渲染上下文里申请资源，
+--- 实测会留下不平衡的 render target，之后每帧刷
+--- "[ASSERT] - PushRenderTarget: stack overflow!"，而且关掉册子也不停。
+function book.preload()
+    loadFonts()
+    getPaper()
+    getCJK()
+end
+
 local function rect(x, y, w, h, r, g, b, a)
     local p = getPaper()
     if not p or w <= 0 or h <= 0 then return end

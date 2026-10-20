@@ -36,6 +36,8 @@ tools/check.ps1         一键体检（mod 有没有加载 / 采集行 / 报错 
 tools/strip-log.ps1     生成去噪日志副本（原文件只读，头部记账）
 tools/luacheck.ps1     语法校验（借游戏自带 Lua5.4.dll）
 tools/luarun.ps1       离线执行 Lua（借同一个 DLL）
+tools/verify.ps1       自动进游戏自检：启动 → 进存档 → 按 F5 → 截图 + 查日志
+tools/_win.ps1         verify 的底层：找窗口 / 发键盘扫描码 / 截窗口图
 ```
 
 ## 离线跑测试（不用启动游戏）
@@ -55,19 +57,46 @@ C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe -NoProfile `
 > 两个 .ps1 都是 **UTF-8 with BOM** 保存的（Windows PowerShell 5.1 只认带 BOM 的 UTF-8）。
 > 改完记得重新加 BOM，否则中文注释会把脚本解析炸掉。
 
-## 进游戏验
+## 进游戏验（可以全自动）
+
+一条命令跑完「部署 → 启动 → 进存档 → 按 F5 开册子 → 截图 → 查日志」：
 
 ```powershell
-pwsh tools\deploy.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\verify.ps1 -Deploy -Launch -Enter -F5
 ```
 
-然后启动游戏（走 `REPENTOGONLauncher.exe`）→ 进一局打几个房间 → 看
+跑完看 `_logs\verify\<时间戳>\`：
+
+| 文件 | 内容 |
+|---|---|
+| `01-menu.png` | 主菜单（确认游戏真的起来了） |
+| `02-run.png` | 进存档后的画面 |
+| `03-book.png` | 按 F5 之后的册子 |
+| `summary.txt` | 结论：mod 是否加载 / Lua 报错 / 引擎断言 / 关键日志 |
+
+退出码：`0` 正常，`1` 有 Lua 报错或引擎断言洪水，`2` 环境问题（没进程/没窗口/超时），
+`3` 按键前窗口被别的程序抢走（已中止，不会把按键误发到别处）。
+
+- 游戏已经开着：`-Enter -F5` 就行，会复用当前实例，不再启动。
+- `-Fresh`：收拾"进程还在但窗口没了"的僵尸进程（关游戏时卡住的常见形态）。
+- `-Close`：跑完优雅关掉游戏（游戏自己会把存档写盘）。
+- 启动默认走 **Steam**（`steam://rungameid/250900`）。`REPENTOGONLauncher.exe` 在这台机器上
+  会卡在 "Checking for update..."（联网检查），所以不用它；真要试加 `-ViaLauncher`。
+- 按键是 **SendInput 发扫描码**（不是 SendKeys），游戏能收到；发之前会确认窗口在前台。
+
+手动验还是老办法：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy.ps1
+```
+
+然后启动游戏 → 进一局打几个房间 → 看
 `%USERPROFILE%\Documents\My Games\Binding of Isaac Repentance\log.txt` 里的 `[HIGHLIGHT]`。
 
 采集正常的话，每离开一个房间会打一行：
 
 ```
-[HIGHLIGHT] F1 型01 形1    9.55 ->  12.29  d +2.74 (+28.7%)  生存   6->  6  道具1   4.2s  伤0  [tears]
+[HIGHLIGHT] F1-48 型01 形6    12.89 ->   12.89  d  +0.00 (  +0.0%)  红1→1 魂0→0 骨0→0  道具1    0.3s  伤0  [tears 伤害4.72 弹幕1]
 ```
 
 ## 数据存在哪
