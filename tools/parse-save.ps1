@@ -103,6 +103,7 @@ function Parse-Blob([string]$path) {
                 $rec["seconds"] = $sec
                 [void]$cur.rooms.Add([pscustomobject]$rec)
             }
+            elseif ($rec.scope -eq "Q" -or $rec.scope -eq "C") { }   # 评级/设置行，不参与房间解析
             else { $warnings += "未知作用域: $($rec.scope)" }
         }
     } finally { $sr.Dispose(); $fs.Dispose() }

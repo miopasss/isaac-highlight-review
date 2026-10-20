@@ -4,7 +4,6 @@ _archive/
 _backup/
 
 # --- build artifacts ---
-tools/exe/*.exe
 tools/*.exe
 tools/node_modules/
 *.log
