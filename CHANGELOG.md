@@ -635,3 +635,33 @@ if not ff:IsLoaded() then ... end   -- ③ 用 IsLoaded() 判断，不能靠 pca
 
 **下一步**：等 EID 字体加载路径的深度调研结论（子代理进行中），
 拿到确定的路径字符串后再改。
+## 第 14 轮 · 中文字体落地（同日续）
+
+按作者决定：**把 EID 的中文字体复制进本 mod**，并注明来源（EID 免费开源）。
+
+```
+mod/resources/font/
+  eid_cn_default.fnt     388,858 B   二进制 BMFont
+  eid_cn_default_0.png   599,501 B   主字形页
+  eid_cn_fix_0.png           115 B   修补页（fnt 内引用两次）
+  CREDITS.txt                700 B   来源与授权说明
+```
+
+来源：External Item Descriptions（wofsauge 等），路径 `resources/font/`。
+
+**加载顺序**改为先找自己这份：
+```lua
+CJK_CANDIDATES = {
+    "font/eid_cn_default.fnt",                                   -- 内置，首选
+    "../mods/external item descriptions_836319872/resources/font/eid_cn_default.fnt",
+    "../mods/external item descriptions/resources/font/eid_cn_default.fnt",
+}
+```
+
+## 顺带修掉一个部署 bug
+
+`deploy.ps1` 的扩展名白名单里**没有 `.fnt`**，导致字体文件同步不过去
+（部署目录只有 png，没有 fnt）。白名单已补
+`.fnt / .ttf / .ogg / .wav / .json`。
+
+> 这个坑同样适用于以后新增的任何非 lua/png 资源。
