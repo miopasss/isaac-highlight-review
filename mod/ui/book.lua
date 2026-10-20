@@ -405,7 +405,13 @@ end
 
 --- 六维行（标签 + 数值 + 分段条 + 增量），返回下一行的 y（单位：480 空间）
 --- 位置全部按字宽算，避免条压字
-local function statRow(s, y, st, mx, mn, x0, colWidth)
+--- 画一行六维。区间规则集中在这里（唯一一处）：
+---   幸运可能为负 → [本局最小值, 本局最大值]
+---   其它维度     → [0, 本局最大值]
+local function statRow(s, y, st, bk, x0, colWidth)
+    local k = st.key
+    local mx = bk.statMax[k] or 0
+    local mn = (k == "lk") and (bk.statMin[k] or 0) or 0   -- 唯一一处区间规则
     local sc = s * 0.56
     local label = (getCJK() and st.label) or st.labelEn or st.label
     txt(label, x0 * s, y * s, sc, INK)
@@ -522,9 +528,7 @@ local function drawHighlight(s, bk, idx)
 
     for i = 1, #r.stats do
         local k = r.stats[i].key
-        -- 区间：幸运可能为负，从最小值算；其它维度从 0 开始（作者要求"0 到最大值"）
-        local mn = (k == "lk") and (bk.statMin[k] or 0) or 0
-        y = statRow(s, y, r.stats[i], bk.statMax[k] or 0, mn, PADX + 12, PADW - 40)
+y = statRow(s, y, r.stats[i], bk, PADX + 12, PADW - 40)
     end
 
     if #r.it > 0 then
@@ -569,9 +573,7 @@ local function drawFloor(s, bk, idx)
     if f.stats then
         for i = 1, #f.stats do
             local k = f.stats[i].key
-            -- 区间：幸运可能为负，从最小值算；其它维度从 0 开始（作者要求"0 到最大值"）
-            local mn = (k == "lk") and (bk.statMin[k] or 0) or 0
-            y = statRow(s, y, f.stats[i], bk.statMax[k] or 0, mn, PADX + 12, PADW - 40)
+y = statRow(s, y, f.stats[i], bk, PADX + 12, PADW - 40)
         end
     end
 
