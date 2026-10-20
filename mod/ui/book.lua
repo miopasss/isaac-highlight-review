@@ -49,17 +49,24 @@ local function getCJK()
     for i = 1, #CJK_CANDIDATES do
         local path = CJK_CANDIDATES[i]
         local ff = Font()
-        local ok = pcall(function()
-            -- 第二个参数给空串（EID 的写法，GoG 版本需要）
-            ff:Load(path, "")
-            ff:SetMissingCharacter(2)
+        local ok, loadRet = pcall(function()
+            return ff:Load(path, "")
         end)
+        pcall(function() ff:SetMissingCharacter(2) end)
         if not ok then
-            if deps and deps.log then deps.log("[CJK] " .. path .. " → Load 抛错") end
+            if deps and deps.log then
+                deps.log("[CJK] " .. path .. " → Load 抛错: " .. tostring(loadRet))
+            end
         else
-            local loaded, w = false, 0
+            local loaded, w, wA, lh = false, 0, 0, 0
             pcall(function() loaded = ff:IsLoaded() end)
             pcall(function() w = ff:GetStringWidth("伤害") or 0 end)
+            pcall(function() wA = ff:GetStringWidth("AA") or 0 end)
+            pcall(function() lh = ff:GetLineHeight() or 0 end)
+            if deps and deps.log then
+                deps.log(string.format("[CJK] probe %s | Load返回=%s | IsLoaded=%s | width(汉字)=%s | width(AA)=%s | lineHeight=%s",
+                    path, tostring(loadRet), tostring(loaded), tostring(w), tostring(wA), tostring(lh)))
+            end
             if loaded and w > 0 then
                 cjkFont = ff
                 if deps and deps.log then
@@ -88,7 +95,12 @@ local function txtCN(str, x, y, scale, col)
     return ok
 end
 
-function book.init(d) deps = d end
+function book.init(d)
+    deps = d
+    -- 字体必须在**初始化阶段**加载：EID 也是在 main.lua 顶部加载的，
+    -- 渲染回调里加载资源可能被引擎拒绝。
+    pcall(function() getCJK() end)
+end
 
 -- ---------------------------------------------------------------- 基础设施
 

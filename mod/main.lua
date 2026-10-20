@@ -545,6 +545,12 @@ local function finishRun(result, player)
     run.res = result
     if player then run.final = snapshot(player).power end
     state.current = nil
+    -- 换层检查点已经把这局写进去过一份，先撤掉，否则同一局会存两条
+    -- （旧那条 res=2 会被 UI 当成"未完成"，正是"死亡却显示 UNFINISHED"的原因）
+    if state.currentEntry then
+        fmt.removeEntry(state.store, state.currentEntry)
+        state.currentEntry = nil
+    end
     fmt.appendRun(state.store, run)
     state.currentEntry = nil
     log(string.format("收局 %s  res=%d  层=%d  房间=%d  终战力=%.2f",

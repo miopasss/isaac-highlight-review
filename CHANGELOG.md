@@ -705,3 +705,43 @@ Site B 从没被执行过。
 - 补拷 `eid_cn_alt.fnt`（256 KB）+ `eid_cn_alt_0.png`（467 KB）
 - **修日志 bug**：原来打印的是 pcall 的第二个返回值（永远是 nil，所以每行都是 `原因=nil`），
   现在明确打 `IsLoaded=... width=...`
+## 第 14 轮 · 两个真 bug（同日再续）
+
+### ① 死亡却显示 UNFINISHED
+
+`finishRun` 追加最终记录时，**没有先删掉换层检查点写进去的那一份**。
+
+于是同一局在档案里存两条：
+- 检查点版：`res=2`（未完成），房间少
+- 收局版：`res=0`（死亡），房间全
+
+UI 按 seq 排序后显示的是**旧那条**，所以 9 层 316 房的死亡局看起来是"未完成"。
+
+修法：
+```lua
+if state.currentEntry then
+    fmt.removeEntry(state.store, state.currentEntry)   -- 先撤检查点那份
+    state.currentEntry = nil
+end
+fmt.appendRun(state.store, run)
+```
+
+### ② 中文字体加载时机
+
+EID 是在 **`main.lua` 顶部（mod 初始化）** 加载字体的；
+我们之前是在 `MC_POST_RENDER` 里懒加载 —— **渲染上下文里加载资源可能被引擎拒绝**。
+
+改为 `book.init()` 里预先加载一次（init 在 mod 加载阶段执行）。
+
+### ③ 探针加详
+
+每次尝试都打一行完整状态：
+
+```
+[CJK] probe font/eid_cn_alt.fnt | Load返回=... | IsLoaded=false | width(汉字)=0 | width(AA)=0 | lineHeight=0
+```
+
+四个指标一起看就知道断在哪：
+- `Load返回` 为 nil 且 `IsLoaded=false` → 引擎没加载（路径/格式问题）
+- `IsLoaded=true` 但 `width(汉字)=0` → 字体加载了但没有汉字字形
+- `width(AA)>0` 而 `width(汉字)=0` → 字体只有拉丁字形
