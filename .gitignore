@@ -4,6 +4,7 @@ _archive/
 _backup/
 
 # --- build artifacts ---
+tools/exe/*.exe
 tools/*.exe
 tools/node_modules/
 *.log
@@ -14,7 +15,7 @@ Thumbs.db
 desktop.ini
 *.tmp
 
-# REPENTOGON Æô¶¯Ê±°´ CWD Ð´µÄÁ½¸öÎÄ¼þ£¨²»¸Ã½ø²Ö¿â£©
+# REPENTOGON ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ CWD Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã½ï¿½ï¿½Ö¿â£©
 REPENTOGONUpdater_Base.exe
 savedatapath.txt
 

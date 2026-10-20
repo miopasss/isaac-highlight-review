@@ -236,3 +236,66 @@ Save-WindowShot $w "_logs\verify\manual.png"
 - 本 mod **不会热重载**：改完代码（哪怕只改一行 Lua）都要退出游戏重开再验证；
   这个环境里 F5 是册子开关，不是"重载 mod"键。
 - 册子底部按键提示文字超宽会切掉尾巴（`footer()` 固定坐标，未按字宽折行），已知未修。
+
+---
+
+## 12. Git 工作流（作者定的版本管理纪律）
+
+**核心诉求**：main 上每个功能只占**一个节点**，细节留在功能分支里。
+
+### 流程
+
+1. 改代码（本地随意 commit）
+2. 开分支：`feature/<功能>-v<版本>`，例：`feature/ui-v0.3`
+3. 推分支：`git push -u origin feature/<功能>-v<版本>`
+4. **等作者发话**（「合并吧」/「提 PR」）
+5. 一条命令走完：
+   ```powershell
+   .\tools\pr.ps1 -Branch feature/<功能>-v<版本> -Title "增加XX（feature/<功能>-v<版本>）" -Merge -DeleteBranch
+   ```
+6. main 多一个节点，远端分支自动删除
+
+### 硬规则
+
+| # | 规则 |
+|---|---|
+| 1 | **不要自己合并**。没听到作者明确说「合并」，就停在推分支那步 |
+| 2 | **禁止对 main 做 force push**。main 只能通过 PR 前进（唯一例外：作者明确要求重写历史） |
+| 3 | 合并只用 **squash**，不用 merge commit、不用 rebase |
+| 4 | 合并提交标题必须**带分支名** |
+| 5 | 每轮改完：CHANGELOG 末尾追加 → commit → push（**攒一批再推是预期内的**，作者认可） |
+| 6 | **不设审批**。作者自己不能 approve 自己的 PR；分支保护也没开，按作者要求不配 |
+
+### token
+
+位置：`tools\.gh_token`（明文一行，作者允许）。
+
+**必须 gitignore** —— 不是怕泄露，而是：
+
+- GitHub **push protection** 会直接拒绝含 token 的推送（实测报 `push declined due to repository rule violations`）
+- **secret scanning** 检测到会自动撤销 token，脚本就失效了
+
+### 合并方式对照
+
+| 方式 | main 上看到 |
+|---|---|
+| **Squash（本项目用这个）** | 1 个节点 |
+| Merge commit | 合并节点 + 全部提交 |
+| Rebase | N 个提交 |
+
+### tag
+
+每个版本一个 tag，与合并提交对齐：
+
+```powershell
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+现有参考：`v0.2.0`（UI 合并提交）、`pre-squash-20261020`（重写 main 前的备份）
+
+### 提交身份（已知问题，暂不处理）
+
+本地 `user.email` 是 Gitee 的 `...@user.noreply.gitee.com`，
+所以 GitHub 上部分提交显示作者为 `piiiika`，贡献者统计里不计入 `miopasss`。
+作者决定「就这样吧」，不改。

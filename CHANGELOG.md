@@ -1188,3 +1188,249 @@ git tag v0.2.0
 
 **验证**：PR #2 建成功（随后关闭）、PR #3 建成功并 squash 合并、分支删除成功。
 本脚本自己也是用它合并进 main 的。
+## AGENTS.md 补第 12 节：Git 工作流（2026-10-20 14:2x）
+
+把这套纪律写进给下一个 Agent 的说明书，避免下次对话又走错：
+
+- 流程：分支 → 推 → **等作者发话** → `pr.ps1` squash 合并 → 删分支
+- 硬规则：不自己合并、不对 main force push、只用 squash、合并标题带分支名
+- token：`tools\.gh_token`，必须 gitignore（push protection 会拒、secret scanning 会撤销）
+- 不设审批（作者自己不能 approve 自己的 PR）
+- 提交身份 `piiiika`/`miopasss` 不一致，作者决定不改
+---
+
+# v0.3 · 自定义道具评级 + 权重（2026-10-20）
+
+## 新增模块
+
+| 文件 | 职责 |
+|---|---|
+| `core/jsonmini.lua` | 只服务评级表的最小 JSON 编解码（不依赖 `require("json")`，离线测试也能跑） |
+| `core/rating.lua` | 评级/权重数据层 + `_G.HLR` 对外接口（未来拆 mod 的边界） |
+| `core/rating_data.lua` | 默认表（写在代码里，**真全局**） |
+| `core/itemwatch.lua` | 每帧监视 `GetCollectiblesList`，修采集盲区 |
+| `core/pool.lua` | 权重快照 + `MC_POST_GET_COLLECTIBLE` 按倍数重掷 |
+| `ui/rating_editor.lua` | ImGui 编辑器（**F6** 打开） |
+
+## 数据结构
+
+存档里新增一行：
+
+```
+Q={"v":1,"e":{"118":{"q":3.5,"w":2}}}
+```
+
+- `q` 评级 0.0–4.0，**向下取整**判四级（3.5 → 3，不算四级）
+- `w` 权重倍数，1 = 不变，0 = 不出
+- `on` 省略即启用
+
+**局外解析**：`tools\rating.ps1`（`ConvertFrom-Json` 直接读）
+**跨槽同步**：`tools\sync-rating.ps1 -From 3`（把 3 号槽的评级复制到另外两槽，自动备份）
+
+## 读取优先级
+
+```
+saveN.dat 的用户覆盖  >  rating_data.lua 默认表  >  原版 ItemConfig.Quality
+```
+
+## 采集修复（itemwatch）
+
+每帧比对 `player:GetCollectiblesList()`（REPENTOGON），修掉两个盲区：
+
+- **同房内"获得又失去"**：净差为 0 → 漏记（例：小麦种子 → 小麦苗 → 成熟小麦）
+- **跨房/换层瞬间获得**：落进新房间基线 → 永远不算获得
+
+第一间房仍不记"获得"（起始道具不是获得的，是初始配置）。
+
+## 权重实现
+
+`MC_POST_GET_COLLECTIBLE` + 确定性重掷（照抄 Revelations 的做法）：
+
+```lua
+rng:SetSeed(seed, 35)
+if rng:NextFloat() < (1 - mul) then 重掷 end
+```
+
+- **v1 只支持 mul < 1（降低/禁用）**
+- mul > 1（提高）**未实现**：POST 阶段只能"强行替换"，会绕过 NO!/神圣宝珠等内建逻辑，风险高
+- 不调用 `RemoveCollectible`，不删除池子条目
+- 回调优先级 `CallbackPriority.LATE`：别人算完我们再微调
+
+## 目录重排
+
+```
+tools\exe\        Book.exe / ParseSave.exe / Rooms.exe / build.ps1
+tools\exe\src\    三个 Launcher.cs + LauncherCommon.cs（统一的根目录定位）
+tools\*.ps1       所有 PowerShell 脚本
+```
+
+启动器改用 `RootFinder`（向上找 `tests`/`mod` 目录），不再假设与 .ps1 同目录。
+重新编译：`.\tools\exe\build.ps1`
+
+## 已知限制
+
+| 项 | 说明 |
+|---|---|
+| 全局配置 | **做不到**。`mod:SaveData` 与 `Isaac.SaveModData` 是同一个按槽文件，用 `sync-rating.ps1` 局外同步 |
+| ImGui 图标 | 无 `AddImage`，编辑器只显示名字 |
+| 1750 项列表 | 无滚动列表控件，用过滤 Combobox |
+| 权重提高 | v1 不支持 |
+| 控件持久化 | ImGui 不存盘，每次渲染从 rating 表推回 |
+
+## 验证
+
+- `tests\rating_test.lua`：**20/20 通过**（含 JSON 往返、向下取整、停用/启用、坏数据容错）
+- `tests\identity_test.lua`：20/20 通过
+- `tests\fmt_test.lua`：通过
+- luacheck：16 个文件 0 失败
+- **按要求没有启动游戏验证**
+## v0.3 修复：F5/F6 失效的三个真实原因（2026-10-21 03:0x）
+
+### ① `ImGui.SetSize` 在这个版本是 nil
+
+启动日志：`[EDITOR] CreateWindow 失败: attempt to call a nil value (field 'SetSize')`
+
+整个 `build()` 被这一步炸掉 → 编辑器从未建成 → F6 无效。
+
+**修**：改用 `SetWindowSize`（实测存在）+ `SetWindowPosition`，并逐步 `tryStep` 包起来，
+任何一个控件缺失只记日志、不影响其它控件。
+
+### ② F5 其实没坏，是我的自动化测试进错了存档槽
+
+测试日志里根本没有 `载入 N 局` —— 说明进的是**空槽**，`sortedRuns()` 返回空，
+`isOpen` 立刻被关回去，看起来就是"F5 没反应"。
+
+**教训**：验证 F5 必须先确认日志里有 `载入 N 局`。
+
+### ③ `ImGui.Show()` 会接管键盘，但 F6 仍能被收到
+
+实测按 F6 → `[EDITOR] 打开`，再按 F6 → `[EDITOR] 关闭`，两次都收到了。
+但稳妥起见关闭时补了 `ImGui.Hide()`，把控制权还给游戏。
+
+## 排查过程的三个教训（写进这里免得再犯）
+
+1. **在 `MC_POST_RENDER` 里插探针要小心**：我删除临时探针时把 `add(ModCallbacks.MC_POST_RENDER, function()` 这一行一起删了，导致语法错误。
+2. **PowerShell 变量大小写不敏感**：`$t` 和 `$T` 是同一个变量，我的路径变量被列表变量覆盖，写入路径变成空串。
+3. **`Set-Content`/`Replace` 的缩进假设**：多次因为 here-string 里多写了前导空格导致替换静默失败。**改代码一律用行号定位，并在改完后 grep 验证**。
+
+## 当前状态
+
+- F5：进有数据的存档后正常
+- F6：正常打开/关闭编辑器
+- 编辑器窗口：520×460，位置 (120, 90)（会被别的 mod 的"控制台"窗口遮住，非本 mod 问题）
+## v0.3 编辑器大修（2026-10-21 03:2x）
+
+按作者反馈改了 7 处，其中 3 个是真 bug：
+
+### 真 bug（实测定位）
+
+| # | 现象 | 根因 |
+|---|---|---|
+| 1 | 进 Boss 房报错 | 我加的诊断钩子调用了不存在的 `Room:GetShape()`（应为 `GetRoomShape`）→ **整个钩子已删除** |
+| 2 | 「已获得道具」显示全部 1763 个道具 | `GetCollectiblesList()` 返回 `{ [id] = 持有数量 }`，**包含全部道具，数量 0 表示没有**。我按"所有键都是已获得"处理了 → 改成按数量 > 0 过滤 |
+| 3 | 权重倍数设了不生效 | 控件回调参数个数不一致（有的给 `(value)`，有的给 `(id, value)`），`tonumber(nil)` → 写进 nil → 等于没写。加 `pickNum` 两种都兼容 |
+
+### 界面改动（按作者要求）
+
+- **池子权重显示全部删除**（`池0 1.00→1.00` 看不懂）
+- 搜索：**纯数字按 id**，字母按英文名/本地化名；名字做了**首字母大写**（`THE SAD ONION` → `The Sad Onion`）
+- 编辑页三个入口并列：**搜索 / 已获得道具 / 已修改**
+- 「已修改」页改成 `AddTextWrapped` 整段文本（实测这个版本没有 `AddTextWrapped`，改用 `AddText(..., wrap=true, id)`）
+- 评级、权重都改成**数字输入框**（支持两位小数），去掉滑条
+- 「启用」从勾选框改成**按钮**（文字随状态变：`状态：启用（点击停用）`）
+- `q=` / `w=` 改成中文 **评级 / 权重**
+- 窗口挪到 `(780, 100)`，尺寸 `520×500`，避开别家 mod 的"控制台"窗口
+- 新增 ImGui 菜单入口 **`Highlight Review → 道具评级`**，与 F6 共用同一开关状态
+
+### 这一轮实测到的 REPENTOGON API 差异（补充进踩坑记录）
+
+| 想要 | 这个版本的实际 |
+|---|---|
+| `ImGui.SetSize` | ❌ nil → 用 `SetWindowSize` |
+| `ImGui.AddTextWrapped` | ❌ nil → 用 `AddText(parent, text, wrap=true, id)` |
+| `GetCollectiblesList()` | `{[id]=数量}`，**全量 1763 项**，要按数量过滤 |
+| `Room:GetShape()` | ❌ 不存在（`GetRoomShape`） |
+
+### 测试方式
+
+- 离线：`tests\rating_test.lua` **20/20 通过**
+- 进游戏实测（脚本自动做）：
+  - 起游戏 → 进 1 号档 → F8 临时钩子写两条评级 → 检查 `save1.dat` 出 `Q=` 行 ✅
+  - `Q={"v":1,"e":{"118":{"q":3.75,"w":0.5},"1052":{"q":2.25,"w":0,"on":false}}}` ✅
+  - F6 打开编辑器截图：三个入口 + 评级/权重 + 状态按钮 + 删除按钮都渲染 ✅
+  - 「已获得道具」显示 `105 The Da...`（真实持有道具，不再是全量）✅
+- **未验证**：鼠标点击选择/改值这条链（我的自动化点击没点中 ImGui 控件，坐标与游戏窗口尺寸有缩放差）→ **需要作者手动点一下确认**
+
+测试钩子（F8）和临时日志已全部删除。
+## v0.3 设置界面 + 权重代码审查 + 修数据丢失（2026-10-21 03:4x）
+
+### 一、权重代码审查结果：找到 3 个会出问题的点
+
+| # | 问题 | 后果 |
+|---|---|---|
+| 1 | **回调里再调 `pool:GetCollectible()` 会再次触发本回调** | 无限递归 → 卡死/崩溃。加 `P.inCallback` 防重入 |
+| 2 | `RNG()` 无参构造 | 这个构造可能不接受空参 → 整个回调报错。改成 `pcall(RNG, seed)` + 失败即放弃 |
+| 3 | `seed` 为 nil 时 `(seed + i*7919)` 直接报错 | 加 `local s = tonumber(seed) or 0` |
+
+修完后 `onPostGet` 的结构：
+
+```
+防重入 → 取倍数 → 只处理 <1 → seed 兜底 → RNG(seed) 派生随机
+→ 概率判定 → 重掷（带防重入标志）→ 返回替换 id
+```
+
+**结论：代码逻辑对了，但权重"是否真的生效"没法自动验证**——需要实际多局抽道具统计。
+按作者意思：**先不测，交给作者用多局观察。**
+
+### 二、修掉一个会丢数据的 bug
+
+发现 `save1.dat` 里的 `Q=` 行**消失过一次**。
+
+根因：`rating.save()` 在"评级还没从存档读过"时执行，此时 `entries` 为空，
+于是它把已有的 `Q=` 行当成"用户删光了"给删掉。
+
+**修法**：加 `R.loaded` 标志，**没读过档就绝不写**。
+
+```lua
+function R.save(store)
+    if not R.loaded then return false end   -- 还没读过档：原样保留，绝不覆盖
+```
+
+实测：注入 Q 行 → 起游戏 → `载入自定义评级 3 条` → 关游戏 → **Q 行仍在** ✅
+
+### 三、设置界面（新增）
+
+- 菜单 `Settings` 改名 **`设置`**
+- 设置窗口里两个 **热键绑定控件**（`AddInputKeyboard`）：`打开册子` / `道具评级`
+- 热键存 `C=` 行：`C={"f5":294,"f6":295}`，局外可解析
+- 热键改动即时写盘
+- `book.lua` 的 F5 改成读配置（`deps.hotkeyF5`）
+- 窗口尺寸/位置：设置 560×260 @(520,300)，评级 620×560 @(490,170)（按 1600×900 居中）
+
+### 四、踩坑补充
+
+- **`splitBlob` 把第一行当魔数**：我手写测试数据时把 `Q=` 放到 `MRV2` 前面，
+  Q 行被当成魔数消耗掉了。**注入测试数据必须把 MRV2 放第一行。**
+- `Q`/`C` 行现在**不计入任何一局的记录数**（否则会污染 `trimToCount` 的统计）
+
+### 五、测试
+
+- `tests\rating_test.lua`：**22/22 通过**（新增"未 load 时 save 必须被拒绝"用例）
+- `tests\identity_test.lua`：20/20 通过
+- 游戏内：注入 3 条评级 → 启动 → `载入自定义评级 3 条` → 界面「已修改」显示
+  `1 The Sad Onion 评级 4...` → 关游戏 → Q 行保留 ✅
+## README 重写（2026-10-21 04:0x）
+
+原来的 README 是 v0.1 时代的**开发文档**（讲脚本、讲 DPI、讲怎么跑测试），
+给玩家看没有任何信息量。按作者要求重写成**功能说明**：
+
+- 现在能做什么：册子（F5）、评级与权重（F6）、设置（热键绑定）
+- 册子的页面顺序与按键表
+- 六维双色条的含义
+- 终极 Boss 名单
+- 数据文件在哪、里面是什么
+- 局外工具一览
+- 已知限制（权重只能降、按槽存、随机弹幕道具等）
+- 开发文档挪到文末一小节
+
+`AGENTS.md` / `DESIGN.md` / `FORMAT.md` / `CHANGELOG.md` 保持不变。

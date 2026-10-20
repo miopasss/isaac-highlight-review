@@ -333,8 +333,10 @@ local function navStep(down)
 end
 
 local function update()
-    if trig(Keyboard.KEY_F5) then
+        local k5 = (deps and deps.hotkeyF5 and deps.hotkeyF5()) or Keyboard.KEY_F5
+        if trig(k5) then
         isOpen = not isOpen
+            if deps and deps.log then deps.log(string.format("[UI] F5 → isOpen=%s", tostring(isOpen))) end
         if isOpen then
             page, cache, holdNext, lastDiag = 1, {}, 0, ""
             local l0 = sortedRuns()

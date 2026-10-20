@@ -39,6 +39,15 @@ local bookui = include("ui.book")
 local configui = include("ui.config")
 local dump   = tryRequire("core.dump", "core/dump")
 
+-- ── 评级 / 权重 相关（v0.3）──
+local jsonmini  = tryRequire("core.jsonmini", "core/jsonmini")
+local rating    = tryRequire("core.rating", "core/rating")
+local ratedata  = tryRequire("core.rating_data", "core/rating_data")
+local poolmod   = tryRequire("core.pool", "core/pool")
+local itemwatch = tryRequire("core.itemwatch", "core/itemwatch")
+local settings  = tryRequire("core.settings", "core/settings")
+local ratingui  = include("ui.rating_editor")
+
 if not schema or not fmt or not power or not config then
     emit("[CHRONICLE] FATAL: module load failed (schema=" .. tostring(schema ~= nil) ..
          " fmt=" .. tostring(fmt ~= nil) .. " power=" .. tostring(power ~= nil) ..
@@ -46,6 +55,13 @@ if not schema or not fmt or not power or not config then
     return
 end
 fmt.setSchema(schema)
+
+-- 评级数据层：先装默认表，再发布 _G.HLR 给外部读
+if rating and jsonmini then
+    rating.init(jsonmini, ratedata or {})
+if settings then settings.init() end
+    rating.publish()
+end
 
 local function log(msg) if config.debug then emit(LOG_PREFIX .. tostring(msg)) end end
 local function err(msg) emit(LOG_PREFIX .. "ERROR: " .. tostring(msg)) end
@@ -145,6 +161,11 @@ end
 --- 道具品质（0~4）。带缓存，同一个 id 只查一次。
 local qualityCache = {}
 local function qualityOf(id)
+    -- 自定义评级优先（作者要求：四级道具的判断优先用新评级）；不缓存，编辑器随时会改
+    if rating then
+        local rq = rating.getQuality(id)
+        if rq then return rq end
+    end
     local q = qualityCache[id]
     if q then return q end
     q = -1
@@ -315,7 +336,19 @@ end
 
 local function bossIdNow()
     local v = 0
+    -- ① Room:GetBossID()：文档说返回"房间里第一个 Boss 实体"的 id
     pcall(function() v = num(Game():GetRoom():GetBossID()) end)
+    -- ② 退路：房间 description 的 Subtype 按文档就等于 bossID，不依赖实体是否已生成
+    if v == 0 then
+        pcall(function()
+            local desc = Game():GetLevel():GetCurrentRoomDesc()
+            if desc and desc.Data then v = num(desc.Data.Subtype) end
+        end)
+    end
+    -- ③ 退路：XL 楼层的第二间 Boss 房
+    if v == 0 then
+        pcall(function() v = num(Game():GetRoom():GetSecondBossID()) end)
+    end
     return v
 end
 
@@ -523,6 +556,16 @@ local function settleRoom(player)
     -- 第一间房不记"获得"类字段：那多半是角色自带/初始化顺序造成的假阳性
     local firstRoom = (#run.rooms == 0)
     if firstRoom then gained = {} end
+    -- 实时监视补采：修掉"同房获得又失去""跨房瞬间获得"两个盲区
+    if itemwatch then
+        local extra = itemwatch.drain()
+        for i = 1, #extra do
+            local id = extra[i]
+            local dup = false
+            for j = 1, #gained do if gained[j] == id then dup = true break end end
+            if not dup then gained[#gained + 1] = id end
+        end
+    end
 
     -- 与 gained 平行的品质列表（用于识别 4 级起飞 / 0 级封盘）
     local gainedQ = {}
@@ -609,6 +652,8 @@ saveData = function()
     if removed > 0 then
         log(string.format("超出字节预算，又淘汰了 %d 局", removed))
     end
+    if rating then rating.save(state.store) end
+    if settings then settings.save(state.store) end
     local blob = fmt.buildBlob(state.store)
     if blob == lastBlob then
         log("落盘跳过：内容未变（" .. #blob .. " 字节）")
@@ -640,6 +685,12 @@ loadData = function()
     local store, warns = fmt.splitBlob(blob)
     state.store = store
     state.store.bytes = nil
+    if settings then settings.load(store) end
+    if rating then
+        rating.load(store)
+        local n = rating.count()
+        if n > 0 then log(string.format("载入自定义评级 %d 条", n)) end
+    end
     log(string.format("载入 %d 局 / %d 行 / %d 字节（未解析房间体）",
         #store.index, #store.lines, #blob))
     for i = 1, math.min(#warns, 5) do log("  警告：" .. warns[i]) end
@@ -655,14 +706,18 @@ do
 end
 
 -- ---------------------------------------------------------------- 回调
-
-local function add(event, fn)
+local function add(event, fn, priority)
     if event == nil then return end
+    if priority ~= nil then
+        local ok = pcall(function() mod:AddCallback(event, fn, priority) end)
+        if ok then return end
+    end
     mod:AddCallback(event, fn)
 end
 
 -- ---------------------------------------------------------------- 册子 UI
 bookui.init({
+    hotkeyF5 = function() return (settings and settings.get("f5")) or Keyboard.KEY_F5 end,
     getStore = function() return state.store end,
     fmt      = fmt,
     hl       = highlight,
@@ -689,11 +744,42 @@ end
 
 -- 输入必须在 POST_RENDER 里读：POST_UPDATE 里读 IsButtonTriggered 会漏触发
 add(ModCallbacks.MC_POST_RENDER, function()
+    local f6 = (settings and settings.get("f6")) or Keyboard.KEY_F6
+    if ratingui and ratingui.isReady() and Input.IsButtonTriggered(f6, 0) then
+        ratingui.toggle()
+    end
     uiGuard("update", bookui.update)
     uiGuard("render", bookui.render)
 end)
 
-configui.init({})
+configui.init({ settings = settings, log = log, onChanged = function() pcall(saveData) end })
+do
+    local editorDeps = {
+        rating = rating, pool = poolmod, getPlayer = getPlayer, log = log,
+        onChanged = function() pcall(saveData) end,
+    }
+    if ratingui and ratingui.init(editorDeps) then
+        log("评级编辑器已就绪（F6 打开）")
+    elseif not ratingui then
+        log("评级编辑器缺失")
+    end
+end
+
+-- 每帧监视道具变化；局开始时快照权重并重建基线
+add(ModCallbacks.MC_POST_GAME_STARTED, function()
+    local p = getPlayer()
+    if itemwatch then itemwatch.reset(p, 1800) end
+    if poolmod then
+        local n = poolmod.snapshot(poolmod.COMMON_POOLS)
+        log(string.format("[POOL] 权重快照：%d 个池子", n))
+    end
+end)
+
+-- 抽到道具后：按权重倍数决定要不要重掷（排最后，只微调别人的结果）
+add(ModCallbacks.MC_POST_GET_COLLECTIBLE, function(_, itemID, poolType, decrease, seed)
+    if not (poolmod and rating) then return nil end
+    return poolmod.onPostGet(rating, itemID, poolType, decrease, seed, log)
+end, CallbackPriority.LATE)
 if configui.isReady() then log("ImGui 配置菜单已挂上") else log("ImGui 不可用（或挂载失败），跳过配置菜单") end
 
 add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
@@ -726,7 +812,9 @@ end)
 
 -- Boss 房补采：进房瞬间 Boss 还没生成，GetBossID() 会返回 0。
 -- 每帧检查一次，读到非 0 就停（只在 Boss 房 / Boss Rush 房做）。
+
 add(ModCallbacks.MC_POST_UPDATE, function()
+    if itemwatch then itemwatch.tick(getPlayer(), 1800) end
     local p = state.pending
     if not p then return end
 
