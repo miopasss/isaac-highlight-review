@@ -46,9 +46,15 @@ local function getCJK()
     if cjkTried then return cjkFont end
     cjkTried = true
     for i = 1, #CJK_CANDIDATES do
-        local ok, f = pcall(function()
+        local ok, f, why = pcall(function()
             local ff = Font()
-            ff:Load(CJK_CANDIDATES[i])
+            -- 第二个参数是空串（照 EID 的写法，GoG 版本需要）
+            ff:Load(CJK_CANDIDATES[i], "")
+            ff:SetMissingCharacter(2)
+            if not ff:IsLoaded() then return nil, "IsLoaded=false" end
+            -- 再验一次真的能量到汉字宽度
+            local w = ff:GetStringWidth("伤害")
+            if not w or w <= 0 then return nil, "GetStringWidth=0" end
             return ff
         end)
         if ok and f then
@@ -56,8 +62,11 @@ local function getCJK()
             if deps and deps.log then deps.log("[CJK] 使用字体: " .. CJK_CANDIDATES[i]) end
             return cjkFont
         end
+        if deps and deps.log then
+            deps.log("[CJK] 加载失败: " .. CJK_CANDIDATES[i] .. "  原因=" .. tostring(f))
+        end
     end
-    if deps and deps.log then deps.log("[CJK] 没找到中文字体，回退英文") end
+    if deps and deps.log then deps.log("[CJK] 没找到可用的中文字体，回退英文") end
     return nil
 end
 
@@ -371,7 +380,14 @@ local function statRow(s, y, st, mx, mn, x0, colWidth)
     local ft = ((st.outV or 0) - (mn or 0)) / span
     segBar2(xBar * s, (y + 2.2) * s, barW * s, 5.5 * s, fb, ft, 20)
 
-    local dStr = string.format("%+.2f", st.delta)
+    local dStr
+        if st.inV and math.abs(st.inV) > 0.005 then
+            dStr = string.format("%+.1f%%", st.delta / st.inV * 100)
+        elseif st.delta ~= 0 then
+            dStr = string.format("%+.2f", st.delta)
+        else
+            dStr = "0%"
+        end
     txt(dStr, (xBar + barW + 5) * s, y * s, sc,
         st.delta > 0.005 and INK_UP or (st.delta < -0.005 and INK_DN or INK_DIM))
     return y + 11

@@ -595,3 +595,23 @@ spriteDummy:LoadGraphics()
 ## 流程约定（作者要求，长期有效）
 
 > 每次代码修改都要：① 更新 CHANGELOG ② git commit 一下。
+## 第 14 轮的补充修正（同日）
+
+**字体加载的三个必需细节**（照 `EID:loadFont` 抄，之前全漏了）：
+
+```lua
+local ff = Font()
+ff:Load(path, "")              -- ① 第二个参数必须给空串（GoG 版本兼容）
+ff:SetMissingCharacter(2)      -- ② 设置缺字符号
+if not ff:IsLoaded() then ... end   -- ③ 用 IsLoaded() 判断，不能靠 pcall
+```
+
+`Font:Load` 失败时**不抛错、静默返回**，所以之前的
+`pcall(function() ff:Load(p) return ff end)` 永远"成功"，
+`cjk=yes` 是个**假阳性**——字体对象有、字形没有。
+
+现在三道校验：`Load(path, "")` → `IsLoaded()` → `GetStringWidth("伤害") > 0`，
+任何一步不过就记 `[CJK] 加载失败: <路径> 原因=<...>` 并试下一个候选。
+
+**六维增量改为百分比**（作者要求）：
+`+2.74` → `+12.3%`。进房值为 0 时无法算比例，退回绝对值。
