@@ -1063,3 +1063,39 @@ local mn = (k == "lk") and (bk.statMin[k] or 0) or 0
 ```
 csc /nologo /target:exe /out:tools\Rooms.exe tools\RoomsLauncher.cs
 ```
+## Boss 房补采（2026-10-20 13:4x）
+
+用房间明细核对作者记忆：**F9 的 Boss 房确实是 Hush，F10 的确实是百变怪**。
+
+| 层 | stage | 关卡 | Boss |
+|---|---|---|---|
+| F9 | 9 | BlueWomb (???) | **Hush** ✓ |
+| F10 | 12 | Void | **百变怪** ✓ |
+
+但发现两个字段**全为 0**，原因是同一个：
+
+```
+F9 第12间 型5 boss=0  292.2s 受伤14    ← 本该 63 (Hush)
+F10 第4间 型5 boss=0  402.3s 受伤24    ← 本该 70 (百变怪)
+```
+
+**根因**：`Room:GetBossID()` 文档写的是"返回房间里**第一个 Boss 实体**的 id"——
+我们在 `MC_POST_NEW_ROOM`（刚进房）调用，Boss 还没生成，所以返回 0。
+同理 `foes`（进房敌人数）在进房瞬间也是 0，导致全档案 374 间房全是 `敌0`。
+
+**修法**：加一个 `MC_POST_UPDATE` 每帧补采，读到非 0 就停：
+
+```lua
+if (p.foes or 0) == 0 then p.foes = countFoes() end          -- 补敌人数量
+if (p.bossIn or 0) ~= 0 and (p.ubIn or 0) ~= 0 then return end
+-- 只在型5/Boss Rush房做，Boss 生成后再读 GetBossID
+```
+
+**影响**：终极 Boss 页在修复前**永远不会触发**（ub 恒为 0）。
+修复后需**新开一局**才有数据。
+
+## 房间明细核对结论（作者那局 E6A68F51-0）
+
+- 374 间房 / 148 分钟
+- 最久：F1 第28间 67 分钟（挂机）
+- 真正的 Boss 战：F10 第14间 402 秒（百变怪）、F9 第12间 292 秒（Hush）

@@ -724,6 +724,28 @@ add(ModCallbacks.MC_POST_NEW_ROOM, function()
     end
 end)
 
+-- Boss 房补采：进房瞬间 Boss 还没生成，GetBossID() 会返回 0。
+-- 每帧检查一次，读到非 0 就停（只在 Boss 房 / Boss Rush 房做）。
+add(ModCallbacks.MC_POST_UPDATE, function()
+    local p = state.pending
+    if not p then return end
+
+    -- 敌人数量：进房瞬间还没生成，这里补到第一次非 0
+    if (p.foes or 0) == 0 then
+        pcall(function() p.foes = countFoes() end)
+    end
+
+    -- Boss id / 终极 Boss：同理，Boss 生成之后才读得到
+    if (p.bossIn or 0) ~= 0 and (p.ubIn or 0) ~= 0 then return end
+    pcall(function()
+        local room = Game():GetRoom()
+        local t = num(room:GetType())
+        if t ~= 5 and t ~= 17 then return end
+        if (p.bossIn or 0) == 0 then p.bossIn = bossIdNow() end
+        if (p.ubIn or 0) == 0 then p.ubIn = ultimateBossNow() end
+    end)
+end)
+
 add(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function()
     if state.pending then state.pending.cleared = true end
 end)
