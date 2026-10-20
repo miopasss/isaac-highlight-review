@@ -424,7 +424,12 @@ local function drawOverview(s, bk, entry)
         txt(valStr, xVal * s, y * s, sc, INK)
         local wVal = textW(valStr, sc) / s
 
-        local gainStr = string.format("%+.2f", f.gain)
+        local gainStr
+        if f.powerIn and math.abs(f.powerIn) > 0.005 then
+            gainStr = string.format("%+.1f%%", f.gain / f.powerIn * 100)
+        else
+            gainStr = "0%"
+        end
         local wGain = textW(gainStr, sc) / s
         local durStr = deps.hl.durationEn(f.ms)
         local wDur = textW(durStr, s * 0.52) / s
