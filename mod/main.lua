@@ -334,7 +334,19 @@ end
 
 local function bossIdNow()
     local v = 0
+    -- ① Room:GetBossID()：文档说返回"房间里第一个 Boss 实体"的 id
     pcall(function() v = num(Game():GetRoom():GetBossID()) end)
+    -- ② 退路：房间 description 的 Subtype 按文档就等于 bossID，不依赖实体是否已生成
+    if v == 0 then
+        pcall(function()
+            local desc = Game():GetLevel():GetCurrentRoomDesc()
+            if desc and desc.Data then v = num(desc.Data.Subtype) end
+        end)
+    end
+    -- ③ 退路：XL 楼层的第二间 Boss 房
+    if v == 0 then
+        pcall(function() v = num(Game():GetRoom():GetSecondBossID()) end)
+    end
     return v
 end
 
@@ -728,6 +740,7 @@ end
 -- 输入必须在 POST_RENDER 里读：POST_UPDATE 里读 IsButtonTriggered 会漏触发
 add(ModCallbacks.MC_POST_RENDER, function()
     if ratingui and ratingui.isReady() and Input.IsButtonTriggered(Keyboard.KEY_F6, 0) then
+        log("[EDITOR] 收到 F6")
         ratingui.toggle()
     end
     uiGuard("update", bookui.update)
@@ -794,6 +807,34 @@ end)
 
 -- Boss 房补采：进房瞬间 Boss 还没生成，GetBossID() 会返回 0。
 -- 每帧检查一次，读到非 0 就停（只在 Boss 房 / Boss Rush 房做）。
+-- 一次性诊断：进 Boss 房时把三条取 id 的路都打出来（每局最多 3 次）
+local bossDiagCount = 0
+add(ModCallbacks.MC_POST_UPDATE, function()
+    if bossDiagCount >= 3 then return end
+    local room = nil
+    pcall(function() room = Game():GetRoom() end)
+    if not room then return end
+    local t = 0
+    pcall(function() t = num(room:GetType()) end)
+    if t ~= 5 and t ~= 17 then return end
+    -- 只在新房间的第一帧打
+    local p = state.pending
+    if not p or p.diagDone then return end
+    p.diagDone = true
+    bossDiagCount = bossDiagCount + 1
+
+    local a, b, c, sub, err = 0, 0, 0, 0, nil
+    local ok1, r1 = pcall(function() return Game():GetRoom():GetBossID() end)
+    if ok1 then a = num(r1) else err = tostring(r1) end
+    local ok2, r2 = pcall(function() return Game():GetLevel():GetCurrentRoomDesc().Data.Subtype end)
+    if ok2 then sub = num(r2) else err = (err or "") .. " | desc:" .. tostring(r2) end
+    local ok3, r3 = pcall(function() return Game():GetRoom():GetSecondBossID() end)
+    if ok3 then c = num(r3) else err = (err or "") .. " | 2nd:" .. tostring(r3) end
+
+    log(string.format("[BOSSDIAG] type=%d shape=%d  GetBossID=%d  desc.Subtype=%d  2nd=%d  err=%s",
+        t, num(room:GetShape()), a, sub, c, tostring(err)))
+end)
+
 add(ModCallbacks.MC_POST_UPDATE, function()
     if itemwatch then itemwatch.tick(getPlayer(), 1800) end
     local p = state.pending

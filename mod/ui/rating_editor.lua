@@ -177,72 +177,117 @@ end
 
 -- ── 建界面 ──────────────────────────────────────────────────────────────────
 
+--- 逐步构建：某一步失败只记日志，不影响其它控件（REPENTOGON 各版本控件名略有差异）
+local function tryStep(name, fn)
+    local ok, err = pcall(fn)
+    if not ok and deps and deps.log then
+        deps.log("[EDITOR] " .. name .. " 失败: " .. tostring(err))
+    end
+    return ok
+end
+
 local function build()
-    ImGui.CreateWindow(WIN, "Highlight Review · 道具评级")
-    ImGui.SetSize(WIN, 460, 380)
-    ImGui.AddTabBar(WIN, "hlr_tabbar")
-    ImGui.AddTab("hlr_tabbar", TAB_EDIT, "编辑")
-    ImGui.AddTab("hlr_tabbar", TAB_LIST, "已修改")
-
-    -- ── 编辑页 ──
-    ImGui.AddInputText(TAB_EDIT, S_QUERY, "搜索（英文名 或 id）", function(_, val)
-        query = tostring(val)
-        buildCandidates()
-        if #candidates > 0 then
-            ImGui.UpdateData(SEL_COMBO, ImGuiData.ListValues, labelsOf(candidates))
-            ImGui.UpdateData(SEL_COMBO, ImGuiData.Value, 0)
+    tryStep("CreateWindow", function()
+        ImGui.CreateWindow(WIN, "Highlight Review · 道具评级")
+        -- 窗口尺寸/位置：这个版本没有 SetSize，但 SetWindowSize 在
+        local sized = false
+        if ImGui.SetWindowSize then
+            local ok = pcall(function() ImGui.SetWindowSize(WIN, 520, 460) end)
+            sized = ok
+        elseif ImGui.SetSize then
+            local ok = pcall(function() ImGui.SetSize(WIN, 520, 460) end)
+            sized = ok
         end
-    end, "")
-
-    ImGui.AddCombobox(TAB_EDIT, SEL_COMBO, "搜索结果", function(idx)
-        local c = candidates[(idx or 0) + 1]
-        if c then selectId(c.id) end
-    end, { "（输入关键字）" }, 0)
-
-    ImGui.AddCombobox(TAB_EDIT, OWNED_COMBO, "已获得道具", function(idx)
-        local c = owned[(idx or 0) + 1]
-        if c then selectId(c.id) end
-    end, { "（进一局后可用）" }, 0)
-
-    ImGui.AddText(TAB_EDIT, "", false, S_INFO)
-
-    ImGui.AddSliderFloat(TAB_EDIT, S_RATING, "评级", function(_, val)
-        if not curId then return end
-        deps.rating.set(curId, tonumber(val), nil, nil)
-        refreshInfo()
-    end, 0.0, 0.0, 4.0, "%.1f")
-
-    ImGui.AddInputFloat(TAB_EDIT, S_WEIGHT, "权重倍数（1=不变, 0=不出）", function(_, val)
-        if not curId then return end
-        deps.rating.set(curId, nil, tonumber(val), nil)
-        refreshInfo()
-    end, 1.0, 0.1, 0.1, "%.2f")
-
-    ImGui.AddCheckbox(TAB_EDIT, S_ON, "启用", function(checked)
-        if not curId then return end
-        deps.rating.set(curId, nil, nil, checked and true or false)
-        refreshInfo()
-    end, true)
-
-    ImGui.AddButton(TAB_EDIT, "hlr_btn_clear", "删除此条（回退官方）", function()
-        if not curId then return end
-        deps.rating.clear(curId)
-        pushValues()
-        refreshInfo()
-        if deps.onChanged then deps.onChanged() end
+        if ImGui.SetWindowPosition then
+            pcall(function() ImGui.SetWindowPosition(WIN, 120, 90) end)
+        end
+        if deps and deps.log then
+            deps.log(string.format("[EDITOR] 窗口: SetWindowSize=%s SetWindowPosition=%s sized=%s",
+                tostring(ImGui.SetWindowSize ~= nil), tostring(ImGui.SetWindowPosition ~= nil), tostring(sized)))
+        end
     end)
 
-    -- ── 已修改页 ──
-    ImGui.AddText(TAB_LIST, "（每次切到这一页时刷新）", false, "hlr_list_info")
-    ImGui.AddCombobox(TAB_LIST, "hlr_list_combo", "覆盖条目", function(idx)
-        local ids = deps.rating.list()
-        local id = ids[(idx or 0) + 1]
-        if id then
-            curId = id
+    tryStep("TabBar", function()
+        ImGui.AddTabBar(WIN, "hlr_tabbar")
+        ImGui.AddTab("hlr_tabbar", TAB_EDIT, "编辑")
+        ImGui.AddTab("hlr_tabbar", TAB_LIST, "已修改")
+    end)
+
+    tryStep("搜索框", function()
+        ImGui.AddInputText(TAB_EDIT, S_QUERY, "搜索（英文名 或 id）", function(_, val)
+            query = tostring(val)
+            buildCandidates()
+            if #candidates > 0 then
+                ImGui.UpdateData(SEL_COMBO, ImGuiData.ListValues, labelsOf(candidates))
+                ImGui.UpdateData(SEL_COMBO, ImGuiData.Value, 0)
+            end
+        end, "")
+    end)
+
+    tryStep("搜索结果下拉", function()
+        ImGui.AddCombobox(TAB_EDIT, SEL_COMBO, "搜索结果", function(idx)
+            local c = candidates[(idx or 0) + 1]
+            if c then selectId(c.id) end
+        end, { "（输入关键字）" }, 0)
+    end)
+
+    tryStep("已获得下拉", function()
+        ImGui.AddCombobox(TAB_EDIT, OWNED_COMBO, "已获得道具", function(idx)
+            local c = owned[(idx or 0) + 1]
+            if c then selectId(c.id) end
+        end, { "（进一局后可用）" }, 0)
+    end)
+
+    tryStep("信息文本", function()
+        ImGui.AddText(TAB_EDIT, "", false, S_INFO)
+    end)
+
+    tryStep("评级滑条", function()
+        ImGui.AddSliderFloat(TAB_EDIT, S_RATING, "评级", function(_, val)
+            if not curId then return end
+            deps.rating.set(curId, tonumber(val), nil, nil)
+            refreshInfo()
+        end, 0.0, 0.0, 4.0, "%.1f")
+    end)
+
+    tryStep("权重输入", function()
+        ImGui.AddInputFloat(TAB_EDIT, S_WEIGHT, "权重倍数（1=不变, 0=不出）", function(_, val)
+            if not curId then return end
+            deps.rating.set(curId, nil, tonumber(val), nil)
+            refreshInfo()
+        end, 1.0, 0.1, 0.1, "%.2f")
+    end)
+
+    tryStep("启用勾选", function()
+        ImGui.AddCheckbox(TAB_EDIT, S_ON, "启用", function(checked)
+            if not curId then return end
+            deps.rating.set(curId, nil, nil, checked and true or false)
+            refreshInfo()
+        end, true)
+    end)
+
+    tryStep("删除按钮", function()
+        ImGui.AddButton(TAB_EDIT, "hlr_btn_clear", "删除此条（回退官方）", function()
+            if not curId then return end
+            deps.rating.clear(curId)
             pushValues()
             refreshInfo()
-        end
-    end, { "（无）" }, 0)
+            if deps.onChanged then deps.onChanged() end
+        end)
+    end)
+
+    tryStep("已修改页", function()
+        ImGui.AddText(TAB_LIST, "（切到这一页时刷新）", false, "hlr_list_info")
+        ImGui.AddCombobox(TAB_LIST, "hlr_list_combo", "覆盖条目", function(idx)
+            local ids = deps.rating.list()
+            local id = ids[(idx or 0) + 1]
+            if id then
+                curId = id
+                pushValues()
+                refreshInfo()
+            end
+        end, { "（无）" }, 0)
+    end)
 
     READY = true
 end
@@ -252,14 +297,20 @@ end
 function E.init(d)
     deps = d
     if READY then return true end
-    if not ImGui or not ImGui.CreateWindow then return false end
-    local ok = pcall(build)
-    if not ok then
-        READY = false
-        if deps and deps.log then deps.log("[EDITOR] ImGui 建界面失败") end
+    if not ImGui or not ImGui.CreateWindow then
+        if deps and deps.log then deps.log("[EDITOR] 没有 ImGui 全局") end
         return false
     end
-    ImGui.SetVisible(WIN, false)
+    local ok, err = pcall(build)
+    if not ok then
+        READY = false
+        if deps and deps.log then deps.log("[EDITOR] ImGui 建界面失败: " .. tostring(err)) end
+        return false
+    end
+    local ok2, err2 = pcall(function() ImGui.SetVisible(WIN, false) end)
+    if not ok2 and deps and deps.log then
+        deps.log("[EDITOR] SetVisible 失败: " .. tostring(err2))
+    end
     return true
 end
 
@@ -290,10 +341,15 @@ end
 function E.toggle()
     if not READY then return false end
     opened = not opened
-    ImGui.SetVisible(WIN, opened)
+    pcall(function() ImGui.SetVisible(WIN, opened) end)
     if opened then
         E.refresh()
+        -- Show() 会让 ImGui 接管键盘；关的时候必须 Hide() 把控制权还给游戏
         pcall(function() ImGui.Show() end)
+        if deps and deps.log then deps.log("[EDITOR] 打开（ImGui 接管键盘）") end
+    else
+        pcall(function() ImGui.Hide() end)
+        if deps and deps.log then deps.log("[EDITOR] 关闭（键盘还给游戏）") end
     end
     return opened
 end
@@ -302,6 +358,7 @@ function E.close()
     if not READY then return end
     opened = false
     pcall(function() ImGui.SetVisible(WIN, false) end)
+    pcall(function() ImGui.Hide() end)
 end
 
 return E

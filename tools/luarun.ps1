@@ -12,6 +12,7 @@ param([Parameter(Mandatory = $true)][string]$File)
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\_paths.ps1"
 $GameDir = $IsaacDir
+$ProjectRoot = Split-Path $PSScriptRoot -Parent   # tools 的上一级
 $Dll = Join-Path $GameDir "Lua5.4.dll"
 
 if (-not (Test-Path $Dll)) { Write-Host "找不到 $Dll"; exit 2 }
@@ -57,6 +58,16 @@ public static class LuaRun {
 # 把路径传给 Lua（Lua 里不准硬编码路径）
 $env:HLR_ROOT = $ProjectRoot
 $env:HLR_DATA = Join-Path $IsaacDir "data\highlight-review"
+
+# 环境变量传不进进程内的 LuaJIT（MSVC 的 getenv 读启动缓存的 _environ），
+# 所以额外写一个 Lua 文件，脚本用 loadfile 读它。
+$logsDir = Join-Path $ProjectRoot "_logs"
+if (-not (Test-Path $logsDir)) { New-Item -ItemType Directory -Path $logsDir -Force | Out-Null }
+$pathsLua = Join-Path $logsDir ".hlr_paths.lua"
+$rootLua  = $ProjectRoot.Replace("\", "/")
+$dataLua  = (Join-Path $IsaacDir "data\highlight-review").Replace("\", "/")
+$pathsBody = "return { root = [[" + $rootLua + "/]], data = [[" + $dataLua + "/]] }"
+[System.IO.File]::WriteAllText($pathsLua, $pathsBody, (New-Object System.Text.UTF8Encoding($false)))
 
 Add-Type -TypeDefinition $src
 

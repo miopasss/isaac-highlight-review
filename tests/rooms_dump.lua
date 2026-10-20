@@ -5,10 +5,20 @@
 -- 运行：tools\luarun.ps1 tests\rooms_dump.lua
 -- 输出：_logs\rooms-<时间>.txt
 -- =============================================================================
-local ROOT = (os and os.getenv and os.getenv("HLR_ROOT")) or "D:/00000/aiStudy/issacmod/"
+local ROOT = "D:/00000/aiStudy/issacmod/"
+local DATA_OVERRIDE = nil
+do
+    local f = io.open(ROOT .. "_logs/.hlr_paths.lua", "rb")
+    if f then
+        local s = f:read("*a"); f:close()
+        local chunk = load(s)
+        local t = chunk and chunk()
+        if t and t.root then ROOT = t.root end
+        if t and t.data then DATA_OVERRIDE = t.data end
+    end
+end
 if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
-local DATA = (os and os.getenv and os.getenv("HLR_DATA")) or "data/highlight-review"
-if DATA:sub(-1) ~= "/" and DATA:sub(-1) ~= "\\" then DATA = DATA .. "/" end
+local DATA = DATA_OVERRIDE or "data/highlight-review"
 
 local function loadmod(p) return loadfile(ROOT .. p)() end
 local schema = loadmod("mod/core/schema.lua")

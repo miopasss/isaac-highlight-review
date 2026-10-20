@@ -335,6 +335,7 @@ end
 local function update()
     if trig(Keyboard.KEY_F5) then
         isOpen = not isOpen
+            if deps and deps.log then deps.log(string.format("[UI] F5 → isOpen=%s", tostring(isOpen))) end
         if isOpen then
             page, cache, holdNext, lastDiag = 1, {}, 0, ""
             local l0 = sortedRuns()

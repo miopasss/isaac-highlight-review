@@ -1284,3 +1284,37 @@ tools\*.ps1       所有 PowerShell 脚本
 - `tests\fmt_test.lua`：通过
 - luacheck：16 个文件 0 失败
 - **按要求没有启动游戏验证**
+## v0.3 修复：F5/F6 失效的三个真实原因（2026-10-21 03:0x）
+
+### ① `ImGui.SetSize` 在这个版本是 nil
+
+启动日志：`[EDITOR] CreateWindow 失败: attempt to call a nil value (field 'SetSize')`
+
+整个 `build()` 被这一步炸掉 → 编辑器从未建成 → F6 无效。
+
+**修**：改用 `SetWindowSize`（实测存在）+ `SetWindowPosition`，并逐步 `tryStep` 包起来，
+任何一个控件缺失只记日志、不影响其它控件。
+
+### ② F5 其实没坏，是我的自动化测试进错了存档槽
+
+测试日志里根本没有 `载入 N 局` —— 说明进的是**空槽**，`sortedRuns()` 返回空，
+`isOpen` 立刻被关回去，看起来就是"F5 没反应"。
+
+**教训**：验证 F5 必须先确认日志里有 `载入 N 局`。
+
+### ③ `ImGui.Show()` 会接管键盘，但 F6 仍能被收到
+
+实测按 F6 → `[EDITOR] 打开`，再按 F6 → `[EDITOR] 关闭`，两次都收到了。
+但稳妥起见关闭时补了 `ImGui.Hide()`，把控制权还给游戏。
+
+## 排查过程的三个教训（写进这里免得再犯）
+
+1. **在 `MC_POST_RENDER` 里插探针要小心**：我删除临时探针时把 `add(ModCallbacks.MC_POST_RENDER, function()` 这一行一起删了，导致语法错误。
+2. **PowerShell 变量大小写不敏感**：`$t` 和 `$T` 是同一个变量，我的路径变量被列表变量覆盖，写入路径变成空串。
+3. **`Set-Content`/`Replace` 的缩进假设**：多次因为 here-string 里多写了前导空格导致替换静默失败。**改代码一律用行号定位，并在改完后 grep 验证**。
+
+## 当前状态
+
+- F5：进有数据的存档后正常
+- F6：正常打开/关闭编辑器
+- 编辑器窗口：520×460，位置 (120, 90)（会被别的 mod 的"控制台"窗口遮住，非本 mod 问题）
