@@ -11,6 +11,7 @@
 
 | 文件 | 内容 |
 |---|---|
+| [AGENTS.md](AGENTS.md) | **给 Agent 的操作说明书**：怎么自己启动游戏 → 进存档 → 按 F5 → 看截图判断 |
 | [DESIGN.md](DESIGN.md) | **设计文档**：已定决策、不变量、未定项、扩展点仓库（§12） |
 | [FORMAT.md](FORMAT.md) | **数据格式规范 v1**：这是最贵的东西，改动规则在 §5 |
 | [damage-formula-verdict.md](damage-formula-verdict.md) | 伤害/攻速公式核对结论（带来源） |
