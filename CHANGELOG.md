@@ -1434,3 +1434,32 @@ function R.save(store)
 - 开发文档挪到文末一小节
 
 `AGENTS.md` / `DESIGN.md` / `FORMAT.md` / `CHANGELOG.md` 保持不变。
+## 局外工具入仓 + 工坊发布清单（2026-10-21 05:0x）
+
+### exe 重新编译并入仓库
+
+`tools\exe\` 下三个启动器全部重新编译（旧版是目录重排前编的，找不到脚本）：
+
+| exe | 用途 | 实测 |
+|---|---|---|
+| `Book.exe` | 生成册子文本 | ✅ 归档 6 局并生成报告 |
+| `ParseSave.exe` | 存档导出 JSON | ✅ save1/save3 都导出了 |
+| `Rooms.exe` | 每局房间明细 | ✅ 写出 `_logs\rooms-*.txt` |
+
+**踩坑**：旧 `Book.exe` 进程卡在"按任意键关闭"（`Console.ReadKey` 在重定向 stdin 时不退出），
+**文件被锁** → `csc` 报 `CS0016 未能写入输出文件` → 之后几次"编译成功"其实一直在用旧 exe。
+以后重建前先 `Get-Process Book/ParseSave/Rooms | Stop-Process`。
+
+### `.gitignore`
+
+去掉 `tools/exe/*.exe` 一行，三个 exe 现在**纳入版本管理**。
+（`tools/*.exe` 保留，防止以后在 tools 根目录生成 exe 又被误提交。）
+
+### `parse-save.ps1` 认识 `Q=` / `C=` 行
+
+之前会警告 `未知作用域: Q; C`。修的时候第一版插入位置破坏了 `if/elseif` 链语法，
+改成 `elseif ($rec.scope -eq "Q" -or $rec.scope -eq "C") { }`。
+
+### README 新增「创意工坊发布清单」
+
+明确写清只打包 `mod/`，**不带** `tools/`（含 exe）、`tests/`、`_logs/`、`_archive/`、`_backup/`、`*.md`。

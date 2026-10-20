@@ -139,4 +139,15 @@
 - `FORMAT.md` —— 数据格式规范
 - `CHANGELOG.md` —— 每一轮改动记录
 
-`tools/` 和 `tests/` 都是开发工具，发布 mod 时不需要。
+`tools/` 和 `tests/` 都是开发工具，**发布 mod 时不需要**。
+
+### 创意工坊发布清单
+
+只打包 `mod/` 一个目录，**不要带**：
+
+- `tools/`（含里面的 `.exe`）
+- `tests/`
+- `_logs/` `_archive/` `_backup/`
+- `*.md` 文档
+
+工坊里上传的就是 `mod/` 的内容（`main.lua` + `core/` + `ui/` + `resources/` + `metadata.xml`）。
