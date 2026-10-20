@@ -1188,3 +1188,12 @@ git tag v0.2.0
 
 **验证**：PR #2 建成功（随后关闭）、PR #3 建成功并 squash 合并、分支删除成功。
 本脚本自己也是用它合并进 main 的。
+## AGENTS.md 补第 12 节：Git 工作流（2026-10-20 14:2x）
+
+把这套纪律写进给下一个 Agent 的说明书，避免下次对话又走错：
+
+- 流程：分支 → 推 → **等作者发话** → `pr.ps1` squash 合并 → 删分支
+- 硬规则：不自己合并、不对 main force push、只用 squash、合并标题带分支名
+- token：`tools\.gh_token`，必须 gitignore（push protection 会拒、secret scanning 会撤销）
+- 不设审批（作者自己不能 approve 自己的 PR）
+- 提交身份 `piiiika`/`miopasss` 不一致，作者决定不改
