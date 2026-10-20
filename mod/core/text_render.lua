@@ -57,6 +57,16 @@ function text.book(book, opts)
     w(string.format("  %s   %s   %dF   %d rooms",
         book.runId, rtext, book.maxFloor, #book.rooms))
     local growth = (book.base > 0) and ((book.final - book.base) / book.base * 100) or 0
+    local fin = book.pages and book.pages[1]
+    if fin and fin.q4 and #fin.q4 > 0 then
+        local ids = {}
+        for k = 1, math.min(#fin.q4, 8) do ids[k] = itemLabel(fin.q4[k], opts) end
+        local more = (#fin.q4 > 8) and string.format("  +%d", #fin.q4 - 8) or ""
+        w(string.format("  四级道具（%d）：%s%s", #fin.q4, table.concat(ids, ", "), more))
+    end
+    if book.bossSummary and #book.bossSummary > 0 then
+        w("  终极Boss：" .. table.concat(book.bossSummary, " · "))
+    end
     w(string.format("  POWER  %.2f > %.2f    %+.2f   (%s)",
         book.base, book.final, book.final - book.base, pctStr(growth)))
     w("")
@@ -75,6 +85,31 @@ function text.book(book, opts)
     -- ── 亮点回顾 ───────────────────────────────────────────────
     for pi = 1, #book.pages do
         local p = book.pages[pi]
+
+        -- 终局页：终极 Boss + 四级 + 零级
+        if p.kind == "finale" then
+            w("")
+            w(title(p.title or "终极Boss与终极道具", string.format("%d/%d", 1 + pi, book.pageCount)))
+            if p.bosses and #p.bosses > 0 then
+                for bi = 1, math.min(#p.bosses, 4) do
+                    local b = p.bosses[bi]
+                    w(string.format("  %-10s %8s   受伤 %d",
+                        (opts.bossName and opts.bossName(b.ub, false)) or ("boss" .. tostring(b.ub)), (opts.duration and opts.duration(b.ms)) or "", b.dmg or 0))
+                end
+            else
+                w("  （本局未击败终极Boss）")
+            end
+            if p.q4 and #p.q4 > 0 then
+                local ids = {}
+                for k = 1, #p.q4 do ids[k] = itemLabel(p.q4[k], opts) end
+                w("  四级道具：" .. table.concat(ids, ", "))
+            end
+            if p.q0 and #p.q0 > 0 then
+                local ids = {}
+                for k = 1, #p.q0 do ids[k] = itemLabel(p.q0[k], opts) end
+                w("  零级道具：" .. table.concat(ids, ", "))
+            end
+        else
         local r = p.room
         local label = string.format("%s  #%d",
             (p.kind == "power" and "战力提升") or (p.kind == "q4" and "四级道具") or "零级道具",
@@ -105,6 +140,7 @@ function text.book(book, opts)
             end
             w("  道具  " .. table.concat(items, "  "))
         end
+        end   -- else（非终局页）
     end
 
     -- ── 楼层页 ────────────────────────────────────────────────

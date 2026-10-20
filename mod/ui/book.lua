@@ -288,6 +288,13 @@ local function segBar(x, y, w, h, frac, onCol, offCol, n)
     end
 end
 
+--- 游戏是否暂停。Lua 侧只有只读的 Game():IsPaused()，没有 SetPaused，
+--- 所以"打开册子就暂停时间"做不到；只能提示玩家按 ESC（原生暂停，时间会停）。
+local function isGamePaused()
+    local ok, v = pcall(function() return Game():IsPaused() end)
+    return (ok and v) and true or false
+end
+
 local function sortedRuns()
     local store = deps.getStore()
     local list = {}
@@ -450,6 +457,36 @@ local function drawOverview(s, bk, entry)
         tostring(entry.id), RES_NAME[bk.result] or "?", bk.maxFloor, #bk.rooms),
         (PADX + 12) * s, y * s, s * 0.64, INK_DIM)
     y = y + 12
+
+    -- 本局四级道具（最多 8 个一行）
+    local fin = bk.pages and bk.pages[1]
+    local q4 = (fin and fin.q4) or {}
+    if #q4 > 0 then
+        local lab = ((getCJK() and "四级道具") or "Q4") .. " " .. #q4
+        txt(lab, (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
+        local wL = textW(lab, s * 0.54) / s
+        for k = 1, math.min(#q4, 8) do
+            local sp = itemIcon(q4[k])
+            if sp then
+                sp.Scale = Vector(s * 0.62, s * 0.62)
+                sp:Render(Vector((PADX + 16 + wL + (k - 1) * 26) * s, (y - 2) * s))
+            end
+        end
+        if #q4 > 8 then
+            txt(string.format("+%d", #q4 - 8),
+                (PADX + 16 + wL + 8 * 26) * s, y * s, s * 0.52, INK_DIM)
+        end
+        y = y + 12
+    end
+
+    -- 终极 Boss 总结
+    local bs = bk.bossSummary or {}
+    if #bs > 0 then
+        txt(((getCJK() and "终极Boss  ") or "BOSS  ") .. table.concat(bs, " · "),
+            (PADX + 12) * s, y * s, s * 0.54, INK_RED)
+        y = y + 12
+    end
+
     local growth = (bk.base > 0) and ((bk.final - bk.base) / bk.base * 100) or 0
     txt(string.format("POWER  %.2f > %.2f    %+.2f   (%+.1f%%)",
         bk.base, bk.final, bk.final - bk.base, growth),
@@ -494,7 +531,73 @@ local function drawOverview(s, bk, entry)
         txt(durStr, durX * s, y * s, s * 0.52, INK_DIM)
         y = y + 14.5
     end
-    footer(s, "U/D RUN    ENTER OPEN    L/R PAGE    F5 CLOSE")
+    footer(s, isGamePaused() and "TIME PAUSED    U/D RUN    ENTER OPEN    L/R PAGE    F5 CLOSE"
+        or "U/D RUN    ENTER OPEN    L/R PAGE    F5 CLOSE   (ESC pauses time)")
+end
+
+--- 「终极Boss与终极道具」页：Boss 战斗时间 + 四级图标 + 零级图标
+local function drawFinale(s, bk, idx)
+    local p = bk.pages[idx]
+    if not p then footer(s, "empty"); return end
+
+    title(s, p.title or "终极Boss与终极道具", string.format("%d/%d", 1 + idx, bk.pageCount))
+
+    local y = PADY + 27
+    local boseCn = getCJK()
+
+    -- 终极 Boss（最多 4 行）
+    txt(boseCn and "终极BOSS" or "FINAL BOSS", (PADX + 12) * s, y * s, s * 0.58, INK_DIM)
+    y = y + 12
+    local n = math.min(#(p.bosses or {}), 4)
+    for i = 1, n do
+        local b = p.bosses[i]
+        local nm = deps.hl.bossName(b.ub, not boseCn) or ("?" .. tostring(b.ub))
+        txt(string.format("%-10s %8s   %s %d",
+            nm, deps.hl.durationEn(b.ms),
+            boseCn and "受伤" or "DMG", b.dmg or 0),
+            (PADX + 14) * s, y * s, s * 0.6, INK)
+        y = y + 12
+    end
+    if #(p.bosses or {}) > 4 then
+        txt(string.format("+%d", #p.bosses - 4), (PADX + 14) * s, y * s, s * 0.55, INK_DIM)
+        y = y + 12
+    end
+    if n == 0 then
+        txt(boseCn and "（本局未击败终极Boss）" or "(no final boss)", (PADX + 14) * s, y * s, s * 0.55, INK_DIM)
+        y = y + 12
+    end
+
+    -- 四级道具
+    y = y + 6
+    txt(string.format("%s %d", boseCn and "四级道具" or "QUALITY 4", #(p.q4 or {})),
+        (PADX + 12) * s, y * s, s * 0.58, INK_DIM)
+    y = y + 13
+    local perRow = 8
+    for k = 1, math.min(#(p.q4 or {}), 8) do
+        local sp = itemIcon(p.q4[k])
+        if sp then
+            sp.Scale = Vector(s * 0.7, s * 0.7)
+            sp:Render(Vector((PADX + 14 + (k - 1) * 30) * s, (y - 3) * s))
+        end
+    end
+    if #(p.q4 or {}) > 8 then
+        txt(string.format("+%d", #p.q4 - 8), (PADX + 14 + 8 * 30) * s, y * s, s * 0.55, INK_DIM)
+    end
+    y = y + 16
+
+    -- 零级道具
+    txt(string.format("%s %d", boseCn and "零级道具" or "QUALITY 0", #(p.q0 or {})),
+        (PADX + 12) * s, y * s, s * 0.58, INK_DIM)
+    y = y + 13
+    for k = 1, math.min(#(p.q0 or {}), 8) do
+        local sp = itemIcon(p.q0[k])
+        if sp then
+            sp.Scale = Vector(s * 0.7, s * 0.7)
+            sp:Render(Vector((PADX + 14 + (k - 1) * 30) * s, (y - 3) * s))
+        end
+    end
+
+    footer(s, "L/R PAGE    ESC BACK    F5 CLOSE")
 end
 
 local function drawHighlight(s, bk, idx)
@@ -546,7 +649,8 @@ y = statRow(s, y, r.stats[i], bk, PADX + 12, PADW - 40)
             end
         end
     end
-    footer(s, "L/R PAGE    ESC BACK    F5 CLOSE")
+    footer(s, isGamePaused() and "TIME PAUSED    L/R PAGE    ESC BACK    F5 CLOSE"
+        or "L/R PAGE    ESC BACK    F5 CLOSE   (ESC pauses time)")
 end
 
 local function drawFloor(s, bk, idx)
@@ -600,7 +704,8 @@ y = statRow(s, y, f.stats[i], bk, PADX + 12, PADW - 40)
             (xIcon + (shown % perRow) * 26) * s,
             (y + math.floor(shown / perRow) * 24) * s, s * 0.54, INK_DIM)
     end
-    footer(s, "L/R PAGE    ESC BACK    F5 CLOSE")
+    footer(s, isGamePaused() and "TIME PAUSED    L/R PAGE    ESC BACK    F5 CLOSE"
+        or "L/R PAGE    ESC BACK    F5 CLOSE   (ESC pauses time)")
 end
 
 -- ---------------------------------------------------------------- 主渲染
@@ -639,7 +744,12 @@ local function render()
     if page == 1 then
         drawOverview(s, bk, list[selRun])
     elseif page <= 1 + #bk.pages then
-        drawHighlight(s, bk, page - 1)
+        local pg = bk.pages[page - 1]
+        if pg and pg.kind == "finale" then
+            drawFinale(s, bk, page - 1)
+        else
+            drawHighlight(s, bk, page - 1)
+        end
     else
         drawFloor(s, bk, page - 1 - #bk.pages)
     end

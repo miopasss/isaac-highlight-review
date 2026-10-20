@@ -69,6 +69,22 @@ function highlight.curseNamesEn(mask)
     return out
 end
 
+-- 终极 Boss（采集端写入的 ub 代码 → 显示名，作者指定）
+highlight.ULTIMATE_BOSS = {
+    [1] = { cn = "Hush",       en = "Hush" },
+    [2] = { cn = "Boss Rush",  en = "Boss Rush" },
+    [3] = { cn = "超级撒旦",   en = "Mega Satan" },
+    [4] = { cn = "老干妈",     en = "Mother" },
+    [5] = { cn = "祸兽",       en = "The Beast" },
+    [6] = { cn = "百变怪",     en = "Delirium" },
+}
+
+function highlight.bossName(code, useEn)
+    local e = highlight.ULTIMATE_BOSS[code]
+    if not e then return nil end
+    return useEn and e.en or e.cn
+end
+
 highlight.RESULT_NAMES = { [0] = "死亡", [1] = "通关", [2] = "未完成" }
 
 function highlight.resultName(r)
@@ -163,6 +179,7 @@ function highlight.analyze(run, cfg)
             hp = num(r.hp), hpo = num(r.hpo), mxhp = num(r.mxhp), mxhpo = num(r.mxhpo),
             hs = num(r.hs), hso = num(r.hso), hb = num(r.hb), hbo = num(r.hbo),
             it = r.it or {}, iq = r.iq or {},
+            ub = num(r.ub), cleared = r.clr and true or false,
             stats = stats,
         }
     end
@@ -224,6 +241,21 @@ function highlight.analyze(run, cfg)
         book.curve[#book.curve + 1] = { floor = f.i, power = f.powerOut }
     end
 
+    -- 2.5) 终极 Boss（只收"已清房"的；最多 4 个）
+    book.finalBosses = {}
+    for i = 1, #rooms do
+        local r = rooms[i]
+        if r.ub ~= 0 and r.cleared then
+            book.finalBosses[#book.finalBosses + 1] = r
+        end
+    end
+    book.bossSummary = {}
+    for i = 1, #book.finalBosses do
+        local b = book.finalBosses[i]
+        local nm = highlight.bossName(b.ub, false)
+        if nm then book.bossSummary[#book.bossSummary + 1] = nm end
+    end
+
     -- 3) 亮点 ①：战力提升 Top3（按房间进出差值）
     local pool = {}
     for i = 1, #rooms do
@@ -236,42 +268,26 @@ function highlight.analyze(run, cfg)
         }
     end
 
-    -- 4) 亮点 ②：四级道具（时间顺序，同房合并）
-    local seenRoom = {}
-    local q4Count = 0
+    -- 3.5) 页序：整页「终极Boss与终极道具」放最前（总是存在，内容可为空），再接战力 Top3
+    local q4Items, q0Items = {}, {}
     for i = 1, #rooms do
         local r = rooms[i]
-        local ids = {}
         for k = 1, #r.it do
-            if num(r.iq[k]) >= 4 then ids[#ids + 1] = r.it[k] end
-        end
-        if #ids > 0 and q4Count < cfg.q4MaxPages then
-            local key = r.floor .. ":" .. r.idx
-            if not seenRoom[key] then
-                seenRoom[key] = true
-                q4Count = q4Count + 1
-                book.pages[#book.pages + 1] = {
-                    kind = "q4", rank = q4Count, room = r,
-                    items = ids, title = "四级道具",
-                }
-            end
+            local q = num(r.iq[k])
+            if q >= 4 then q4Items[#q4Items + 1] = r.it[k] end
+            if q == 0 and #q0Items == 0 then q0Items[#q0Items + 1] = r.it[k] end
         end
     end
 
-    -- 5) 亮点 ③：零级道具（最早拿到的那个）
-    for i = 1, #rooms do
-        local r = rooms[i]
-        local ids = {}
-        for k = 1, #r.it do
-            if num(r.iq[k]) == 0 then ids[#ids + 1] = r.it[k] end
-        end
-        if #ids > 0 then
-            book.pages[#book.pages + 1] = {
-                kind = "q0", rank = 1, room = r, items = ids, title = "零级道具",
-            }
-            break
-        end
-    end
+    local finale = {
+        kind = "finale",
+        title = "终极Boss与终极道具",
+        bosses = book.finalBosses,   -- 已清房的终极 Boss（最多显示 4 个）
+        q4 = q4Items,
+        q0 = q0Items,
+    }
+    table.insert(book.pages, 1, finale)
+
 
     book.pageCount = 1 + #book.pages + #book.floors
     return book

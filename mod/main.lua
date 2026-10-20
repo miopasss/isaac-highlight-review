@@ -277,6 +277,42 @@ local function firstVisitNow()
     return v
 end
 
+-- 终极 Boss 识别（调研确认的号码，见 CHANGELOG）
+--   房间 GetBossID() 返回的是"房间 subtype"，不是实体类型：
+--     Hush 63 / 超级撒旦 55 / 老干妈 88 / 百变怪 70
+--   两个特例必须靠实体类型认：
+--     祸兽（The Beast）房间返回 0，实体 Type 951
+--     Boss Rush 没有 bossID，靠房型 17
+local UB = { HUSH = 1, BOSSRUSH = 2, MEGASATAN = 3, MOTHER = 4, BEAST = 5, DELIRIUM = 6 }
+
+local function ultimateBossNow()
+    local code = 0
+    pcall(function()
+        local room = Game():GetRoom()
+        if num(room:GetType()) == 17 then code = UB.BOSSRUSH; return end
+
+        local bid = num(room:GetBossID())
+        if bid == 63 then code = UB.HUSH
+        elseif bid == 55 then code = UB.MEGASATAN
+        elseif bid == 88 then code = UB.MOTHER
+        elseif bid == 70 then code = UB.DELIRIUM end
+
+        if code == 0 then
+            local es = room:GetEntities()
+            for i = 1, #es do
+                local t = num(es[i].Type)
+                if t == 407 then code = UB.HUSH
+                elseif t == 951 then code = UB.BEAST
+                elseif t == 912 then code = UB.MOTHER
+                elseif t == 274 then code = UB.MEGASATAN
+                elseif t == 412 then code = UB.DELIRIUM end
+                if code ~= 0 then break end
+            end
+        end
+    end)
+    return code
+end
+
 local function bossIdNow()
     local v = 0
     pcall(function() v = num(Game():GetRoom():GetBossID()) end)
@@ -451,6 +487,7 @@ local function beginRoom(player)
         hblIn   = snap.black, hgoIn = snap.gold, hetIn = snap.eternal, hrtIn = snap.rotten,
         firstIn = firstVisitNow(),
         bossIn  = bossIdNow(),
+        ubIn    = ultimateBossNow(),
         dmgIn   = snap.damage, muIn = snap.multiShot, fmIn = snap.form,
         stIn    = { dv = snap.damage, ts = snap.tears, ss = snap.shotspeed,
                     rg = snap.rangeStat, mv = snap.movespeed, lk = snap.luck },
@@ -520,7 +557,7 @@ local function settleRoom(player)
         c = p.pockets and p.pockets.c or 0, co = pok.c,
         bmb = p.pockets and p.pockets.b or 0, bmbo = pok.b,
         key = p.pockets and p.pockets.k or 0, keyo = pok.k,
-        boss = bossId, first = firstVisit,
+        boss = bossId, ub = p.ubIn or 0, first = firstVisit,
         tri = firstRoom and (p.trOut or {}) or (p.trIn or {}),
         tro = p.trOut or {},
         pd = "",
@@ -729,7 +766,20 @@ add(ModCallbacks.MC_ENTITY_TAKE_DMG, function(...)
 end)
 
 add(ModCallbacks.MC_POST_GAME_END, function(isGameOver)
-    finishRun(isGameOver and 0 or 1, getPlayer())
+    -- 收局诊断：isGameOver 到底靠不靠得住，靠这几个值判断
+    local p = getPlayer()
+    local info = "?"
+    pcall(function()
+        info = string.format("victoryLap=%s hearts=%s soul=%s stage=%s roomType=%s hpRef=%s",
+            tostring(Game():GetVictoryLap()),
+            tostring(p and p:GetHearts() or -1),
+            tostring(p and p:GetSoulHearts() or -1),
+            tostring(Game():GetLevel():GetStage()),
+            tostring(Game():GetRoom():GetType()),
+            tostring(p and p:GetMaxHearts() or -1))
+    end)
+    log("收局诊断 isGameOver=" .. tostring(isGameOver) .. "  " .. info)
+    finishRun(isGameOver and 0 or 1, p)
 end)
 
 add(ModCallbacks.MC_PRE_GAME_EXIT, function()
