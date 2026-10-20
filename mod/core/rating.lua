@@ -22,6 +22,7 @@ R.VERSION = 1
 
 R.entries  = {}   -- [id] = { q = number, w = number, on = boolean }
 R.defaults = {}   -- [id] = { q, w, on }   来自 rating_data
+R.loaded = false   -- 是否已经从存档里读过（没读过就不允许写，防止把已有配置清掉）
 R.dirty    = false
 
 -- ── 取值 ────────────────────────────────────────────────────────────────────
@@ -131,11 +132,13 @@ function R.load(store)
             return
         end
     end
+    R.loaded = true
 end
 
 --- 把当前 entries 写回 store.lines（先删旧的 Q= 行）
 --- 返回 true 表示内容有变化
 function R.save(store)
+    if not R.loaded then return false end   -- 还没读过档：原样保留，绝不覆盖
     if not store or not store.lines then return false end
     local lines, kept = store.lines, {}
     local before = nil

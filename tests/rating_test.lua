@@ -45,8 +45,16 @@ check("停用后 getWeightMul 返回 nil", R.getWeightMul(118) == nil, R.getWeig
 R.set(118, nil, nil, true)
 check("重新启用后恢复 3.5", R.getRating(118) == 3.5, R.getRating(118))
 
--- ⑤ 存盘 → 读盘
+-- ⑤ 防丢失保护：没读过档时不允许写
+local store0 = { lines = { "R\t1\ttest" } }
+check("未 load 时 save 被拒绝", R.save(store0) == false, "save 返回了 true")
+check("未 load 时不会动存档行", #store0.lines == 1, #store0.lines)
+
+-- ⑤b 存盘 → 读盘
 local store = { lines = { "R\t1\ttest", "M\t1\t1\t4" } }
+R.load(store)          -- 模拟"已读档"（会清空 entries）
+R.set(118, 3.5, 2.0)
+R.set(1052, 4.0, 1.0)
 R.save(store)
 local qLine = nil
 for _, l in ipairs(store.lines) do if l:sub(1, 2) == "Q=" then qLine = l end end

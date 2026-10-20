@@ -234,6 +234,8 @@ function fmt.splitBlob(blob)
                 else
                     warnings[#warnings + 1] = "无法解析的局头"
                 end
+            elseif scope == "Q" or scope == "C" then
+                -- 评级/设置行：保留在 lines 里，但不计入任何一局的记录数
             elseif cur then
                 cur.count = cur.count + 1
                 if scope == "M" then cur.rooms = cur.rooms + 1 end

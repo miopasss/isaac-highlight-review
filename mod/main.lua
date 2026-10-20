@@ -45,6 +45,7 @@ local rating    = tryRequire("core.rating", "core/rating")
 local ratedata  = tryRequire("core.rating_data", "core/rating_data")
 local poolmod   = tryRequire("core.pool", "core/pool")
 local itemwatch = tryRequire("core.itemwatch", "core/itemwatch")
+local settings  = tryRequire("core.settings", "core/settings")
 local ratingui  = include("ui.rating_editor")
 
 if not schema or not fmt or not power or not config then
@@ -58,6 +59,7 @@ fmt.setSchema(schema)
 -- 评级数据层：先装默认表，再发布 _G.HLR 给外部读
 if rating and jsonmini then
     rating.init(jsonmini, ratedata or {})
+if settings then settings.init() end
     rating.publish()
 end
 
@@ -651,6 +653,7 @@ saveData = function()
         log(string.format("超出字节预算，又淘汰了 %d 局", removed))
     end
     if rating then rating.save(state.store) end
+    if settings then settings.save(state.store) end
     local blob = fmt.buildBlob(state.store)
     if blob == lastBlob then
         log("落盘跳过：内容未变（" .. #blob .. " 字节）")
@@ -682,6 +685,7 @@ loadData = function()
     local store, warns = fmt.splitBlob(blob)
     state.store = store
     state.store.bytes = nil
+    if settings then settings.load(store) end
     if rating then
         rating.load(store)
         local n = rating.count()
@@ -713,6 +717,7 @@ end
 
 -- ---------------------------------------------------------------- 册子 UI
 bookui.init({
+    hotkeyF5 = function() return (settings and settings.get("f5")) or Keyboard.KEY_F5 end,
     getStore = function() return state.store end,
     fmt      = fmt,
     hl       = highlight,
@@ -739,15 +744,15 @@ end
 
 -- 输入必须在 POST_RENDER 里读：POST_UPDATE 里读 IsButtonTriggered 会漏触发
 add(ModCallbacks.MC_POST_RENDER, function()
-    if ratingui and ratingui.isReady() and Input.IsButtonTriggered(Keyboard.KEY_F6, 0) then
-        log("[EDITOR] 收到 F6")
+    local f6 = (settings and settings.get("f6")) or Keyboard.KEY_F6
+    if ratingui and ratingui.isReady() and Input.IsButtonTriggered(f6, 0) then
         ratingui.toggle()
     end
     uiGuard("update", bookui.update)
     uiGuard("render", bookui.render)
 end)
 
-configui.init({})
+configui.init({ settings = settings, log = log, onChanged = function() pcall(saveData) end })
 do
     local editorDeps = {
         rating = rating, pool = poolmod, getPlayer = getPlayer, log = log,

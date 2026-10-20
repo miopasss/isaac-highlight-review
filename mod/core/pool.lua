@@ -15,6 +15,7 @@ local P = {}
 
 P.snap      = {}     -- [poolType] = { [id] = weight }   局开头快照
 P.hasSnap   = false
+P.inCallback = false
 P.maxRetry  = 4
 P.warnedUp  = false  -- "提高权重未实现"只警告一次
 P.stats     = { reRolled = 0, banned = 0, gaveUp = 0 }
@@ -73,9 +74,12 @@ end
 --- 参数与回调一致：(itemID, poolType, decrease, seed)
 --- 返回：替换后的 id，或 nil 表示不改。
 function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
+    -- 防重入：下面会再调一次 pool:GetCollectible()，那会再次触发本回调
+    if P.inCallback then return nil end
+
     if not itemID or itemID <= 0 then return nil end
     local mul = ratings.getWeightMul(itemID)
-    if mul == nil then return nil end          -- 没配置：完全不动
+    if mul == nil then return nil end              -- 没配置：完全不动
     if mul >= 1 then
         if mul > 1 and not P.warnedUp and log then
             P.warnedUp = true
@@ -83,35 +87,46 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
         end
         return nil
     end
-    if mul <= 0 then
-        -- 禁用：必重掷
-    end
 
-    -- POST 阶段：以 (1 - mul) 的概率重掷
-    local rng = RNG()
-    rng:SetSeed(seed or 0, 35)
+    local s = tonumber(seed) or 0
+
+    -- 随机数用回调给的 seed 派生，保证种子可复现
+    local rng
+    local okRng, r = pcall(function() return RNG(s) end)
+    if not okRng or not r then return nil end
+    rng = r
+    pcall(function() rng:SetSeed(s, 35) end)
 
     local chance = 1 - math.max(0, math.min(1, mul))
-    if rng:NextFloat() >= chance then return nil end   -- 这次保留原结果
+    local okRoll, roll = pcall(function() return rng:NextFloat() end)
+    if not okRoll or not roll then return nil end
+    if roll >= chance then return nil end          -- 这次保留原结果
 
     -- 重掷：换成同池子的别的道具，最多试几次
     local pool = Game():GetItemPool()
+    P.inCallback = true
+    local result = nil
     for i = 1, P.maxRetry do
-        local newSeed = (seed + i * 7919) % 2147483647
+        local newSeed = (s + i * 7919) % 2147483647
         local ok, alt = pcall(function()
             return pool:GetCollectible(poolType, false, newSeed)
         end)
         if ok and alt and alt > 0 and alt ~= itemID then
             local altMul = ratings.getWeightMul(alt)
-            -- 新抽到的道具如果也被配置成极小权重，别换过去（否则降权失效）
+            -- 新抽到的道具如果也被配置成更小的权重，别换过去
             if altMul == nil or altMul >= mul then
-                P.stats.reRolled = P.stats.reRolled + 1
-                if mul <= 0 then P.stats.banned = P.stats.banned + 1 end
-                return alt
+                result = alt
+                break
             end
         end
     end
+    P.inCallback = false
 
+    if result then
+        P.stats.reRolled = P.stats.reRolled + 1
+        if mul <= 0 then P.stats.banned = P.stats.banned + 1 end
+        return result
+    end
     P.stats.gaveUp = P.stats.gaveUp + 1
     return nil
 end

@@ -240,8 +240,8 @@ end
 local function build()
     tryStep("CreateWindow", function()
         ImGui.CreateWindow(WIN, "Highlight Review · 道具评级")
-        if ImGui.SetWindowSize then ImGui.SetWindowSize(WIN, 520, 500) end
-        if ImGui.SetWindowPosition then ImGui.SetWindowPosition(WIN, 780, 100) end
+        if ImGui.SetWindowSize then ImGui.SetWindowSize(WIN, 620, 560) end
+        if ImGui.SetWindowPosition then ImGui.SetWindowPosition(WIN, 490, 170) end
     end)
 
     tryStep("菜单入口", function()
