@@ -745,3 +745,27 @@ EID 是在 **`main.lua` 顶部（mod 初始化）** 加载字体的；
 - `Load返回` 为 nil 且 `IsLoaded=false` → 引擎没加载（路径/格式问题）
 - `IsLoaded=true` 但 `width(汉字)=0` → 字体加载了但没有汉字字形
 - `width(AA)>0` 而 `width(汉字)=0` → 字体只有拉丁字形
+## 第 14 轮 · 中文终于通了（同日终）
+
+**实测结论：`Font:Load` 的三种路径里，只有「游戏根相对」形式有效。**
+
+| 路径形式 | 结果 |
+|---|---|
+| `"mods/highlight-review/resources/font/eid_cn_alt.fnt"` | ✅ `IsLoaded=true`，汉字宽度 36，lineHeight=10 |
+| `"font/eid_cn_alt.fnt"`（本 mod 的 VFS 键） | ❌ `IsLoaded=false`，且 `GetLineHeight()` 返回垃圾值 `8302` |
+| `"../mods/..."`（EID 里的写法） | ❌ `IsLoaded=false` |
+
+这与 heaven's call 的用法一致（`computer.lua:37` 用 `mods/<folder>/resources/...`），
+也与 EID 自己用绝对路径（`main.lua:168`）的行为吻合——**VFS 键在这里不可靠**。
+
+**教训**：加载失败时 `GetLineHeight()` 会返回未初始化的内存值（8302），
+不能用它判断成功；必须用 `IsLoaded()` + `GetStringWidth()`。
+
+最终候选（按优先级）：
+```lua
+local CJK_CANDIDATES = {
+    "mods/highlight-review/resources/font/eid_cn_alt.fnt",
+    "mods/highlight-review/resources/font/eid_cn_default.fnt",
+    "font/eid_cn_alt.fnt",
+}
+```

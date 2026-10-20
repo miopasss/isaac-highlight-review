@@ -35,10 +35,19 @@ local bodyFont, titleFont, fontTried = nil, nil, false
 local cjkFont, cjkTried = nil, false
 
 -- 借用 EID 的中文字体（EID 没装就回退英文）
+-- Font:Load 只认三种路径（实测 + 调研结论）：
+--   ① mod 自己的 VFS 键      "font/xxx.fnt"
+--   ② 游戏根相对             "mods/highlight-review/resources/font/xxx.fnt"
+--   ③ 绝对 Windows 路径
+-- "../mods/..." 一律无效（EID 里那段是死代码，从未执行过）
+-- 实测结论（2026-10-20）：只有「游戏根相对」这种形式能加载成功
+--   ✔ "mods/highlight-review/resources/font/eid_cn_alt.fnt"  ← IsLoaded=true, 汉字宽度 36
+--   ✘ "font/eid_cn_alt.fnt"（VFS 键）        IsLoaded=false, lineHeight 是垃圾值
+--   ✘ "../mods/..."（EID 里的死代码形式）      IsLoaded=false
 local CJK_CANDIDATES = {
-    "../mods/external item descriptions_836319872/resources/font/eid_cn_default.fnt",
-    "../mods/external item descriptions/resources/font/eid_cn_default.fnt",
-    "font/eid_cn_default.fnt",
+    "mods/highlight-review/resources/font/eid_cn_alt.fnt",
+    "mods/highlight-review/resources/font/eid_cn_default.fnt",
+    "font/eid_cn_alt.fnt",
 }
 
 --- 中文探针：游戏自带的 mplus 字体带日文汉字，可能覆盖部分中文
