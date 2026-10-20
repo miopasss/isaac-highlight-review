@@ -137,3 +137,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\deploy.ps1
 | v0.2 存档 + 纯文字册 | ⬜ |
 | v0.3 封面折线图 + 主菜单入口 | ⬜ |
 | v0.4 宝宝折算 + 需求比例 + 双语 → 发工坊 | ⬜ |
+
+- 	ools/Rooms.exe —— 双击导出每局全部房间明细到 _logs/rooms-*.txt（调试用）

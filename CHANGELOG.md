@@ -1047,3 +1047,19 @@ local mn = (k == "lk") and (bk.statMin[k] or 0) or 0
 
 那局战力在 **67.97 ↔ 135.94** 之间来回跳，正好 ×2——
 就是之前说的"隔一个房间翻倍/减半"那个道具，符合已知行为。
+## tools\Rooms.exe —— 房间明细一键导出（2026-10-20 13:1x）
+
+把命令包成双击可用的 exe，做法沿用 `Book.exe` / `ParseSave.exe`（`csc.exe` 本地编译）。
+
+- 源码：`tools\RoomsLauncher.cs`（6 KB exe）
+- 等价于：`luarun.ps1 tests\rooms_dump.lua`
+- 跑完自动打开最新的 `_logs\rooms-*.txt`
+
+**踩到的坑**：`luarun.ps1` 依赖 **32 位 LuaJIT DLL**，
+用 64 位 `powershell.exe` 会直接报"必须用 32 位 PowerShell"。
+启动器现在固定调用 `C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe`。
+
+编译命令：
+```
+csc /nologo /target:exe /out:tools\Rooms.exe tools\RoomsLauncher.cs
+```
