@@ -1120,3 +1120,22 @@ if (p.bossIn or 0) ~= 0 and (p.ubIn or 0) ~= 0 then return end
 
 **作者决定**：不在 UI 显示弹幕数；这类道具"应该单独维护"，**现在先不做**。
 已记入 `DESIGN.md` 第 15 节 **E30**，包含以后可选的三种做法。
+## 清空本轮数据（2026-10-20 13:22）
+
+这两局是在 `boss`/`ub` 字段修复之前打的，Boss 相关全是 0，留着没用。
+按作者要求清空，从下一局开始重新攒。
+
+**备份**：`_backup\data-clear-20261020-132215\`
+
+| 文件 | 大小 |
+|---|---|
+| `save1.dat` | 715 B |
+| `save3.dat` | 105,154 B |
+| `archive-all.dat` | 103,593 B |
+
+**已删**：`data\highlight-review\save*.dat`、`_archive\all.dat`
+
+**下一局会带上的新东西**：
+- `boss` 房型 subtype（Boss 生成后补采）
+- `ub` 终极 Boss 代码
+- `foes` 进房敌人数（终于不会是 0 了）
