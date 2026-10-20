@@ -522,7 +522,9 @@ local function drawHighlight(s, bk, idx)
 
     for i = 1, #r.stats do
         local k = r.stats[i].key
-        y = statRow(s, y, r.stats[i], bk.statMax[k] or 0, bk.statMin[k] or 0, PADX + 12, PADW - 40)
+        -- 区间：幸运可能为负，从最小值算；其它维度从 0 开始（作者要求"0 到最大值"）
+        local mn = (k == "lk") and (bk.statMin[k] or 0) or 0
+        y = statRow(s, y, r.stats[i], bk.statMax[k] or 0, mn, PADX + 12, PADW - 40)
     end
 
     if #r.it > 0 then
@@ -567,7 +569,9 @@ local function drawFloor(s, bk, idx)
     if f.stats then
         for i = 1, #f.stats do
             local k = f.stats[i].key
-            y = statRow(s, y, f.stats[i], bk.statMax[k] or 0, bk.statMin[k] or 0, PADX + 12, PADW - 40)
+            -- 区间：幸运可能为负，从最小值算；其它维度从 0 开始（作者要求"0 到最大值"）
+            local mn = (k == "lk") and (bk.statMin[k] or 0) or 0
+            y = statRow(s, y, f.stats[i], bk.statMax[k] or 0, mn, PADX + 12, PADW - 40)
         end
     end
 
