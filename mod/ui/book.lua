@@ -21,11 +21,11 @@ local holdNext = 0
 
 local RES_NAME = { [0] = "DEAD", [1] = "WIN", [2] = "UNFINISHED" }
 
-local INK     = { 0.24, 0.19, 0.14 }
-local INK_DIM = { 0.45, 0.39, 0.30 }
-local INK_RED = { 0.52, 0.17, 0.12 }
-local INK_UP  = { 0.16, 0.40, 0.18 }
-local INK_DN  = { 0.55, 0.12, 0.10 }
+local INK     = { 0.16, 0.12, 0.08 }   -- 主文字（更深）
+local INK_DIM = { 0.33, 0.26, 0.17 }   -- 次要文字（原 0.45 太浅）
+local INK_RED = { 0.46, 0.10, 0.06 }   -- 标题红
+local INK_UP  = { 0.10, 0.32, 0.12 }   -- 上涨绿
+local INK_DN  = { 0.50, 0.08, 0.05 }   -- 下跌红
 local BAR_ON  = { 0.36, 0.52, 0.26 }
 local BAR_OFF = { 0.62, 0.58, 0.50 }
 local BAR_BASE = { 0.55, 0.36, 0.18 }   -- 原有属性（棕）
@@ -394,7 +394,13 @@ local function title(s, text, right)
 end
 
 local function footer(s, text)
-    txt(text, (PADX + 10) * s, (FOOTY + 4) * s, s * 0.6, INK_DIM)
+    local avail = (PADW - 20) * s          -- 纸内可用宽度（像素）
+    local sc = s * 0.54
+    local wpx = textW(text, sc)
+    if wpx > avail and wpx > 0 then
+        sc = sc * (avail / wpx)            -- 按比例缩到刚好放得下
+    end
+    txt(text, (PADX + 8) * s, (FOOTY + 4.5) * s, sc, INK_DIM)
 end
 
 --- 六维行（标签 + 数值 + 分段条 + 增量），返回下一行的 y（单位：480 空间）
@@ -482,18 +488,7 @@ local function drawOverview(s, bk, entry)
         txt(durStr, durX * s, y * s, s * 0.52, INK_DIM)
         y = y + 14.5
     end
-    -- 中文探针：验证游戏自带字体能否显示汉字
-    local cf = getCJK()
-    if cf then
-        pcall(function()
-            txt("[CJK probe] ->", (PADX + 12) * s, (PADY + PADH - 16) * s, s * 0.5, INK_DIM)
-            cf:DrawStringUTF8("伤害攻速射程宝箱房", (PADX + 58) * s, (PADY + PADH - 16) * s,
-                KColor(0.5, 0.1, 0.1, 1), 0, false)
-        end)
-    else
-        txt("CJK font: NOT FOUND", (PADX + 12) * s, (PADY + PADH - 16) * s, s * 0.5, INK_DN)
-    end
-    footer(s, "UP/DOWN Run   ENTER/RIGHT Open   LEFT/RIGHT Page   F5 Close")
+    footer(s, "U/D RUN    ENTER OPEN    L/R PAGE    F5 CLOSE")
 end
 
 local function drawHighlight(s, bk, idx)
@@ -545,7 +540,7 @@ local function drawHighlight(s, bk, idx)
             end
         end
     end
-    footer(s, "LEFT/RIGHT Page   ESC Back   F5 Close")
+    footer(s, "L/R PAGE    ESC BACK    F5 CLOSE")
 end
 
 local function drawFloor(s, bk, idx)
@@ -599,7 +594,7 @@ local function drawFloor(s, bk, idx)
             (xIcon + (shown % perRow) * 26) * s,
             (y + math.floor(shown / perRow) * 24) * s, s * 0.54, INK_DIM)
     end
-    footer(s, "LEFT/RIGHT Page   ESC Back   F5 Close")
+    footer(s, "L/R PAGE    ESC BACK    F5 CLOSE")
 end
 
 -- ---------------------------------------------------------------- 主渲染
