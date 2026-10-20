@@ -361,3 +361,121 @@ function Send-GameKey {
     }
     Start-Sleep -Milliseconds 80
 }
+
+# =============================================================================
+# 屏幕几何 / DPI（截图不完整的根因就在这一段）
+#
+# 这台机器是「双屏 + 主屏 125% 缩放」：
+#   · PowerShell 默认 DPI-unaware：GetClientRect 给的是 1536×864 这种**逻辑**值，
+#     而 CopyFromScreen 抓到的是**物理**像素 → 截出来只有窗口左上 1/1.25，右边被切。
+#   · 游戏窗口几何存在 options.ini（WindowPosX/Y、WindowWidth/Height），
+#     一次被拖到屏幕外之后，每次启动都还是"一半在屏幕外"。
+# 所以：① 进程改成 DPI-aware ② 截图前把窗口夹回屏幕内。
+# =============================================================================
+
+Add-Type -AssemblyName System.Windows.Forms
+
+if (-not ("IsaacScreen" -as [type])) {
+    Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public static class IsaacScreen
+{
+    [DllImport("user32.dll")] public static extern bool SetProcessDpiAwarenessContext(IntPtr ctx);
+    [DllImport("shcore.dll")] public static extern int SetProcessDpiAwareness(int value);
+    [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
+    [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr h, IntPtr after, int x, int y, int cx, int cy, uint flags);
+
+    public const uint SWP_NOZORDER   = 0x0004;
+    public const uint SWP_NOACTIVATE = 0x0010;
+    public const uint SWP_SHOWWINDOW = 0x0040;
+
+    public static string EnableDpi()
+    {
+        try { if (SetProcessDpiAwarenessContext(new IntPtr(-4))) return "per-monitor-v2"; } catch { }
+        try { if (SetProcessDpiAwareness(2) == 0) return "per-monitor"; } catch { }
+        try { if (SetProcessDPIAware()) return "system"; } catch { }
+        return "unchanged";
+    }
+}
+"@
+}
+
+$script:DpiMode = [IsaacScreen]::EnableDpi()
+
+function Get-DpiMode { return $script:DpiMode }
+
+function Get-WindowRect {
+    param($Window)
+    $r = New-Object IsaacWin32+RECT
+    if (-not [IsaacWin32]::GetWindowRect($Window.Handle, [ref]$r)) { return $null }
+    return [pscustomobject]@{
+        X      = $r.Left
+        Y      = $r.Top
+        Width  = $r.Right - $r.Left
+        Height = $r.Bottom - $r.Top
+        Right  = $r.Right
+        Bottom = $r.Bottom
+    }
+}
+
+function Get-PrimaryScreenInfo {
+    $s = [System.Windows.Forms.Screen]::PrimaryScreen
+    $b = $s.Bounds
+    $wa = $s.WorkingArea
+    return [pscustomobject]@{
+        Screen = [pscustomobject]@{ X = $b.X; Y = $b.Y; Width = $b.Width; Height = $b.Height }
+        Work   = [pscustomobject]@{ X = $wa.X; Y = $wa.Y; Width = $wa.Width; Height = $wa.Height }
+    }
+}
+
+# 窗口（按客户区算，截图截的就是客户区）是否完整落在主屏可用区域内
+function Test-WindowInside {
+    param($Window)
+    $wa = (Get-PrimaryScreenInfo).Work
+    $c = Get-ClientRectScreen $Window
+    if (-not $c) { return $false }
+    return ($c.X -ge $wa.X -and $c.Y -ge $wa.Y -and
+            ($c.X + $c.Width)  -le ($wa.X + $wa.Width) -and
+            ($c.Y + $c.Height) -le ($wa.Y + $wa.Height))
+}
+
+# 把窗口挪（必要时再缩）到主屏可用区里。
+# 优先"只挪不缩"：大多数时候窗口尺寸没问题，只是位置出界（比如被拖到屏幕右下角）。
+function Set-WindowFit {
+    param($Window, [int]$ClientW = 0, [int]$ClientH = 0)
+    if (-not $Window -or $Window.Handle -eq [IntPtr]::Zero) { return $null }
+    $wa = (Get-PrimaryScreenInfo).Work
+
+    $frame  = Get-WindowRect $Window
+    $client = Get-ClientRectScreen $Window
+    if (-not $frame -or -not $client) { return $null }
+
+    $dW = $frame.Width  - $client.Width      # 边框 + 标题栏
+    $dH = $frame.Height - $client.Height
+
+    if ($ClientW -le 0) { $ClientW = $client.Width }
+    if ($ClientH -le 0) { $ClientH = $client.Height }
+
+    # 客户区最多能有多大（放不下才缩）
+    $ClientW = [Math]::Max(800, [Math]::Min($ClientW, $wa.Width  - $dW))
+    $ClientH = [Math]::Max(600, [Math]::Min($ClientH, $wa.Height - $dH))
+
+    $frameW = $ClientW + $dW
+    $frameH = $ClientH + $dH
+
+    $x = $frame.X
+    $y = $frame.Y
+    if ($x -lt $wa.X) { $x = $wa.X }
+    if ($y -lt $wa.Y) { $y = $wa.Y }
+    if (($x + $frameW) -gt ($wa.X + $wa.Width))  { $x = $wa.X + $wa.Width  - $frameW }
+    if (($y + $frameH) -gt ($wa.Y + $wa.Height)) { $y = $wa.Y + $wa.Height - $frameH }
+    if ($x -lt $wa.X) { $x = $wa.X }
+    if ($y -lt $wa.Y) { $y = $wa.Y }
+
+    [void][IsaacScreen]::SetWindowPos($Window.Handle, [IntPtr]::Zero, $x, $y, $frameW, $frameH,
+        [IsaacScreen]::SWP_NOZORDER -bor [IsaacScreen]::SWP_SHOWWINDOW)
+    Start-Sleep -Milliseconds 800
+    return (Get-ClientRectScreen $Window)
+}
+

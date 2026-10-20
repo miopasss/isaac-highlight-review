@@ -13,3 +13,7 @@ tools/node_modules/
 Thumbs.db
 desktop.ini
 *.tmp
+
+# REPENTOGON 启动时按 CWD 写的两个文件（不该进仓库）
+REPENTOGONUpdater_Base.exe
+savedatapath.txt

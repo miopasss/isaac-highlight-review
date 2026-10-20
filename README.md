@@ -37,7 +37,8 @@ tools/strip-log.ps1     生成去噪日志副本（原文件只读，头部记�
 tools/luacheck.ps1     语法校验（借游戏自带 Lua5.4.dll）
 tools/luarun.ps1       离线执行 Lua（借同一个 DLL）
 tools/verify.ps1       自动进游戏自检：启动 → 进存档 → 按 F5 → 截图 + 查日志
-tools/_win.ps1         verify 的底层：找窗口 / 发键盘扫描码 / 截窗口图
+tools/_win.ps1         verify 的底层：找窗口 / 发键盘扫描码 / 截窗口图 / DPI + 窗口归位
+tools/fix-bom.ps1      把 tools\*.ps1 重新存成 UTF-8 with BOM
 ```
 
 ## 离线跑测试（不用启动游戏）
@@ -74,15 +75,33 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\verify.ps1 -Deploy -La
 | `03-book.png` | 按 F5 之后的册子 |
 | `summary.txt` | 结论：mod 是否加载 / Lua 报错 / 引擎断言 / 关键日志 |
 
-退出码：`0` 正常，`1` 有 Lua 报错或引擎断言洪水，`2` 环境问题（没进程/没窗口/超时），
+退出码：`0` 正常，`1` 有 Lua 报错，`2` 环境问题（没进程/没窗口/超时），
 `3` 按键前窗口被别的程序抢走（已中止，不会把按键误发到别处）。
 
 - 游戏已经开着：`-Enter -F5` 就行，会复用当前实例，不再启动。
 - `-Fresh`：收拾"进程还在但窗口没了"的僵尸进程（关游戏时卡住的常见形态）。
 - `-Close`：跑完优雅关掉游戏（游戏自己会把存档写盘）。
-- 启动默认走 **Steam**（`steam://rungameid/250900`）。`REPENTOGONLauncher.exe` 在这台机器上
-  会卡在 "Checking for update..."（联网检查），所以不用它；真要试加 `-ViaLauncher`。
+- 启动默认走 Steam（`steam.exe -applaunch 250900`，Steam 会给游戏加上
+  `-popupwindow -borderless -nostartupmovies`）；40 秒没进程就报错退出，不会傻等。
+  `REPENTOGONLauncher.exe` 会卡在 "Checking for update..."，不用；直接开 `isaac-ng.exe`
+  在这台机器上会挂死（steam_api 初始化卡住），所以只在 Steam 完全没开时才用它。
 - 按键是 **SendInput 发扫描码**（不是 SendKeys），游戏能收到；发之前会确认窗口在前台。
+
+### 截图为什么曾经缺一条边（已修）
+
+两个原因叠在一起，和册子的排版无关：
+
+1. **PowerShell 默认 DPI-unaware**。主屏是 1920×1080 @125%，所以 `GetClientRect` 拿到的是
+   1536×864 这种**逻辑**值，而 `CopyFromScreen` 抓的是**物理**像素 → 只截到窗口左上角 1/1.25，
+   右边自然被切。修法：脚本启动时把进程切成 per-monitor-v2 感知（`_win.ps1` 的 `Enable-DpiAwareness`）。
+2. **游戏窗口本身出界**。几何存在 `options.ini`（`WindowWidth/Height`、`WindowPosX/Y`，物理像素），
+   这台机器上是 `1919×989 @ (201,230)` → 右下角都在屏幕外。修法两层：
+   启动前把 ini 里放不下的几何改成 16:9 居中；画完主菜单后再量一次，还在界外就用 `SetWindowPos` 挪回来。
+
+现在截图尺寸 = 窗口客户区的物理像素（例如 1600×900），册子右边缘 / 分页角标都完整。
+
+> 顺带：`tools\fix-bom.ps1` 会把 `tools\*.ps1` 重新存成 UTF-8 with BOM。
+> 任何编辑器/工具把 BOM 弄丢之后跑一下，否则 5.1 会按 GBK 解析中文注释直接炸。
 
 手动验还是老办法：
 

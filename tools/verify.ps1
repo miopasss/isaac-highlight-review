@@ -92,12 +92,59 @@ function Shot([string]$name) {
     if (-not $w -or $w.Handle -eq [IntPtr]::Zero) { Warn "没有窗口，跳过截图 $name"; return $null }
     try {
         $p = Save-WindowShot $w (Join-Path $OutDir "$name.png") -NoFocus
-        Say ("  [截图] " + $p)
+        Add-Type -AssemblyName System.Drawing
+        $img = [System.Drawing.Image]::FromFile($p)
+        $size = "{0}x{1}" -f $img.Width, $img.Height
+        $img.Dispose()
+        Say ("  [截图] {0}  ({1})" -f $p, $size)
         return $p
     } catch {
         Warn ("截图失败：" + $_.Exception.Message)
         return $null
     }
+}
+
+# 游戏窗口的几何存在 options.ini 里（WindowWidth/Height、WindowPosX/Y，单位是物理像素）。
+# 上次被拖到屏幕外之后，游戏就永远以"一半在屏幕外"的窗口启动 → 截图右边被切。
+# 这里在启动前把窗口夹回主屏可用区域内。
+function Repair-GameWindowIni {
+    $ini = Join-Path $Docs "options.ini"
+    if (-not (Test-Path $ini)) { Warn "没有 options.ini，跳过窗口几何修正"; return }
+    $lines = @(Get-Content $ini -Encoding UTF8)
+    $kv = @{}
+    foreach ($l in $lines) {
+        if ($l -match '^([A-Za-z0-9_]+)=(.*)$') { $kv[$Matches[1]] = $Matches[2] }
+    }
+    $w = 0; $h = 0; $x = 0; $y = 0
+    [void][int]::TryParse("$($kv['WindowWidth'])", [ref]$w)
+    [void][int]::TryParse("$($kv['WindowHeight'])", [ref]$h)
+    [void][int]::TryParse("$($kv['WindowPosX'])", [ref]$x)
+    [void][int]::TryParse("$($kv['WindowPosY'])", [ref]$y)
+
+    $wa = (Get-PrimaryScreenInfo).Work
+    $fits = ($w -gt 0 -and $h -gt 0 -and
+             $x -ge $wa.X -and $y -ge $wa.Y -and
+             ($x + $w) -le ($wa.X + $wa.Width) -and ($y + $h) -le ($wa.Y + $wa.Height))
+    Say ("  options.ini 里的窗口：{0}x{1} @ ({2},{3})   主屏可用区：{4}x{5}" -f $w, $h, $x, $y, $wa.Width, $wa.Height)
+    if ($fits) { Ok "窗口完整在屏幕内，不用改"; return }
+
+    # 换成 16:9、按屏缩小、居中
+    $nw = [Math]::Min(1600, $wa.Width)
+    $nh = [int]($nw * 9 / 16)
+    if ($nh -gt $wa.Height) { $nh = $wa.Height; $nw = [int]($nh * 16 / 9) }
+    $nx = $wa.X + [int](($wa.Width - $nw) / 2)
+    $ny = $wa.Y + [int](($wa.Height - $nh) / 2)
+
+    $out = New-Object System.Collections.ArrayList
+    foreach ($l in $lines) {
+        if     ($l -match '^WindowWidth=')  { [void]$out.Add("WindowWidth=$nw") }
+        elseif ($l -match '^WindowHeight=') { [void]$out.Add("WindowHeight=$nh") }
+        elseif ($l -match '^WindowPosX=')   { [void]$out.Add("WindowPosX=$nx") }
+        elseif ($l -match '^WindowPosY=')   { [void]$out.Add("WindowPosY=$ny") }
+        else                                { [void]$out.Add($l) }
+    }
+    [System.IO.File]::WriteAllLines($ini, [string[]]$out, (New-Object System.Text.UTF8Encoding($false)))
+    Warn ("窗口出界 → 改成 {0}x{1} @ ({2},{3})（16:9，居中；游戏下次启动就生效）" -f $nw, $nh, $nx, $ny)
 }
 
 # 截图前先确认游戏真的画完了：
@@ -159,21 +206,36 @@ function Start-Game {
         return
     }
 
-    # 默认走 Steam：等价于点“开始游戏”，app id 由 Steam 注入，最接近手动启动
-    if (Get-Process steam -ErrorAction SilentlyContinue) {
-        Say "  通过 Steam 启动（steam://rungameid/250900）..."
+    # 启动游戏：优先 steam.exe -applaunch（比 steam:// 稳），次选协议，最后才是直接开 exe。
+    # 注意：直接开 isaac-ng.exe 在这台机器上会挂住（steam_api 初始化卡死、mod 不加载），
+    # 只能当 Steam 完全没开时的最后手段。
+    $steamExe = (Get-ItemProperty "HKCU:\Software\Valve\Steam" -Name SteamExe -ErrorAction SilentlyContinue).SteamExe
+    if ((Get-Process steam -ErrorAction SilentlyContinue) -and $steamExe -and (Test-Path $steamExe)) {
+        Say "  steam.exe -applaunch 250900 ..."
+        Start-Process -FilePath ($steamExe -replace '/', '\') -ArgumentList "-applaunch 250900" `
+                      -WorkingDirectory (Split-Path ($steamExe -replace '/', '\') -Parent)
+    } elseif (Get-Process steam -ErrorAction SilentlyContinue) {
+        Say "  steam://rungameid/250900 ..."
         Start-Process "steam://rungameid/250900"
-        return
-    }
-
-    if (Test-Path $exe) {
-        Say "  直接启动 isaac-ng.exe（Steam 没开，用 SteamAppId 兜底）..."
+    } elseif (Test-Path $exe) {
+        Warn "Steam 没开：直接启动 isaac-ng.exe（可能卡在 steam_api 初始化）"
         $env:SteamAppId = "250900"
-        Start-Process -FilePath $exe
+        # WorkingDirectory 必须是游戏目录：否则 REPENTOGON 会把 savedatapath.txt /
+        # REPENTOGONUpdater_Base.exe 写到脚本的当前目录里
+        Start-Process -FilePath $exe -WorkingDirectory $Game
         return
+    } else {
+        Bad "找不到游戏可执行文件：$Game"
+        exit 2
     }
 
-    Bad "找不到游戏可执行文件：$Game"
+    # 等 40 秒；还没有进程就说明 Steam 没理我们（刚关过游戏时常见）
+    $deadline = (Get-Date).AddSeconds(40)
+    while ((Get-Date) -lt $deadline) {
+        Start-Sleep -Milliseconds 700
+        if (Get-Process isaac-ng -ErrorAction SilentlyContinue) { return }
+    }
+    Warn "Steam 40 秒内没把游戏拉起来 —— 等一会儿重跑一次即可"
     exit 2
 }
 
@@ -218,6 +280,7 @@ if ($proc -and $w) {
         Warn "游戏没在跑。加 -Launch（或 -Fresh）让我启动它"
         exit 2
     }
+    Repair-GameWindowIni          # 启动前把窗口几何夹回屏幕内（游戏是按 ini 里的几何开窗口的）
     Start-Game
     Say ("  等游戏窗口出现（最多 {0}s）..." -f $WaitMenuSec)
     $deadline = (Get-Date).AddSeconds($WaitMenuSec)
@@ -230,6 +293,10 @@ if ($proc -and $w) {
     if (-not $w) { Bad "等不到游戏窗口"; exit 2 }
     Ok ("游戏窗口：0x{0:X}" -f [int64]$w.Handle)
 }
+
+# ---------------------------------------------------------------- 窗口几何（初查）
+$c0 = Get-ClientRectScreen $w
+Say ("  窗口客户区 {0}x{1} @ ({2},{3})   DPI={4}" -f $c0.Width, $c0.Height, $c0.X, $c0.Y, (Get-DpiMode))
 
 # ---------------------------------------------------------------- 等 mod 加载
 Head "3) 等 mod 加载 + 主菜单就绪"
@@ -248,6 +315,19 @@ if ($loaded.Count -eq 0) {
 Ok "mod 已加载"
 if (-not (Wait-GameReady $WaitMenuSec)) { Warn "窗口标题一直显示启动中；仍尝试截图" }
 Start-Sleep -Seconds 1
+
+# ---------------------------------------------------------------- 窗口几何（正式检查）
+# 游戏是先建小窗口再按 options.ini 改尺寸的，所以必须等它画出来再量一次。
+$wa = (Get-PrimaryScreenInfo).Work
+$c1 = Get-ClientRectScreen $w
+if (-not (Test-WindowInside $w)) {
+    Warn ("窗口出界：客户区 {0}x{1} @ ({2},{3})，可用区 {4}x{5} → 截图会缺边，正在挪回来…" -f $c1.Width, $c1.Height, $c1.X, $c1.Y, $wa.Width, $wa.Height)
+    $c2 = Set-WindowFit $w
+    if ($c2 -and (Test-WindowInside $w)) { Ok ("已挪到 {0}x{1} @ ({2},{3})" -f $c2.Width, $c2.Height, $c2.X, $c2.Y) }
+    else { Warn "挪不动（游戏自己会改窗口位置？）——截图可能仍然缺边" }
+} else {
+    Ok ("窗口完整可见：{0}x{1} @ ({2},{3})" -f $c1.Width, $c1.Height, $c1.X, $c1.Y)
+}
 [void](Shot "01-menu")
 
 # ---------------------------------------------------------------- 进存档

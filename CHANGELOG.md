@@ -839,3 +839,76 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\verify.ps1 -Deploy -La
 - 我可以自己跑这一轮并把截图**看懂**（`read_image`），不需要人描述画面。
 - 想让我"进存档"，前提是**有可续的局**；没有的话最多到主菜单，脚本会提示。
 - 每次循环约 2 分钟（60+ 个 mod 的加载时间是大头），所以别为了改一行文案去跑全套。
+
+---
+
+# 第 16 轮 · 截图缺边的真因：DPI + 窗口出界（2026-10-20 09:5x）
+
+作者指出：双屏、游戏启动时不在屏幕左上角，截图才不完整。一查，是两个原因叠加。
+
+## ① PowerShell 是 DPI-unaware，抓的是物理像素却按逻辑坐标算
+
+主屏 1920×1080 @**125%**（`AppliedDPI=120`）。于是：
+
+| 调用 | 返回 | 单位 |
+|---|---|---|
+| `GetClientRect` | 1550×829 | 逻辑（1536×864 是屏的大小） |
+| `BitBlt`（CopyFromScreen 底层） | 真的像素 | 物理 |
+
+1.25 倍的错位 → 截出来只有窗口左上角 1/1.25，右边那条自然没了。
+册子页面在 1919 宽的画布里居中，被截到 1535 处，看着就像"右边缘被裁"。
+**修法**：进程启动时 `SetProcessDpiAwarenessContext(PER_MONITOR_AWARE_V2)`。
+
+## ② 游戏窗口本身就一半在屏幕外
+
+`options.ini` 里躺着：
+
+```
+WindowWidth=1919   WindowHeight=989
+WindowPosX=201     WindowPosY=230
+```
+
+1919+201=2120 > 1920，989+230=1219 > 1080 —— 右下角都在屏幕外，
+人眼看游戏也是缺的（作者截图里能看到窗口贴着屏幕右/下边被切）。
+**修法**两层：
+
+1. 启动前读 `options.ini`，放不下就改成 16:9 居中（这台机器 → 1600×900 @ (160,65)）
+2. 主菜单画出来之后再量一次客户区（游戏是先建小窗、再按 ini 改尺寸的，早量会量到 978×587），
+   还在界外就 `SetWindowPos` 挪回来——实测游戏不完全听 `WindowPosX/Y`，会自己放在 (128,128)
+
+## 结果
+
+```
+窗口客户区 1600x900 @ (137,121)  DPI=per-monitor-v2
+[截图] 03-book.png (1600x900)      ← 尺寸 = 客户区物理像素
+```
+
+截图里册子右边缘、右上角 `1/2` 分页角标、底部按键提示都在了。
+
+## 顺手加的
+
+- `tools/fix-bom.ps1`：把 `tools/*.ps1` 统一重存成 UTF-8 with BOM。
+  这轮又被 BOM 坑了两次（`edit` 工具会写回无 BOM），以后改完跑一下就完事。
+- `verify.ps1` 把断言洪水降级成"提示"（第三方 mod 刷的，不该由它判红），退出码只看 Lua 报错。
+
+## 还留着的小问题（不急）
+
+- 册子底部那行按键提示文字比页宽长，末尾 `F5 CLOS...` 会被切；
+  `footer()` 用的是固定坐标，没按 `GetStringWidth` 折行。
+- EID 的道具说明框会盖在册子下半部分（那串红字），是 EID 的浮层，不是我们的。
+
+## 启动路径也顺手修了
+
+排查时发现两种启动方式各有坑：
+
+| 方式 | 现象 |
+|---|---|
+| `REPENTOGONLauncher.exe` | 卡在 "Checking for update..."，游戏永远不启动 |
+| 直接开 `isaac-ng.exe` | **挂死**：进程在、窗口不响应、日志不写、mod 不加载（steam_api 初始化卡住） |
+| `steam.exe -applaunch 250900` | 可靠；Steam 会给游戏加 `-popupwindow -borderless -nostartupmovies` |
+
+所以 `Start-Game` 现在是：`steam.exe -applaunch` → `steam://` → （Steam 没开才）直接开 exe，
+40 秒还没进程就明确报错退出（退出码 2），不再傻等。
+
+另外：Steam 刚被强杀过游戏进程时会有一段"以为游戏还在跑"的脏状态，
+`-applaunch` 会卡在 `CheckShaderDepotManifest` 一分钟以上。重启 Steam 即可，不是脚本的问题。
