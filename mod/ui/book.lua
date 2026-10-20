@@ -45,31 +45,38 @@ local CJK_CANDIDATES = {
 local function getCJK()
     if cjkTried then return cjkFont end
     cjkTried = true
+
     for i = 1, #CJK_CANDIDATES do
-        local ok, f, why = pcall(function()
-            local ff = Font()
-            -- 第二个参数是空串（照 EID 的写法，GoG 版本需要）
-            ff:Load(CJK_CANDIDATES[i], "")
+        local path = CJK_CANDIDATES[i]
+        local ff = Font()
+        local ok = pcall(function()
+            -- 第二个参数给空串（EID 的写法，GoG 版本需要）
+            ff:Load(path, "")
             ff:SetMissingCharacter(2)
-            if not ff:IsLoaded() then return nil, "IsLoaded=false" end
-            -- 再验一次真的能量到汉字宽度
-            local w = ff:GetStringWidth("伤害")
-            if not w or w <= 0 then return nil, "GetStringWidth=0" end
-            return ff
         end)
-        if ok and f then
-            cjkFont = f
-            if deps and deps.log then deps.log("[CJK] 使用字体: " .. CJK_CANDIDATES[i]) end
-            return cjkFont
-        end
-        if deps and deps.log then
-            deps.log("[CJK] 加载失败: " .. CJK_CANDIDATES[i] .. "  原因=" .. tostring(f))
+        if not ok then
+            if deps and deps.log then deps.log("[CJK] " .. path .. " → Load 抛错") end
+        else
+            local loaded, w = false, 0
+            pcall(function() loaded = ff:IsLoaded() end)
+            pcall(function() w = ff:GetStringWidth("伤害") or 0 end)
+            if loaded and w > 0 then
+                cjkFont = ff
+                if deps and deps.log then
+                    deps.log(string.format("[CJK] OK %s  (lineWidth=%.1f)", path, w))
+                end
+                return cjkFont
+            end
+            if deps and deps.log then
+                deps.log(string.format("[CJK] FAIL %s  IsLoaded=%s width=%s",
+                    path, tostring(loaded), tostring(w)))
+            end
         end
     end
-    if deps and deps.log then deps.log("[CJK] 没找到可用的中文字体，回退英文") end
+
+    if deps and deps.log then deps.log("[CJK] 全部候选失败，回退英文") end
     return nil
 end
-
 --- 画一段中文（没有中文字体时返回 false）
 local function txtCN(str, x, y, scale, col)
     local f = getCJK()

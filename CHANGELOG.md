@@ -675,3 +675,33 @@ Floor 5   101.26  ████...██  +70.9%   5m59s
 
 进层战力为 0 时显示 `0%`（与六维同一套规则）。
 条宽/文字位置仍按 `GetStringWidth` 动态算，所以改成百分比后不会错位。
+## 第 14 轮 · 字体路径调研结论（子代理，含实证）
+
+**核心结论：`Font:Load` 只认三种路径**（扫描了 64 个 mod 的 139 处 `:Load(...fnt)`）：
+
+| 形式 | 例子 | 是否可用 |
+|---|---|---|
+| ① mod 自己的 VFS 键 | `font/pftempestasevencondensed.fnt` | ✅ 游戏自带字体就用这个 |
+| ② 游戏根相对 | `mods/highlight-review/resources/font/x.fnt` | ✅ `heaven's call` 在用 |
+| ③ 绝对 Windows 路径 | `D:\...\mods\x\resources\font\x.fnt` | ✅ EID / qing 在用 |
+| `../mods/...` | 我们之前试的 | ❌ **无任何 mod 这么用** |
+
+EID 里那段 `"../mods/"..modfolder.."...` 是**死代码**——它的 Site A（绝对路径）永远成功，
+Site B 从没被执行过。
+
+**跨 mod 加载字体=不可行**，实证：`log.txt:6223-6226` 三个候选全部失败。
+需要 CJK 的中文 mod `qing_2787337337` 的做法是**自带字体**（`resources/font/eid9/` + 26 张页图）。
+
+**EID 中文实际用的是 `eid_cn_alt.fnt`**（`descriptions/ab+/zh_cn.lua:20`，
+`fonts[1].name = "cn_alt"`，行高 10），不是 `cn_default`（行高 13）。
+
+**fnt 是二进制 BMFont v3**（魔数 `42 4D 46 03`），页名是**裸文件名**，按 fnt 同目录解析；
+必须连 `eid_cn_fix_0.png`（16×16 存根，115 B）一起放，否则第 2/3 页坏掉。
+
+## 本轮修正
+
+- 候选路径改为：`font/eid_cn_alt.fnt` → `mods/highlight-review/resources/font/eid_cn_alt.fnt`
+  → `font/eid_cn_default.fnt` → 游戏根相对版本
+- 补拷 `eid_cn_alt.fnt`（256 KB）+ `eid_cn_alt_0.png`（467 KB）
+- **修日志 bug**：原来打印的是 pcall 的第二个返回值（永远是 nil，所以每行都是 `原因=nil`），
+  现在明确打 `IsLoaded=... width=...`
