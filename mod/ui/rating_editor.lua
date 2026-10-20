@@ -1,65 +1,82 @@
 -- ============================================================================
 -- ui/rating_editor.lua —— 道具评级/权重编辑器（ImGui + 鼠标）
 --
--- 为什么用 ImGui 而不是册子自绘：需要搜索框、滑条、数字输入，
--- 自绘成本高；而"已获得道具"只有 20~40 个，下拉点选即可，不需要方向键。
+-- 入口：F6 热键 + ImGui 菜单「Highlight Review → 道具评级」，两个入口共用同一开关状态
 --
--- 已知限制（调研确认）：
---   · ImGui 没有 AddImage → 不显示道具图标，只显示名字
---   · ImGui 没有滚动列表 → 用 Combobox 过滤，而不是长列表
---   · ImGui 不持久化 → 值由本模块每次渲染时从 rating 表推回
---
--- 打开方式：主循环里按热键 → editor.toggle()
+-- 实测限制（不是猜测，是跑出来的）：
+--   · 没有 ImGui.SetSize（要用 SetWindowSize / SetWindowPosition）
+--   · 没有 AddImage / AddChild / ListBox / AddSeparator
+--   · ImGui.Show() 会接管键盘，关闭时要 Hide()
+--   · 控件回调参数个数不统一：有的给 (id, value)，有的只给 (value) → 用 pickNum 兼容
+--   · 作者要求两位小数 → 评级和权重都用数字输入框，不用滑条
 -- ============================================================================
 local E = {}
+local floor = math.floor
 
-local WIN      = "hlr_rating_win"
-local TAB_EDIT = "hlr_rating_tab_edit"
-local TAB_LIST = "hlr_rating_tab_list"
+local MENU      = "highlight_review_menu"      -- 与 ui/config.lua 共用同一个菜单
+local MENU_ITEM = "hlr_rating_menuitem"
+local WIN       = "hlr_rating_win"
+local TAB_EDIT  = "hlr_tab_edit"
+local TAB_LIST  = "hlr_tab_list"
 
-local SEL_COMBO   = "hlr_sel_combo"     -- 搜索结果下拉
-local OWNED_COMBO = "hlr_owned_combo"   -- 已获得道具下拉
-local S_QUERY     = "hlr_query"         -- 搜索框
-local S_RATING    = "hlr_rating"        -- 评级滑条
-local S_WEIGHT    = "hlr_weight"        -- 权重倍数
-local S_ON        = "hlr_on"            -- 启用
-local S_INFO      = "hlr_info"          -- 结果显示文本
+local C_SEARCH = "hlr_search"
+local C_RESULT = "hlr_result"
+local C_OWNED  = "hlr_owned"
+local C_EDITED = "hlr_edited"
+local S_INFO   = "hlr_info"
+local S_RATING = "hlr_rating"
+local S_WEIGHT = "hlr_weight"
+local B_ENABLE = "hlr_btn_enable"
+local B_DELETE = "hlr_btn_delete"
+local S_LIST   = "hlr_list_text"
 
-local READY   = false
-local opened  = false
-local deps    = nil
-local curId   = nil      -- 当前编辑的道具 id
-local query   = ""
-local candidates = {}    -- { {id=..., label=...}, ... }
-local owned      = {}    -- 已获得道具候选
-local listMode   = false
+local READY  = false
+local opened = false
+local deps   = nil
+local curId  = nil
 
--- ── 工具 ────────────────────────────────────────────────────────────────────
+local searchResults = {}
+local ownedList     = {}
+local editedList    = {}
 
-local function itemName(id)
+-- ── 小工具 ──────────────────────────────────────────────────────────────────
+
+--- 回调参数兼容：有的控件给 (id, value)，有的只给 (value)
+local function pickNum(a, b)
+    local v = tonumber(b)
+    if v then return v end
+    return tonumber(a)
+end
+
+--- 取整数下标（控件可能给 0 基或 1 基，这里统一按 0 基处理）
+local function pickIndex(a, b)
+    local v = pickNum(a, b)
+    if not v then return 0 end
+    return floor(v)
+end
+
+--- 道具英文名：去掉未本地化 key 的 # 前缀与 _NAME 后缀
+local function rawName(id)
     local ok, cfg = pcall(function() return Isaac.GetItemConfig():GetCollectible(id) end)
-    if ok and cfg then
+    if ok and cfg and cfg.Name then
         local n = tostring(cfg.Name)
-        -- 未本地化的 key 形如 #OLD_BANDAGE_NAME，去掉井号看起来干净些
-        n = n:gsub("^#", "")
+        n = n:gsub("^#", ""):gsub("_NAME$", ""):gsub("_", " ")
+        n = n:gsub("(%a)([%w']*)", function(a, b) return a:upper() .. b:lower() end)
         return n
     end
     return "?"
 end
 
-local function itemNameCN(id)
-    -- 本地化名字；没有就回退英文
+--- 显示名：优先本地化（中文），否则英文
+local function shownName(id)
     local ok, s = pcall(function()
         local cfg = Isaac.GetItemConfig():GetCollectible(id)
-        if not cfg then return nil end
-        if cfg.Localized then return cfg.Localized end
-        return nil
+        if cfg and cfg.Localized and cfg.Localized ~= "" then return cfg.Localized end
     end)
-    if ok and s and s ~= "" then return s end
-    return itemName(id)
+    if ok and s then return s end
+    return rawName(id)
 end
 
---- 官方品质（用于对照显示）
 local function officialQuality(id)
     local ok, q = pcall(function()
         local cfg = Isaac.GetItemConfig():GetCollectible(id)
@@ -69,105 +86,109 @@ local function officialQuality(id)
     return -1
 end
 
---- 构造搜索候选：先按 id，再按英文名（不区分大小写）
-local function buildCandidates()
-    candidates = {}
-    local q = (query or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
-    if q == "" then return end
+--- 当前持有的道具 id（兼容 GetCollectiblesList 返回数组或映射两种形状）
+local function heldIds()
+    local out = {}
+    local p = deps and deps.getPlayer and deps.getPlayer()
+    if not p then return out end
+    local ok, list = pcall(function() return p:GetCollectiblesList() end)
+    if not ok or type(list) ~= "table" then return out end
 
-    -- 纯数字 → 直接当 id 塞到最前
-    local asId = tonumber(q)
-    if asId and asId > 0 then
-        candidates[#candidates + 1] = {
-            id = asId,
-            label = string.format("%d  %s", asId, itemName(asId)),
-        }
-    end
-
-    local maxId = 1800
-    local limit = 40
-    for id = 1, maxId do
-        if #candidates >= limit then break end
-        if id ~= asId then
-            local nm = itemName(id):lower()
-            if nm:find(q, 1, true) then
-                candidates[#candidates + 1] = {
-                    id = id,
-                    label = string.format("%d  %s", id, itemName(id)),
-                }
-            end
+    -- 实测：GetCollectiblesList() 返回 { [道具id] = 持有数量 }，包含全部 1763 个道具，
+    -- 数量为 0 表示没有。所以必须按数量过滤，不能把所有键都当成已获得。
+    for id, count in pairs(list) do
+        local n = tonumber(count) or 0
+        if type(id) == "number" and id > 0 and n > 0 then
+            out[#out + 1] = id
         end
     end
-end
-
---- 已获得道具（当前持有）
-local function buildOwned()
-    owned = {}
-    local p = deps and deps.getPlayer and deps.getPlayer()
-    if not p then return end
-    local ok, list = pcall(function() return p:GetCollectiblesList() end)
-    if not ok or type(list) ~= "table" then return end
-    local ids = {}
-    for id in pairs(list) do ids[#ids + 1] = id end
-    table.sort(ids)
-    for _, id in ipairs(ids) do
-        owned[#owned + 1] = {
-            id = id,
-            label = string.format("%d  %s", id, itemNameCN(id)),
-        }
-    end
-end
-
-local function labelsOf(list)
-    local out = {}
-    for i = 1, #list do out[i] = list[i].label end
-    if #out == 0 then out[1] = "（无）" end
     return out
 end
 
---- 刷新信息文本（评级对象、官方值、各池权重）
+local function label(id)
+    return string.format("%d  %s", id, shownName(id))
+end
+
+local function listLabels(items, emptyText)
+    local out = {}
+    for i = 1, #items do out[i] = items[i].label end
+    if #out == 0 then out[1] = emptyText end
+    return out
+end
+
+-- ── 搜索 ────────────────────────────────────────────────────────────────────
+
+local function doSearch(text)
+    searchResults = {}
+    local q = tostring(text or ""):lower():gsub("^%s+", ""):gsub("%s+$", "")
+    if q == "" then return end
+
+    local isNumeric = q:match("^%d+$") ~= nil
+    local asId = isNumeric and tonumber(q) or nil
+    local limit = 40
+
+    if isNumeric then
+        if asId and asId > 0 then
+            searchResults[#searchResults + 1] = { id = asId, label = label(asId) }
+        end
+        for id = 1, 1800 do
+            if #searchResults >= limit then break end
+            if id ~= asId and tostring(id):sub(1, #q) == q then
+                searchResults[#searchResults + 1] = { id = id, label = label(id) }
+            end
+        end
+        return
+    end
+
+    for id = 1, 1800 do
+        if #searchResults >= limit then break end
+        local en = rawName(id):lower()
+        local cn = shownName(id):lower()
+        if en:find(q, 1, true) or cn:find(q, 1, true) then
+            searchResults[#searchResults + 1] = { id = id, label = label(id) }
+        end
+    end
+end
+
+-- ── 详情与列表刷新 ──────────────────────────────────────────────────────────
+
 local function refreshInfo()
+    if not S_INFO then return end
     if not curId then
-        ImGui.UpdateText(S_INFO, "先在下面选一个道具")
+        pcall(function() ImGui.UpdateText(S_INFO, "先在下面选一个道具") end)
         return
     end
     local r = deps.rating
+    local q = r.getRating(curId)
+    local w = r.getWeightMul(curId)
     local lines = {
-        string.format("%s  #%d", itemNameCN(curId), curId),
-        string.format("官方评级 %s   HL 评级 %s",
-            tostring(officialQuality(curId)),
-            (r.getRating(curId) and string.format("%.1f", r.getRating(curId))) or "未设置"),
+        string.format("%s    官方 %s", label(curId), tostring(officialQuality(curId))),
+        string.format("评级 %s     权重 %s",
+            q and string.format("%.2f", q) or "未设置",
+            w and string.format("%.2f", w) or "未设置"),
     }
-    local pools = deps.pool and deps.pool.poolsOf and deps.pool.poolsOf(curId) or {}
-    if #pools == 0 then
-        lines[#lines + 1] = "该道具不在任何已快照的池子里"
-    else
-        local parts = {}
-        for i = 1, math.min(#pools, 4) do
-            local pw = pools[i]
-            local mul = r.getWeightMul(curId) or 1
-            parts[#parts + 1] = string.format("池%d %.2f→%.2f", pw.pool, pw.weight, pw.weight * mul)
-        end
-        lines[#lines + 1] = "权重 " .. table.concat(parts, "  ")
+    if w and w > 1.0 then
+        lines[#lines + 1] = "权重 > 1 暂不生效（v1 只能降低出现率）"
     end
-    if not deps.pool or not deps.pool.hasSnap then
-        lines[#lines + 1] = "（权重快照未建立：需进一局）"
-    end
-    ImGui.UpdateText(S_INFO, table.concat(lines, "\n"))
+    pcall(function() ImGui.UpdateText(S_INFO, table.concat(lines, "\n")) end)
 end
 
---- 把评级表里的值推回控件（ImGui 不持久化，必须每次推）
 local function pushValues()
     if not curId then return end
     local r = deps.rating
-    local q = r.getRating(curId)
-    ImGui.UpdateData(S_RATING, ImGuiData.Value, q or (officialQuality(curId) >= 0 and officialQuality(curId) or 0))
-    ImGui.UpdateData(S_WEIGHT, ImGuiData.Value, r.getWeightMul(curId) or 1.0)
     local e = r.entries[curId]
-    ImGui.UpdateData(S_ON, ImGuiData.Value, not (e and e.on == false))
+    local q = r.getRating(curId)
+    local w = r.getWeightMul(curId)
+    local on = not (e and e.on == false)
+    pcall(function()
+        ImGui.UpdateData(S_RATING, ImGuiData.Value, q or math.max(0, officialQuality(curId)))
+        ImGui.UpdateData(S_WEIGHT, ImGuiData.Value, w or 1.0)
+        if ImGui.UpdateText then
+            ImGui.UpdateText(B_ENABLE, on and "状态：启用（点击停用）" or "状态：停用（点击启用）")
+        end
+    end)
 end
 
---- 选中一个道具
 local function selectId(id)
     if not id or id <= 0 then return end
     curId = id
@@ -175,9 +196,39 @@ local function selectId(id)
     refreshInfo()
 end
 
+local function refreshLists()
+    local ids = heldIds()
+    ownedList = {}
+    for i = 1, #ids do ownedList[i] = { id = ids[i], label = label(ids[i]) } end
+    pcall(function()
+        ImGui.UpdateData(C_OWNED, ImGuiData.ListValues, listLabels(ownedList, "（还没有道具）"))
+        ImGui.UpdateData(C_OWNED, ImGuiData.Value, 0)
+    end)
+
+    local edited = deps.rating.list()
+    editedList = {}
+    local textLines = {}
+    for i = 1, #edited do
+        local id = edited[i]
+        local e = deps.rating.entries[id]
+        local tag = (e.on == false) and "  （停用）" or ""
+        editedList[i] = {
+            id = id,
+            label = string.format("%s   评级 %.2f   权重 %.2f%s", label(id), e.q or 0, e.w or 1, tag),
+        }
+        textLines[i] = string.format("%s   评级 %.2f   权重 %.2f%s", label(id), e.q or 0, e.w or 1, tag)
+    end
+    pcall(function()
+        ImGui.UpdateData(C_EDITED, ImGuiData.ListValues, listLabels(editedList, "（还没有修改）"))
+        ImGui.UpdateData(C_EDITED, ImGuiData.Value, 0)
+    end)
+
+    if #textLines == 0 then textLines[1] = "还没有任何修改。" end
+    pcall(function() ImGui.UpdateText(S_LIST, table.concat(textLines, "\n")) end)
+end
+
 -- ── 建界面 ──────────────────────────────────────────────────────────────────
 
---- 逐步构建：某一步失败只记日志，不影响其它控件（REPENTOGON 各版本控件名略有差异）
 local function tryStep(name, fn)
     local ok, err = pcall(fn)
     if not ok and deps and deps.log then
@@ -189,22 +240,15 @@ end
 local function build()
     tryStep("CreateWindow", function()
         ImGui.CreateWindow(WIN, "Highlight Review · 道具评级")
-        -- 窗口尺寸/位置：这个版本没有 SetSize，但 SetWindowSize 在
-        local sized = false
-        if ImGui.SetWindowSize then
-            local ok = pcall(function() ImGui.SetWindowSize(WIN, 520, 460) end)
-            sized = ok
-        elseif ImGui.SetSize then
-            local ok = pcall(function() ImGui.SetSize(WIN, 520, 460) end)
-            sized = ok
-        end
-        if ImGui.SetWindowPosition then
-            pcall(function() ImGui.SetWindowPosition(WIN, 120, 90) end)
-        end
-        if deps and deps.log then
-            deps.log(string.format("[EDITOR] 窗口: SetWindowSize=%s SetWindowPosition=%s sized=%s",
-                tostring(ImGui.SetWindowSize ~= nil), tostring(ImGui.SetWindowPosition ~= nil), tostring(sized)))
-        end
+        if ImGui.SetWindowSize then ImGui.SetWindowSize(WIN, 520, 500) end
+        if ImGui.SetWindowPosition then ImGui.SetWindowPosition(WIN, 780, 100) end
+    end)
+
+    tryStep("菜单入口", function()
+        if not ImGui.CreateMenu then return end
+        pcall(function() ImGui.CreateMenu(MENU, "Highlight Review") end)
+        ImGui.AddElement(MENU, MENU_ITEM, ImGuiElement.MenuItem, "道具评级")
+        if ImGui.LinkWindowToElement then ImGui.LinkWindowToElement(WIN, MENU_ITEM) end
     end)
 
     tryStep("TabBar", function()
@@ -214,79 +258,81 @@ local function build()
     end)
 
     tryStep("搜索框", function()
-        ImGui.AddInputText(TAB_EDIT, S_QUERY, "搜索（英文名 或 id）", function(_, val)
-            query = tostring(val)
-            buildCandidates()
-            if #candidates > 0 then
-                ImGui.UpdateData(SEL_COMBO, ImGuiData.ListValues, labelsOf(candidates))
-                ImGui.UpdateData(SEL_COMBO, ImGuiData.Value, 0)
+        ImGui.AddInputText(TAB_EDIT, C_SEARCH, "搜索（数字按 id，字母按英文名）", function(a, b)
+            local text = (type(b) == "string") and b or tostring(a or "")
+            doSearch(text)
+            if #searchResults > 0 then
+                ImGui.UpdateData(C_RESULT, ImGuiData.ListValues, listLabels(searchResults, "（无结果）"))
+                ImGui.UpdateData(C_RESULT, ImGuiData.Value, 0)
             end
         end, "")
     end)
 
-    tryStep("搜索结果下拉", function()
-        ImGui.AddCombobox(TAB_EDIT, SEL_COMBO, "搜索结果", function(idx)
-            local c = candidates[(idx or 0) + 1]
+    tryStep("搜索结果", function()
+        ImGui.AddCombobox(TAB_EDIT, C_RESULT, "搜索结果", function(a, b)
+            local c = searchResults[pickIndex(a, b) + 1]
             if c then selectId(c.id) end
         end, { "（输入关键字）" }, 0)
     end)
 
-    tryStep("已获得下拉", function()
-        ImGui.AddCombobox(TAB_EDIT, OWNED_COMBO, "已获得道具", function(idx)
-            local c = owned[(idx or 0) + 1]
+    tryStep("已获得", function()
+        ImGui.AddCombobox(TAB_EDIT, C_OWNED, "已获得道具", function(a, b)
+            local c = ownedList[pickIndex(a, b) + 1]
             if c then selectId(c.id) end
-        end, { "（进一局后可用）" }, 0)
+        end, { "（还没有道具）" }, 0)
     end)
 
-    tryStep("信息文本", function()
-        ImGui.AddText(TAB_EDIT, "", false, S_INFO)
+    tryStep("已修改", function()
+        ImGui.AddCombobox(TAB_EDIT, C_EDITED, "已修改", function(a, b)
+            local c = editedList[pickIndex(a, b) + 1]
+            if c then selectId(c.id) end
+        end, { "（还没有修改）" }, 0)
     end)
 
-    tryStep("评级滑条", function()
-        ImGui.AddSliderFloat(TAB_EDIT, S_RATING, "评级", function(_, val)
-            if not curId then return end
-            deps.rating.set(curId, tonumber(val), nil, nil)
-            refreshInfo()
-        end, 0.0, 0.0, 4.0, "%.1f")
+    tryStep("信息", function() ImGui.AddText(TAB_EDIT, "", false, S_INFO) end)
+
+    tryStep("评级输入", function()
+        ImGui.AddInputFloat(TAB_EDIT, S_RATING, "评级（0.00 ~ 4.00）", function(a, b)
+            local v = pickNum(a, b)
+            if not curId or not v then return end
+            if v < 0 then v = 0 elseif v > 4 then v = 4 end
+            deps.rating.set(curId, v, nil, nil)
+            pushValues(); refreshInfo(); refreshLists()
+        end, 0.0, 0.01, 0.05, "%.2f")
     end)
 
     tryStep("权重输入", function()
-        ImGui.AddInputFloat(TAB_EDIT, S_WEIGHT, "权重倍数（1=不变, 0=不出）", function(_, val)
-            if not curId then return end
-            deps.rating.set(curId, nil, tonumber(val), nil)
-            refreshInfo()
-        end, 1.0, 0.1, 0.1, "%.2f")
+        ImGui.AddInputFloat(TAB_EDIT, S_WEIGHT, "权重（0 不出 / 1 不变 / >1 暂不生效）", function(a, b)
+            local v = pickNum(a, b)
+            if not curId or not v then return end
+            if v < 0 then v = 0 elseif v > 5 then v = 5 end
+            deps.rating.set(curId, nil, v, nil)
+            pushValues(); refreshInfo(); refreshLists()
+        end, 1.0, 0.05, 0.1, "%.2f")
     end)
 
-    tryStep("启用勾选", function()
-        ImGui.AddCheckbox(TAB_EDIT, S_ON, "启用", function(checked)
+    tryStep("启用按钮", function()
+        ImGui.AddButton(TAB_EDIT, B_ENABLE, "状态：启用（点击停用）", function()
             if not curId then return end
-            deps.rating.set(curId, nil, nil, checked and true or false)
-            refreshInfo()
-        end, true)
+            local e = deps.rating.entries[curId]
+            local on = not (e and e.on == false)
+            deps.rating.set(curId, nil, nil, not on)
+            pushValues(); refreshInfo(); refreshLists()
+            if deps.onChanged then deps.onChanged() end
+        end)
     end)
 
     tryStep("删除按钮", function()
-        ImGui.AddButton(TAB_EDIT, "hlr_btn_clear", "删除此条（回退官方）", function()
+        ImGui.AddButton(TAB_EDIT, B_DELETE, "删除此条（回退官方）", function()
             if not curId then return end
             deps.rating.clear(curId)
-            pushValues()
-            refreshInfo()
+            pushValues(); refreshInfo(); refreshLists()
             if deps.onChanged then deps.onChanged() end
         end)
     end)
 
     tryStep("已修改页", function()
-        ImGui.AddText(TAB_LIST, "（切到这一页时刷新）", false, "hlr_list_info")
-        ImGui.AddCombobox(TAB_LIST, "hlr_list_combo", "覆盖条目", function(idx)
-            local ids = deps.rating.list()
-            local id = ids[(idx or 0) + 1]
-            if id then
-                curId = id
-                pushValues()
-                refreshInfo()
-            end
-        end, { "（无）" }, 0)
+        ImGui.AddText(TAB_LIST, "", true, S_LIST)
     end)
 
     READY = true
@@ -297,44 +343,23 @@ end
 function E.init(d)
     deps = d
     if READY then return true end
-    if not ImGui or not ImGui.CreateWindow then
-        if deps and deps.log then deps.log("[EDITOR] 没有 ImGui 全局") end
-        return false
-    end
+    if not ImGui or not ImGui.CreateWindow then return false end
     local ok, err = pcall(build)
     if not ok then
+        if deps and deps.log then deps.log("[EDITOR] 建界面失败: " .. tostring(err)) end
         READY = false
-        if deps and deps.log then deps.log("[EDITOR] ImGui 建界面失败: " .. tostring(err)) end
         return false
     end
-    local ok2, err2 = pcall(function() ImGui.SetVisible(WIN, false) end)
-    if not ok2 and deps and deps.log then
-        deps.log("[EDITOR] SetVisible 失败: " .. tostring(err2))
-    end
-    return true
+    pcall(function() ImGui.SetVisible(WIN, false) end)
+    return READY
 end
 
 function E.isReady() return READY end
+function E.isOpen() return opened end
 
---- 每次打开时刷新"已获得"和其他下拉
 function E.refresh()
     if not READY then return end
-    buildOwned()
-    ImGui.UpdateData(OWNED_COMBO, ImGuiData.ListValues, labelsOf(owned))
-    ImGui.UpdateData(OWNED_COMBO, ImGuiData.Value, 0)
-
-    local ids = deps.rating.list()
-    local labels = {}
-    for i = 1, #ids do
-        local e = deps.rating.entries[ids[i]]
-        labels[i] = string.format("%d  %s  q=%.1f w=%.2f%s",
-            ids[i], itemNameCN(ids[i]), e.q or 0, e.w or 1, (e and e.on == false) and "（停用）" or "")
-    end
-    if #labels == 0 then labels[1] = "（还没有任何覆盖）" end
-    ImGui.UpdateData("hlr_list_combo", ImGuiData.ListValues, labels)
-    ImGui.UpdateData("hlr_list_combo", ImGuiData.Value, 0)
-    ImGui.UpdateText("hlr_list_info", string.format("共 %d 条覆盖", #ids))
-
+    refreshLists()
     refreshInfo()
 end
 
@@ -344,14 +369,19 @@ function E.toggle()
     pcall(function() ImGui.SetVisible(WIN, opened) end)
     if opened then
         E.refresh()
-        -- Show() 会让 ImGui 接管键盘；关的时候必须 Hide() 把控制权还给游戏
         pcall(function() ImGui.Show() end)
-        if deps and deps.log then deps.log("[EDITOR] 打开（ImGui 接管键盘）") end
+        if deps and deps.log then deps.log("[EDITOR] 打开") end
     else
         pcall(function() ImGui.Hide() end)
-        if deps and deps.log then deps.log("[EDITOR] 关闭（键盘还给游戏）") end
+        if deps and deps.log then deps.log("[EDITOR] 关闭") end
     end
     return opened
+end
+
+--- 菜单入口点击后也要能打开（状态与 F6 共用）
+function E.open()
+    if not READY or opened then return end
+    E.toggle()
 end
 
 function E.close()
