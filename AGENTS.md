@@ -329,7 +329,6 @@ v0.3 让回顾挂了 `MC_POST_GET_COLLECTIBLE`，于是它从「只读观察者�
    忘了跑 → 两个 mod 里还是旧代码。
 4. `mod-review/core/settings.lua` 和 `mod-rating/core/settings.lua` 是**生成物**，也在 git 里。
    要改就改 `shared/settings.lua`，别直接改这两份。
-5. 各 mod 只写自己用到的设置键：回顾 `S.only = {"f5"}`、评级 `S.only = {"f6"}`，
 5. 各 mod 只写自己用到的设置键：回顾 `S.only = {"f5"}`、评级 `S.only = {"f6","lang"}`，避免两个 mod 互相覆盖对方的 `C=` 行。
 6. **`settings.lua` 支持字符串值**（`lang`）：数字写成 `"f6":295`，字符串写成 `"lang":"en"`。
 7. **双语只做在评级 mod**（作者 2026-10-21 要求）：文案全走 `mod-rating/ui/lang.lua` 的 `L.t(key)`。切语言会 `ImGui.RemoveWindow` + 重建窗口——ImGui 的控件标签只能在创建时给定。
