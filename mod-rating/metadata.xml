@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-    <name>Item Weight Editor (道具权重编辑器)</name>
+    <name>Item Weight Editor</name>
     <directory>highlight-rating</directory>
-    <description>Change any item's drop weight and quality: 0 = never appears, 0.5 = half as often, 1 = unchanged. Also lets you override an item's quality (used by Highlight Review for 4-tier judgement). Requires REPENTOGON. / 自定义任意道具的掉落权重与评级：0 = 不出现，0.5 = 出现率减半，1 = 不变。也可以覆盖道具评级（高光回顾会用它判四级）。需要 REPENTOGON。</description>
+    <description>Change any item's drop weight - 0 = never appears, 0.5 = half as often, 1 = unchanged. Also overrides item quality (used by Highlight Review for 4-tier judgement). Press F6 in game. Works standalone, no dependencies besides REPENTOGON.</description>
     <version>0.1.0</version>
     <visibility>Private</visibility>
 </metadata>

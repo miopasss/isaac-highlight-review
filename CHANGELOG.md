@@ -1941,3 +1941,31 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\make-cover.ps1
 
 正文用 `━━` 分隔线而不是 Markdown 标题——Steam 的描述框不渲染 Markdown，
 `#` 会原样显示出来。
+## metadata 改纯 ASCII（游戏模组列表不支持中文）
+
+作者截图发现模组列表里显示成：
+
+```
+14.Item Weight Editor (é·æéçè¯)
+```
+
+游戏模组列表**不按 UTF-8 渲染**，`<name>` 里的中文全变乱码。
+
+### 修法
+
+`metadata.xml` 全部改成 **ASCII**：
+
+- `<name>` → `Item Weight Editor`（去掉括号中文）
+- `<description>` → 单段英文，去掉所有中文和 `·` `—` 这类非 ASCII 符号
+
+校验：文件里非 ASCII 字节数 = **0**。
+
+### 中文放哪
+
+工坊页面的**长描述**（在网页上编辑）支持 UTF-8，中文放那里。
+`metadata.xml` 只负责游戏内显示的那一块，必须保守。
+
+### 同类问题
+
+`highlight-review/metadata.xml` 的 `<name>` 里也有中文（`Highlight Review (高光回顾)`），
+同样会在列表里乱码。发它之前一并改成 ASCII。
