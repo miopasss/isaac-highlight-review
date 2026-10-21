@@ -118,6 +118,12 @@ function L.code() return STATE.code end
 --- 是否中文
 function L.isZh() return STATE.code ~= "en" end
 
+--- 按指定语言取词（不改全局状态；建双窗口时用）
+function L.tFor(code, key)
+    local set = STR[code] or STR.zh
+    return set[key] or STR.zh[key] or tostring(key)
+end
+
 --- 取文案
 function L.t(key)
     local set = STR[STATE.code] or STR.zh
@@ -143,6 +149,11 @@ function L.init(settings)
 end
 
 --- 切换语言并写回 settings
+--- 只改内存状态，不写盘（建窗口时临时切用）
+function L.setCode(code)
+    STATE.code = (code == "en") and "en" or "zh"
+end
+
 function L.set(settings, code)
     STATE.code = (code == "en") and "en" or "zh"
     if settings then
