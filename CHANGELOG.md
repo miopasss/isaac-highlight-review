@@ -1855,3 +1855,17 @@ $sharedMap = @{
 
 窗口从 620 加宽到 **780**，英文文案另做了缩短（`Search (digits = id, letters = name)` →
 `Search (id or name)`），避免被右边切掉。
+## 修：Item Weight 菜单里有两个同名的「设置」
+
+`ui/config.lua`（设置窗口）和 `ui/rating_editor.lua`（编辑器窗口）都往
+`item_weight_menu` 里挂了一项，而且文案都用 `T("menu_settings")` → 显示成两个「设置」。
+
+拆成两个文案：
+
+| 菜单项 | 中文 | 英文 |
+|---|---|---|
+| 设置窗口 | `设置` | `Settings` |
+| 编辑器窗口 | `道具权重编辑器` | `Weight Editor` |
+
+顺手把 `Search (digits = id, letters = name)` → `Search (id or name)` 等 13 条英文文案缩短，
+避免被窗口右边切掉；窗口宽度 620 → **780**。

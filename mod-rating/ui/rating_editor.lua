@@ -264,7 +264,7 @@ local function buildUI()
     tryStep("menu", function()
         if not ImGui.CreateMenu then return end
         pcall(function() ImGui.CreateMenu(MENU, T("menu_name")) end)
-        ImGui.AddElement(MENU, MENU_ITEM, ImGuiElement.MenuItem, T("menu_settings"))
+        ImGui.AddElement(MENU, MENU_ITEM, ImGuiElement.MenuItem, T("menu_editor"))
         if ImGui.LinkWindowToElement then ImGui.LinkWindowToElement(WIN, MENU_ITEM) end
     end)
 

@@ -60,6 +60,7 @@ local STR = {
         -- 设置
         menu_name       = "Item Weight",
         menu_settings   = "设置",
+        menu_editor     = "道具权重编辑器",
         set_title       = "Item Weight · 设置",
         set_hotkey_hint = "热键（点右边的框，再按你想绑的键）",
         set_open_editor = "打开编辑器",
@@ -101,6 +102,7 @@ local STR = {
 
         menu_name       = "Item Weight",
         menu_settings   = "Settings",
+        menu_editor     = "Weight Editor",
         set_title       = "Item Weight - Settings",
         set_hotkey_hint = "Hotkey (click the box, then press the key)",
         set_open_editor = "Open editor",
