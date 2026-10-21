@@ -107,6 +107,13 @@ function config.init(d)
     return false
 end
 
+--- 语言变了之后重建自己的窗口（外部调用）
+function config.rebuild()
+    if not deps then return false end
+    rebuildSelf()
+    return READY
+end
+
 function config.isReady() return READY end
 
 return config

@@ -86,6 +86,14 @@ local function loadData()
 
     state.store = storemod.split(blob)
     if settings then settings.load(state.store) end
+
+    -- 语言必须在**读过存档之后**才能确定（settings 在 init 时全是默认值）
+    if lang then
+        lang.init(settings)
+        -- 语言可能和启动时不同：重建两个窗口的文字
+        if configui and configui.rebuild then configui.rebuild() end
+        if editor and editor.rebuild then editor.rebuild() end
+    end
     rating.load(state.store)
     log(string.format("载入 %d 条评级配置 / %d 行", rating.count(), #state.store.lines))
 end
@@ -110,7 +118,6 @@ if settings then
     settings.init()
     settings.only = { "f6", "lang" }
 end
-if lang then lang.init(settings) end
 rating.publish()
 
 if poolmod then poolmod.snapshot(poolmod.COMMON_POOLS) end
