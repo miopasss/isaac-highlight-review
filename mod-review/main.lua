@@ -565,6 +565,16 @@ local function settleRoom(player)
         end
     end
 
+    -- 黑名单过滤：某些道具会被别的 mod 反复挂到身上，属于误记（见 config.itemBlacklist）
+    -- 过滤放在这里 → 四个字段（it / iq / ik）都拿不到它，四级/零级列表自然也不会有
+    if config.itemBlacklist and #gained > 0 then
+        local keep = {}
+        for k = 1, #gained do
+            if not config.itemBlacklist[gained[k]] then keep[#keep + 1] = gained[k] end
+        end
+        gained = keep
+    end
+
     -- 与 gained 平行的品质列表（用于识别 4 级起飞 / 0 级封盘）
     local gainedQ = {}
     for k = 1, #gained do gainedQ[k] = qualityOf(gained[k]) end
