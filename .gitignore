@@ -20,3 +20,5 @@ savedatapath.txt
 
 # GitHub token（不进仓库：push protection 会拒绝，且 secret scanning 会自动撤销）
 tools/.gh_token
+# 打包产物（tools\\pack.ps1 生成），不进仓库
+dist/

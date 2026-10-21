@@ -1659,3 +1659,7 @@ ik = [0, 1]       离开时还在吗
 ### 测试
 
 luacheck 22 文件 0 失败；fmt_test PASS、identity_test 20/20、rating_test 22/22。
+## 清理：dist/ 不进仓库
+
+上一轮合并时 `git add -A` 把 `tools\pack.ps1` 的产物（`dist\*.zip`，合计 1.3 MB）
+一起提交了。打包产物不该进版本库，已从索引移除并加进 `.gitignore`。
