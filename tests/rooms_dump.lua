@@ -21,9 +21,9 @@ if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
 local DATA = DATA_OVERRIDE or "data/highlight-review"
 
 local function loadmod(p) return loadfile(ROOT .. p)() end
-local schema = loadmod("mod/core/schema.lua")
-local fmt    = loadmod("mod/core/fmt.lua")
-local hl     = loadmod("mod/core/highlight.lua")
+local schema = loadmod("mod-review/core/schema.lua")
+local fmt    = loadmod("mod-review/core/fmt.lua")
+local hl     = loadmod("mod-review/core/highlight.lua")
 fmt.setSchema(schema)
 
 local function readAll(path)

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<metadata>
-  <name>Highlight Review (高光回顾)</name>
-  <directory>highlight-review</directory>
-  <description>After every run, review where your power actually spiked: which floor, which room, and what you picked up. Requires REPENTOGON. / 每局结束后回看战力到底在哪儿起飞的：哪一层、哪个房间、拿到了什么。需要 REPENTOGON。</description>
-  <version>0.2.0</version>
-  <visibility>Private</visibility>
-</metadata>

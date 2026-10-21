@@ -4,7 +4,7 @@
 #   pwsh tools\book.ps1            解析真实存档，输出 _logs\book-<时间>.txt
 #   pwsh tools\book.ps1 -Demo      用造的数据生成样例（验证排版）
 #
-# 注意：册子的**内容逻辑**在 mod/core/highlight.lua + mod/core/text_render.lua，
+# 注意：册子的**内容逻辑**在 mod-review/core/highlight.lua + mod-review/core/text_render.lua，
 # 游戏内册子将来调用的是同一份 highlight.lua，所以这里验证过的行为不会走样。
 # =============================================================================
 param([switch]$Demo, [switch]$Open)

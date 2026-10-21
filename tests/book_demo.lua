@@ -7,8 +7,8 @@ local ROOT = (os and os.getenv and os.getenv("HLR_ROOT")) or "D:/00000/aiStudy/i
 if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
 local function loadmod(p) return loadfile(ROOT .. p)() end
 
-local hl = loadmod("mod/core/highlight.lua")
-local text = loadmod("mod/core/text_render.lua")
+local hl = loadmod("mod-review/core/highlight.lua")
+local text = loadmod("mod-review/core/text_render.lua")
 
 -- 造一局：3 层，其中有 3 次明显跳变
 local run = {

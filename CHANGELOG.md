@@ -1520,3 +1520,53 @@ end
 **排查记录（花了两轮才搞对）**：自己从旧截图里裁窗口一直切掉左边缘，
 原因是我们窗口的左边界在 x≈590，而 ImGui 窗口背景色 (16,17,18) 和
 游戏暗部颜色接近，靠"找暗色区域"自动定位会认错。最后直接用作者给的整图。
+## 拆成两个 mod（2026-10-21 06:xx）
+
+作者拍板：拆。理由不是"受众不同"这么简单——**v0.3 让回顾挂了 `MC_POST_GET_COLLECTIBLE`，
+它从只读观察者变成了会改游戏的 mod**，这才是必须拆的根因。
+
+### 新结构
+
+```
+shared/settings.lua        唯一一份源码，deploy 时复制进两个 mod
+mod-rating/                Item Weight Editor（目录 highlight-rating，v0.1.0）
+mod-review/                Highlight Review（目录 highlight-review，v0.3.0）
+```
+
+### 评级 mod（新）
+
+| 文件 | 内容 |
+|---|---|
+| `main.lua` | 只做三件事：装评级数据、挂 pool 钩子、开编辑器 |
+| `core/store.lua` | 自己的存档容器（`IWE1` + `Q=` / `C=` 行） |
+| `core/{jsonmini,rating,rating_data,pool,settings}.lua` | 从回顾搬过来 |
+| `ui/rating_editor.lua` | 从回顾搬过来 |
+| `ui/config.lua` | 只绑 F6 |
+
+### 回顾 mod（改）
+
+- 移除：`core/{pool,rating,rating_data,jsonmini}.lua`、`ui/rating_editor.lua`、`MC_POST_GET_COLLECTIBLE` 钩子、F6 处理
+- 新增：`externalQuality(id)` —— 读 `_G.HLR`，读不到返回 nil 由调用方回退官方
+- `qualityOf()` 改为优先用 `externalQuality`
+- 设置窗口只剩 F5
+- 描述加一句"配合 Item Weight Editor 可显示自定义评级"
+
+### 工具
+
+- `deploy.ps1`：`-Mod both|review|rating`，同步前把 `shared/` 复制进两个 mod
+- `luacheck.ps1`：默认检查 `mod-review` + `mod-rating` + `shared`（22 个文件）
+- **新增 `pack.ps1`**：打 `dist\highlight-{rating,review}.zip`，只含各自目录
+- `tests/*` 路径从 `mod/core` 改为 `mod-review/core` / `mod-rating/core`
+
+### 顺带修的两个真 bug（都是拆分时发现的）
+
+1. **`num()` 作用域**：`local function num` 定义在 `ultimateBossNow` / `bossIdNow` **之后**，
+   这两个函数里的 `num` 被编译成全局查找 → nil → `pcall` 吞错 → 返回 0。
+   **Boss 识别失效两轮的真正原因。** 已把 `num` 提到最前。
+2. **`MC_POST_GAME_END` 签名**：第一个参数是 `mod`，不是 `isGameOver`。
+   `function(isGameOver)` 收到的是表（永远真值）→ **所有通关都标成死亡**。改为 `function(_, isGameOver)`。
+
+### 测试
+
+- luacheck：22 个文件，0 失败
+- `rating_test.lua` 22/22、`identity_test.lua` 20/20、`fmt_test.lua` PASS

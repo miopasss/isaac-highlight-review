@@ -39,14 +39,19 @@ local bookui = include("ui.book")
 local configui = include("ui.config")
 local dump   = tryRequire("core.dump", "core/dump")
 
--- ── 评级 / 权重 相关（v0.3）──
-local jsonmini  = tryRequire("core.jsonmini", "core/jsonmini")
-local rating    = tryRequire("core.rating", "core/rating")
-local ratedata  = tryRequire("core.rating_data", "core/rating_data")
-local poolmod   = tryRequire("core.pool", "core/pool")
+-- ── 与外部评级 mod 的兼容（Item Weight Editor 会发布 _G.HLR）──
 local itemwatch = tryRequire("core.itemwatch", "core/itemwatch")
 local settings  = tryRequire("core.settings", "core/settings")
-local ratingui  = include("ui.rating_editor")
+
+--- 读外部评级：读不到就返回 nil，调用方回退官方品质。加载顺序无关。
+local function externalQuality(id)
+    local ok, q = pcall(function()
+        local hlr = rawget(_G, "HLR")
+        if hlr and hlr.getQuality then return hlr.getQuality(id) end
+    end)
+    if ok and type(q) == "number" then return q end
+    return nil
+end
 
 if not schema or not fmt or not power or not config then
     emit("[CHRONICLE] FATAL: module load failed (schema=" .. tostring(schema ~= nil) ..
@@ -56,12 +61,7 @@ if not schema or not fmt or not power or not config then
 end
 fmt.setSchema(schema)
 
--- 评级数据层：先装默认表，再发布 _G.HLR 给外部读
-if rating and jsonmini then
-    rating.init(jsonmini, ratedata or {})
 if settings then settings.init() end
-    rating.publish()
-end
 
 local function log(msg) if config.debug then emit(LOG_PREFIX .. tostring(msg)) end end
 local function err(msg) emit(LOG_PREFIX .. "ERROR: " .. tostring(msg)) end
@@ -161,11 +161,9 @@ end
 --- 道具品质（0~4）。带缓存，同一个 id 只查一次。
 local qualityCache = {}
 local function qualityOf(id)
-    -- 自定义评级优先（作者要求：四级道具的判断优先用新评级）；不缓存，编辑器随时会改
-    if rating then
-        local rq = rating.getQuality(id)
-        if rq then return rq end
-    end
+    -- 外部评级 mod 优先；读不到就回退官方品质
+    local rq = externalQuality(id)
+    if rq then return rq end
     local q = qualityCache[id]
     if q then return q end
     q = -1
@@ -306,6 +304,7 @@ end
 --     Boss Rush 没有 bossID，靠房型 17
 local UB = { HUSH = 1, BOSSRUSH = 2, MEGASATAN = 3, MOTHER = 4, BEAST = 5, DELIRIUM = 6 }
 
+local function num(v) if type(v) == "number" and v == v then return v end return 0 end
 local function ultimateBossNow()
     local code = 0
     pcall(function()
@@ -354,7 +353,6 @@ end
 
 --- 房间身份
 
-local function num(v) if type(v) == "number" and v == v then return v end return 0 end
 
 local function readRoomIdentity()
     local ident = { type = 0, shape = 0, doors = 0, stageId = 0, variant = 0,
@@ -652,7 +650,6 @@ saveData = function()
     if removed > 0 then
         log(string.format("超出字节预算，又淘汰了 %d 局", removed))
     end
-    if rating then rating.save(state.store) end
     if settings then settings.save(state.store) end
     local blob = fmt.buildBlob(state.store)
     if blob == lastBlob then
@@ -687,9 +684,6 @@ loadData = function()
     state.store.bytes = nil
     if settings then settings.load(store) end
     if rating then
-        rating.load(store)
-        local n = rating.count()
-        if n > 0 then log(string.format("载入自定义评级 %d 条", n)) end
     end
     log(string.format("载入 %d 局 / %d 行 / %d 字节（未解析房间体）",
         #store.index, #store.lines, #blob))
@@ -744,43 +738,18 @@ end
 
 -- 输入必须在 POST_RENDER 里读：POST_UPDATE 里读 IsButtonTriggered 会漏触发
 add(ModCallbacks.MC_POST_RENDER, function()
-    local f6 = (settings and settings.get("f6")) or Keyboard.KEY_F6
-    if ratingui and ratingui.isReady() and Input.IsButtonTriggered(f6, 0) then
-        ratingui.toggle()
-    end
-    if ratingui and ratingui.watch then ratingui.watch() end
     uiGuard("update", bookui.update)
     uiGuard("render", bookui.render)
 end)
 
 configui.init({ settings = settings, log = log, onChanged = function() pcall(saveData) end })
-do
-    local editorDeps = {
-        rating = rating, pool = poolmod, getPlayer = getPlayer, log = log,
-        onChanged = function() pcall(saveData) end,
-    }
-    if ratingui and ratingui.init(editorDeps) then
-        log("评级编辑器已就绪（F6 打开）")
-    elseif not ratingui then
-        log("评级编辑器缺失")
-    end
-end
 
 -- 每帧监视道具变化；局开始时快照权重并重建基线
 add(ModCallbacks.MC_POST_GAME_STARTED, function()
     local p = getPlayer()
     if itemwatch then itemwatch.reset(p, 1800) end
-    if poolmod then
-        local n = poolmod.snapshot(poolmod.COMMON_POOLS)
-        log(string.format("[POOL] 权重快照：%d 个池子", n))
-    end
 end)
 
--- 抽到道具后：按权重倍数决定要不要重掷（排最后，只微调别人的结果）
-add(ModCallbacks.MC_POST_GET_COLLECTIBLE, function(_, itemID, poolType, decrease, seed)
-    if not (poolmod and rating) then return nil end
-    return poolmod.onPostGet(rating, itemID, poolType, decrease, seed, log)
-end, CallbackPriority.LATE)
 if configui.isReady() then log("ImGui 配置菜单已挂上") else log("ImGui 不可用（或挂载失败），跳过配置菜单") end
 
 add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
@@ -896,7 +865,7 @@ add(ModCallbacks.MC_ENTITY_TAKE_DMG, function(...)
     return nil
 end)
 
-add(ModCallbacks.MC_POST_GAME_END, function(isGameOver)
+add(ModCallbacks.MC_POST_GAME_END, function(_, isGameOver)   -- 第一个参数是 mod，不是 isGameOver
     -- 收局诊断：isGameOver 到底靠不靠得住，靠这几个值判断
     local p = getPlayer()
     local info = "?"

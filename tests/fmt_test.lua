@@ -11,9 +11,9 @@ local function loadmod(path)
     return chunk()
 end
 
-local schema = loadmod("mod/core/schema.lua")
-local fmt = loadmod("mod/core/fmt.lua")
-local power = loadmod("mod/core/power.lua")
+local schema = loadmod("mod-review/core/schema.lua")
+local fmt = loadmod("mod-review/core/fmt.lua")
+local power = loadmod("mod-review/core/power.lua")
 fmt.setSchema(schema)
 
 local fails = {}

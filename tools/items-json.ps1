@@ -99,7 +99,7 @@ foreach ($id in $items.Keys) {
     $name = ""
     $src = ""
     if ($it.loc -ne "") { $name = $it.loc; $src = "loc" }
-    elseif ($it.raw -ne "" -and -not $it.raw.StartsWith("#")) { $name = $it.raw; $src = "mod" }
+    elseif ($it.raw -ne "" -and -not $it.raw.StartsWith("#")) { $name = $it.raw; $src = "mod-review" }
     elseif ($eidNames.ContainsKey($id)) { $name = $eidNames[$id]; $src = "eid" }
     if ($name -ne "") { $final[$id] = [pscustomobject]@{ n = $name; q = $it.q; gfx = $it.gfx; src = $src } }
 }
