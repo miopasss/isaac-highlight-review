@@ -1663,3 +1663,38 @@ luacheck 22 文件 0 失败；fmt_test PASS、identity_test 20/20、rating_test 
 
 上一轮合并时 `git add -A` 把 `tools\pack.ps1` 的产物（`dist\*.zip`，合计 1.3 MB）
 一起提交了。打包产物不该进版本库，已从索引移除并加进 `.gitignore`。
+## 小版本：权重 mod 支持纯英文界面
+
+作者要求：**只给权重 mod 做双语**，语言切换放在它的 settings 里，先不测试。
+
+### 新增
+
+- `mod-rating/ui/lang.lua` —— 中英文案表（约 30 条），`L.t(key)` 取词
+- 设置窗口加 **语言 / Language** 两个按钮（`中文` / `English`）
+- 语言存 `C=` 行的 `lang` 键：`C={"f6":295,"lang":"en"}`
+- 英文模式下**道具名也用英文**（中文模式用本地化名）
+
+### 切换机制
+
+ImGui 的控件标签只能在创建时给定，所以切语言会**重建窗口**：
+`ImGui.RemoveWindow(WIN)` → 重新 `buildUI()`。`RemoveWindow` 不在时退回"只更新能更新的文字"。
+
+### `shared/core/settings.lua` 升级
+
+原来只支持数字值，现在支持字符串：
+
+| 输入 | 解析 |
+|---|---|
+| `"f6":295` | 数字 |
+| `"lang":"en"` | 字符串 |
+
+写回时数字不带引号、字符串带引号。`S.only` 过滤照旧——
+回顾只写 `{"f5"}`，评级写 `{"f6","lang"}`，两边不会互相覆盖。
+
+### 验证（离线）
+
+- 设置往返：`C={"f6":295,"lang":"en"}` → 读出 `lang=en` → 改回 `zh` → 写回 `C={"f6":295,"lang":"zh"}` ✅
+- `only={"f5"}` 时只写 `C={"f5":294}` ✅
+- luacheck 23 文件 0 失败；rating_test 22/22、fmt_test PASS、identity_test 20/20
+
+**游戏内暂未测试**（作者要求等通知）。

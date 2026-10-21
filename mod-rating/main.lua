@@ -43,6 +43,8 @@ local rates    = rating
 local editor, configui
 pcall(function() editor = include("ui.rating_editor") end)
 pcall(function() configui = include("ui.config") end)
+local lang
+pcall(function() lang = include("ui.lang") end)
 
 local function log(msg) emit(LOG_PREFIX .. tostring(msg)) end
 local function err(msg) emit(LOG_PREFIX .. "ERROR: " .. tostring(msg)) end
@@ -106,8 +108,9 @@ end
 rating.init(jsonmini, ratedata or {})
 if settings then
     settings.init()
-    settings.only = { "f6" }
+    settings.only = { "f6", "lang" }
 end
+if lang then lang.init(settings) end
 rating.publish()
 
 if poolmod then poolmod.snapshot(poolmod.COMMON_POOLS) end
@@ -162,6 +165,8 @@ end
 if editor and editor.init then
     local ok = editor.init({
         rating = rating,
+        lang = lang,
+        settings = settings,
         getPlayer = getPlayer,
         log = log,
         onChanged = onChanged,
@@ -170,7 +175,10 @@ if editor and editor.init then
 end
 
 if configui and configui.init then
-    local ok = configui.init({ settings = settings, log = log, onChanged = onChanged })
+    local ok = configui.init({
+        settings = settings, log = log, onChanged = onChanged,
+        onRebuildEditor = function() if editor and editor.rebuild then editor.rebuild() end end,
+    })
     if ok then log("设置菜单已挂上") end
 end
 
