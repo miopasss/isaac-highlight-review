@@ -1731,3 +1731,45 @@ ImGui 的控件标签只能在创建时给定，所以切语言会**重建窗口
 
 **拆分/删文件之后必须 `deploy -Clean` 或者依赖现在这个自动清理**，
 否则游戏里跑的是"新 main + 旧模块"的混合体，症状诡异且不报错。
+## 修闪退：`ImGui.RemoveWindow` 会崩游戏
+
+### 现场
+
+作者报闪退。日志里有完整栈：
+
+```
+Lua stack trace:
+[C](-1): RemoveWindow
+.../highlight-rating/ui/rating_editor.lua(396)
+.../highlight-rating/ui/rating_editor.lua(395): rebuild
+.../highlight-rating/main.lua(95): loadData
+Caught exception, writing minidump...
+```
+
+**`ImGui.RemoveWindow` 在这个版本会直接崩游戏**，而且我在 `loadData`（`MC_POST_PLAYER_INIT`）里调它，
+那时候根本不在 ImGui 的帧上下文里。
+
+### 修法
+
+1. **彻底不调 `RemoveWindow`**。`editor.rebuild()` 改成空实现并注释说明原因。
+2. **建窗口推迟到读完档之后**：文件加载时不再 `editor.init` / `configui.init`，
+   改到 `loadData()` 里 `lang.init()` 之后调 `initUI()`。这样语言**一次就位**，不需要重建。
+3. 语言切换改为「存盘 + 提示重启」：`lang.needRestart()` 返回
+   `Saved. Restart the game to apply.` / `已保存，重启游戏后生效`。
+
+### 又踩了 Lua 作用域
+
+`initUI()` 里的 `onChanged = function() saveData() end` —— `saveData` 定义在 `initUI` **之后**，
+闭包会把它编译成全局查找 → nil。改成前置声明 `local saveData` + `saveData = function()`。
+
+**这是这个项目第三次被「local 只往后可见」坑到**（前两次是 `num()`）。
+
+### 离线校验
+
+- 代码里用到 **33 个文案 key**，英文表**零缺失**（只有 `menu_name` 中英相同，是故意的）
+- `needRestart()` 中英都能正确返回
+
+### 游戏内
+
+闪退已消失（进程存活、日志无 `Caught exception`）。
+**英文界面的视觉确认被卡住**：游戏反复重播结局动画，进不去正常界面。等作者正常进一局再看。

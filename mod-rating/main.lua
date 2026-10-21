@@ -70,6 +70,33 @@ end
 
 -- ── 存档 ────────────────────────────────────────────────────────────────────
 
+local saveData   -- 前置声明：initUI 里的闭包要用，Lua 的 local 只往后可见
+
+--- 建界面必须在**读完档 + 定好语言之后**做：
+---   1) ImGui 的控件标签只能在创建时给定，语言晚了就只能是中文
+---   2) 绝不能用 ImGui.RemoveWindow 重建 —— 实测会让游戏直接崩（minidump）
+local function initUI()
+    if editor and editor.init and not editor.isReady() then
+        local ok = editor.init({
+            rating = rating,
+            lang = lang,
+            settings = settings,
+            getPlayer = getPlayer,
+            log = log,
+            onChanged = function() saveData() end,
+        })
+        if ok then log("编辑器已就绪（F6 打开）") else err("编辑器初始化失败") end
+    end
+    if configui and configui.init and not configui.isReady() then
+        local ok = configui.init({
+            settings = settings,
+            log = log,
+            onChanged = function() saveData() end,
+        })
+        if ok then log("设置菜单已挂上") end
+    end
+end
+
 local function loadData()
     if state.loaded then return end
     state.loaded = true
@@ -91,14 +118,13 @@ local function loadData()
     if lang then
         lang.init(settings)
         -- 语言可能和启动时不同：重建两个窗口的文字
-        if configui and configui.rebuild then configui.rebuild() end
-        if editor and editor.rebuild then editor.rebuild() end
+        initUI()
     end
     rating.load(state.store)
     log(string.format("载入 %d 条评级配置 / %d 行", rating.count(), #state.store.lines))
 end
 
-local function saveData()
+saveData = function()
     if not state.store then return false end
     if settings then settings.save(state.store) end
     rating.save(state.store)
@@ -169,24 +195,6 @@ local function onChanged()
     saveData()
 end
 
-if editor and editor.init then
-    local ok = editor.init({
-        rating = rating,
-        lang = lang,
-        settings = settings,
-        getPlayer = getPlayer,
-        log = log,
-        onChanged = onChanged,
-    })
-    if ok then log("道具权重编辑器已就绪（F6 打开）") else err("编辑器初始化失败") end
-end
 
-if configui and configui.init then
-    local ok = configui.init({
-        settings = settings, log = log, onChanged = onChanged,
-        onRebuildEditor = function() if editor and editor.rebuild then editor.rebuild() end end,
-    })
-    if ok then log("设置菜单已挂上") end
-end
 
 log("loaded v0.1.0 (REPENTOGON=" .. tostring(REPENTOGON ~= nil) .. ")")

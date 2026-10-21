@@ -114,6 +114,14 @@ function L.t(key)
     return set[key] or (STR.zh[key]) or tostring(key)
 end
 
+--- 切语言后提示（ImGui 窗口不能在运行时重建，需要重启游戏）
+function L.needRestart()
+    if L.current == "en" then
+        return "Saved. Restart the game to apply."
+    end
+    return "已保存，重启游戏后生效"
+end
+
 --- 从 settings 读语言（settings 可为 nil，此时用中文）
 function L.init(settings)
     local code = "zh"

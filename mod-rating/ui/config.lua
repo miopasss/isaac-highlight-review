@@ -55,18 +55,14 @@ end
 
 local switchLang
 
-local function rebuildSelf()
-    READY = false
-    pcall(function() if ImGui.RemoveWindow then ImGui.RemoveWindow(WIN) end end)
-    config.init(deps)
-end
-
 switchLang = function(code)
     if not lang then return end
     lang.set(deps and deps.settings, code)
-    rebuildSelf()
-    if deps and deps.onRebuildEditor then deps.onRebuildEditor() end
     if deps and deps.onChanged then deps.onChanged() end
+    -- 不重建窗口：ImGui.RemoveWindow 会让游戏崩溃。提示下次启动生效。
+    pcall(function()
+        ImGui.UpdateText(T_TIP, lang.needRestart())
+    end)
 end
 
 function config.init(d)
@@ -108,11 +104,6 @@ function config.init(d)
 end
 
 --- 语言变了之后重建自己的窗口（外部调用）
-function config.rebuild()
-    if not deps then return false end
-    rebuildSelf()
-    return READY
-end
 
 function config.isReady() return READY end
 

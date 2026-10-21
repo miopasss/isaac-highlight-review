@@ -387,23 +387,12 @@ function E.init(d)
     return READY
 end
 
---- 切语言后重建窗口（ImGui 的控件标签只能在创建时给定）
+--- 注意：**不要**试图在运行时重建窗口。
+--- 实测 ImGui.RemoveWindow 在本版本会直接崩游戏（minidump），
+--- 而且从 loadData 里调用时根本不在 ImGui 帧上下文。
+--- 语言只在「创建窗口之前」确定一次，见 main.lua 里 init 的时机。
 function E.rebuild()
-    if not deps then return false end
-    local wasOpen = opened
-    READY = false
-    pcall(function()
-        if ImGui.RemoveWindow then ImGui.RemoveWindow(WIN) end
-    end)
-    local ok = pcall(buildUI)
-    pcall(function() ImGui.SetVisible(WIN, wasOpen) end)
-    opened = wasOpen
-    if ok and READY then
-        refreshLists()
-        refreshInfo()
-        pushValues()
-    end
-    return READY
+    return false   -- 故意不实现：切语言需要重启游戏
 end
 
 function E.isReady() return READY end
