@@ -42,6 +42,8 @@ local dump   = tryRequire("core.dump", "core/dump")
 -- ── 与外部评级 mod 的兼容（Item Weight Editor 会发布 _G.HLR）──
 local itemwatch = tryRequire("core.itemwatch", "core/itemwatch")
 local settings  = tryRequire("core.settings", "core/settings")
+local pillmod   = tryRequire("core.pills", "core/pills")
+if pillmod then local n = pillmod.init() end
 
 --- 读外部评级：读不到就返回 nil，调用方回退官方品质。加载顺序无关。
 local function externalQuality(id)
@@ -289,23 +291,6 @@ local function snapshot(player)
     return s
 end
 
---- 六维原始值（吃药丸前后各读一次，算增减）
-local function statNow(player)
-    local s = { dm = 0, ts = 0, ss = 0, rg = 0, mv = 0, lk = 0 }
-    if not player then return s end
-    pcall(function()
-        s.dm = player.Damage or 0
-        s.ts = 30 / (((player.MaxFireDelay or 10)) + 1)
-        s.ss = player.ShotSpeed or 0
-        s.rg = player.TearRange or 0
-        s.mv = player.MoveSpeed or 0
-        s.lk = player.Luck or 0
-    end)
-    return s
-end
-
---- 药丸观察：MC_USE_PILL 触发时记下"吃之前"，几帧后再读一次算差
-local pillWatch = nil
 
 -- ---------------------------------------------------------------- 进房瞬间读一次：是否首次访问 / BossID
 local function firstVisitNow()
@@ -811,46 +796,25 @@ end)
 -- Boss 房补采：进房瞬间 Boss 还没生成，GetBossID() 会返回 0。
 -- 每帧检查一次，读到非 0 就停（只在 Boss 房 / Boss Rush 房做）。
 
--- 吃药丸：记下"吃之前"的六维，3 帧后再读一次算增减（作者 2026-10-21 需求）
-add(ModCallbacks.MC_USE_PILL, function(_, pillEffect, player, _flags)
+-- 吃药丸（作者 2026-10-21 定的做法）：只记 id + 层/房间，属性影响靠 core/pills.lua 白名单查表。
+-- 不在这里回读属性——回读会抓到临时/中间值，还会被大药丸/金药丸的倍数搞乱。
+add(ModCallbacks.MC_USE_PILL, function(_, pillEffect, _player, _flags)
     if not state.current then return end
     local p = state.pending or {}
-    pillWatch = {
-        effect = pillEffect or 0,
-        before = statNow(player or getPlayer()),
-        frames = 0,
+    state.current.pills = state.current.pills or {}
+    state.current.pills[#state.current.pills + 1] = {
         f = p.f or state.floorDepth or 0,
         i = p.i or 0,
+        e = pillEffect or -1,
     }
+    local info = pillmod and pillmod.info(pillEffect)
+    log(string.format("[PILL] effect=%d stat=%s dir=%s",
+        pillEffect or -1, info and info.stat or "-", info and tostring(info.dir) or "-"))
 end)
 
 add(ModCallbacks.MC_POST_UPDATE, function()
     if itemwatch then itemwatch.tick(getPlayer(), 1800) end
 
-    -- 药丸：吃下 3 帧后读一次属性，算出增减；只有真变了才记
-    if pillWatch then
-        pillWatch.frames = pillWatch.frames + 1
-        if pillWatch.frames >= 3 then
-            local after = statNow(getPlayer())
-            local d, changed = {}, false
-            for k, v in pairs(after) do
-                local delta = v - (pillWatch.before[k] or v)
-                d[k] = delta
-                if math.abs(delta) > 0.001 then changed = true end
-            end
-            if state.current then   -- 全部记（要算"改了属性的占比"，就得知道总数）
-                state.current.pills = state.current.pills or {}
-                state.current.pills[#state.current.pills + 1] = {
-                    f = pillWatch.f, i = pillWatch.i, e = pillWatch.effect,
-                    dm = d.dm or 0, ts = d.ts or 0, ss = d.ss or 0,
-                    rg = d.rg or 0, mv = d.mv or 0, lk = d.lk or 0,
-                }
-                log(string.format("[PILL] effect=%d dm=%+.2f ts=%+.2f ss=%+.2f rg=%+.0f mv=%+.2f lk=%+.2f",
-                    pillWatch.effect, d.dm or 0, d.ts or 0, d.ss or 0, d.rg or 0, d.mv or 0, d.lk or 0))
-            end
-            pillWatch = nil
-        end
-    end
     local p = state.pending
     if not p then return end
 

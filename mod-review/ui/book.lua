@@ -537,7 +537,7 @@ local function drawOverview(s, bk, entry)
         or "U/D RUN    ENTER OPEN    L/R PAGE    F5 CLOSE   (ESC pauses time)")
 end
 
---- 「药丸账单」页：整局吃药丸对属性是亏还是赚 + 总数 + 改了属性的占比（按层汇总）
+--- 「药丸账单」页：整局吃药丸的影响（只计次数，不给数值），按层汇总
 local function drawPills(s, bk, idx)
     local p = bk.pages[idx]
     if not p then footer(s, "empty"); return end
@@ -547,54 +547,49 @@ local function drawPills(s, bk, idx)
 
     local y = PADY + 28
     local total = p.total or 0
-    local changed = p.changed or 0
-    local pct = (total > 0) and math.floor(changed * 100 / total + 0.5) or 0
+    local affected = p.affected or 0
+    local pct = (total > 0) and math.floor(affected * 100 / total + 0.5) or 0
 
-    -- 第一行：总数 + 占比
-    txt(string.format(cn and "本局共吃 %d 颗，其中 %d 颗改变了属性（%d%%）"
-                      or "%d pills, %d changed stats (%d%%)", total, changed, pct),
+    txt(string.format(cn and "本局共吃 %d 颗，其中 %d 颗影响属性（%d%%）"
+                      or "%d pills, %d affect stats (%d%%)", total, affected, pct),
         (PADX + 12) * s, y * s, s * 0.62, INK)
     y = y + 18
 
-    local labels = { dm = cn and "伤害" or "DMG", ts = cn and "攻速" or "Tears",
-                     ss = cn and "弹速" or "Shot",  rg = cn and "射程" or "Range",
-                     mv = cn and "移速" or "Speed", lk = cn and "幸运" or "Luck" }
-    local order = { "dm", "ts", "ss", "rg", "mv", "lk" }
+    local ORDER = { "rg", "ts", "mv", "lk", "hp" }
+    local NAME = {
+        rg = cn and "射程" or "Range", ts = cn and "攻速" or "Tears",
+        mv = cn and "移速" or "Speed", lk = cn and "幸运" or "Luck",
+        hp = cn and "红心" or "HP",
+    }
+    local counts = p.counts or {}
 
-    -- 属性合计
-    local sum = p.sum or {}
-    local parts = {}
-    for _, k in ipairs(order) do
-        local v = sum[k] or 0
-        if math.abs(v) > 0.0001 then
-            parts[#parts + 1] = string.format("%s %+.2f", labels[k], v)
+    local ups, downs = {}, {}
+    for _, k in ipairs(ORDER) do
+        local c = counts[k]
+        if c then
+            if (c.up or 0) > 0 then ups[#ups + 1] = string.format("%s x%d", NAME[k] or k, c.up) end
+            if (c.down or 0) > 0 then downs[#downs + 1] = string.format("%s x%d", NAME[k] or k, c.down) end
         end
     end
-    txt((cn and "属性合计   " or "TOTAL   ") .. (#parts > 0 and table.concat(parts, "   ") or (cn and "无变化" or "none")),
-        (PADX + 12) * s, y * s, s * 0.62, INK)
-    y = y + 14
 
-    -- 结论
-    txt(string.format(cn and "结论   %d 项上涨 / %d 项下降" or "VERDICT   %d up / %d down", p.up or 0, p.down or 0),
+    txt((cn and "提升   " or "UP     ") .. (#ups > 0 and table.concat(ups, "   ") or (cn and "无" or "none")),
+        (PADX + 12) * s, y * s, s * 0.6, #ups > 0 and INK_UP or INK_DIM)
+    y = y + 14
+    txt((cn and "下降   " or "DOWN   ") .. (#downs > 0 and table.concat(downs, "   ") or (cn and "无" or "none")),
+        (PADX + 12) * s, y * s, s * 0.6, #downs > 0 and INK_DN or INK_DIM)
+    y = y + 14
+    txt(string.format(cn and "结论   提升 %d 次 / 下降 %d 次" or "VERDICT   %d up / %d down", p.up or 0, p.down or 0),
         (PADX + 12) * s, y * s, s * 0.58, INK_DIM)
     y = y + 20
 
-    -- 按层
     local floors = p.floors or {}
     if #floors > 0 then
         txt(cn and "按层" or "BY FLOOR", (PADX + 12) * s, y * s, s * 0.56, INK_DIM)
         y = y + 13
         for i = 1, math.min(#floors, 9) do
             local f = floors[i]
-            local fp = {}
-            for _, k in ipairs(order) do
-                local v = f[k] or 0
-                if math.abs(v) > 0.0001 then
-                    fp[#fp + 1] = string.format("%s %+.2f", labels[k], v)
-                end
-            end
-            txt(string.format("F%-2d %2d %s   %s", f.f or 0, f.n or 0, cn and "颗" or "pills",
-                #fp > 0 and table.concat(fp, "  ") or (cn and "无变化" or "none")),
+            txt(string.format("F%-2d  %2d %s   %s %d", f.f or 0, f.n or 0,
+                cn and "颗" or "pills", cn and "影响" or "affect", f.affected or 0),
                 (PADX + 14) * s, y * s, s * 0.58, INK)
             y = y + 12
         end

@@ -306,35 +306,42 @@ function highlight.analyze(run, cfg)
     }
     table.insert(book.pages, 1, finale)
 
-    -- 3.6) 药丸账单（作者 2026-10-21 需求 v2）：整局吃药丸对属性是亏还是赚 + 总数 + 改了属性的占比
-    --    不按房间列（房间级没意义），按**层**汇总
+    -- 3.6) 药丸账单（作者 2026-10-21 v3）：只记 id，影响靠白名单查表；只给次数不给数值
     local pills = run.pills or {}
     if #pills > 0 then
-        local STATS = { "dm", "ts", "ss", "rg", "mv", "lk" }
-        local sum = { dm = 0, ts = 0, ss = 0, rg = 0, mv = 0, lk = 0 }
-        local changed, up, down = 0, 0, 0
+        local PMOD = nil
+        pcall(function() PMOD = require("core.pills") end)
+
+        local counts = {}   -- counts[stat] = { up = n, down = n }
+        local affected, upTotal, downTotal = 0, 0, 0
         local byFloor, floorOrder = {}, {}
 
         for i = 1, #pills do
             local pl = pills[i]
-            local any = false
-            for _, k in ipairs(STATS) do
-                local v = num(pl[k])
-                sum[k] = sum[k] + v
-                if v > 0.0001 then up = up + 1; any = true
-                elseif v < -0.0001 then down = down + 1; any = true end
-            end
-            if any then changed = changed + 1 end
-
+            local info = PMOD and PMOD.info(pl.e)
             local f = num(pl.f)
+
             local row = byFloor[f]
             if not row then
-                row = { f = f, n = 0, dm = 0, ts = 0, ss = 0, rg = 0, mv = 0, lk = 0 }
+                row = { f = f, n = 0, affected = 0 }
                 byFloor[f] = row
                 floorOrder[#floorOrder + 1] = f
             end
             row.n = row.n + 1
-            for _, k in ipairs(STATS) do row[k] = row[k] + num(pl[k]) end
+
+            if info then
+                affected = affected + 1
+                row.affected = row.affected + 1
+                local c = counts[info.stat]
+                if not c then c = { up = 0, down = 0 }; counts[info.stat] = c end
+                if info.dir >= 0 then
+                    c.up = c.up + 1
+                    upTotal = upTotal + 1
+                else
+                    c.down = c.down + 1
+                    downTotal = downTotal + 1
+                end
+            end
         end
         table.sort(floorOrder)
 
@@ -342,41 +349,14 @@ function highlight.analyze(run, cfg)
         for i = 1, #floorOrder do floors[i] = byFloor[floorOrder[i]] end
 
         table.insert(book.pages, 2, {
-            kind    = "pills",
-            title   = "药丸账单",
-            total   = #pills,
-            changed = changed,
-            sum     = sum,
-            up      = up,
-            down    = down,
-            floors  = floors,
-        })
-    end
-    -- 3.6) 药丸账单（作者 2026-10-21 需求）：整局吃了哪些改了属性的药丸，合计是涨还是跌
-    local pills = run.pills or {}
-    if #pills > 0 then
-        local keys = { "dm", "ts", "ss", "rg", "mv", "lk" }
-        local sum = {}
-        for _, k in ipairs(keys) do sum[k] = 0 end
-        local up, down = 0, 0
-        for i = 1, #pills do
-            local pl = pills[i]
-            local any = false
-            for _, k in ipairs(keys) do
-                local v = num(pl[k])
-                sum[k] = sum[k] + v
-                if v > 0.0001 then up = up + 1; any = true
-                elseif v < -0.0001 then down = down + 1; any = true end
-            end
-            pills[i]._any = any
-        end
-        table.insert(book.pages, 2, {
-            kind = "pills",
-            title = "药丸账单",
-            list = pills,
-            sum = sum,
-            up = up,
-            down = down,
+            kind     = "pills",
+            title    = "药丸账单",
+            total    = #pills,
+            affected = affected,
+            counts   = counts,
+            up       = upTotal,
+            down     = downTotal,
+            floors   = floors,
         })
     end
 

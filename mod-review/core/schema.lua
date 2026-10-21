@@ -123,13 +123,7 @@ schema.scopes = {
         r    = "i",   -- 属于哪一局
         f    = "i",   -- 第几层
         i    = "i",   -- 本层内第几间
-        e    = "i",   -- PillEffect id
-        dm   = "f",   -- 伤害变化
-        ts   = "f",   -- 攻速变化（次/秒）
-        ss   = "f",   -- 弹速变化
-        rg   = "f",   -- 射程变化
-        mv   = "f",   -- 移速变化
-        lk   = "f",   -- 幸运变化
+        e    = "i",   -- PillEffect id（属性影响靠白名单查表，见 core/pills.lua）
     },
 }
 
