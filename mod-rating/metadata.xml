@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-    <name>Item Weight Editor</name>
+    <name>Item Weight Editor [EN/CN]</name>
     <directory>highlight-rating</directory>
     <id>3824170209</id>
     <description>本MOD刚需 REPENTOGON，目前只支持忏悔，已经测试支持大部分道具MOD
@@ -90,7 +90,7 @@ Three ways to find an item: search / owned items / already modified. You can sea
 Requires REPENTOGON.
 
 Source and issue tracker: https://github.com/miopasss/isaac-highlight-review</description>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Items"/>
