@@ -682,6 +682,8 @@ loadData = function()
     local store, warns = fmt.splitBlob(blob)
     state.store = store
     state.store.bytes = nil
+    local dups = fmt.dedupe(store)
+    if dups > 0 then log(string.format("清理重复记录 %d 条（同一局存了多份）", dups)) end
     if settings then settings.load(store) end
     if rating then
     end

@@ -1570,3 +1570,52 @@ mod-review/                Highlight Review（目录 highlight-review，v0.3.0�
 
 - luacheck：22 个文件，0 失败
 - `rating_test.lua` 22/22、`identity_test.lua` 20/20、`fmt_test.lua` PASS
+## 修重复存档（小退一次多一条空记录）
+
+作者实测：打完一局 10 层 327 房，存档里同一局存了 **6 份**，其中 5 份是空记录：
+
+```
+#5  seq=2 E41A634F-0 res=2 rooms=0   final=17.46
+#6  seq=2 E41A634F-0 res=2 rooms=0   final=22.95
+#7  seq=2 E41A634F-0 res=2 rooms=0   final=57.24
+#8  seq=2 E41A634F-0 res=2 rooms=0   final=303.09
+#9  seq=2 E41A634F-0 res=2 rooms=0   final=321.50
+#10 seq=2 E41A634F-0 res=1 rooms=327 final=321.50  ← 只有这份是完整的
+```
+
+`final` 一路递增 = 每次小退都多写一条。
+
+### 修法：读档时按 run id 去重
+
+`fmt.dedupe(store)`：同一局 id 只保留**行数最多**的那一份，其余删除（从后往前删，避免 start 偏移失效）。
+`loadData` 里调用，清理条数写日志。
+
+### 离线验证（真实存档）
+
+| 存档 | 去重前 | 去重后 | 删掉 |
+|---|---|---|---|
+| save1 | 13 条 | 8 条 | 5 |
+| save3 | 10 条 | 2 条 | 8 |
+
+保留的都是最完整的那份（`2047CBC3-0` 留 rooms=43，`E41A634F-0` 留 rooms=327）。
+
+### 根因还没定位
+
+`state.current` 只有两处赋值（续接 / 新开局），续接分支看着是对的。
+空记录说明某次 `PRE_GAME_EXIT` 时 `state.current` 是个 0 房间的新对象。
+**去重能兜住症状**（每次读档自动清掉），根因留待后续用 run id 诊断。
+
+---
+
+## 顺带确认：Boss 识别 + 通关判定已完全修复
+
+同一局的日志：
+
+```
+[BOSSCLEAR] boss=63 ub=1     ← Hush
+[BOSSCLEAR] boss=70 ub=6     ← 百变怪
+收局诊断 isGameOver=false     ← 是布尔了
+收局 E41A634F-0  res=1        ← 正确记成通关
+```
+
+落盘数据里 10 个 Boss 房全部有 id（60/2/91/67/15/78/6/25/63/70），Hush 和百变怪都带 `ub`。

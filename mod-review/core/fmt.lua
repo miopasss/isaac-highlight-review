@@ -368,6 +368,33 @@ function fmt.removeEntry(store, entry)
     store.bytes = nil
 end
 
+--- 同一个局 id 只保留**最完整**的那一份（行数最多），其余删掉。
+--- 为什么需要：小退续接时偶尔会多写一条"只有局头、0 房间"的空记录，
+--- 平板上它会显示成一局空数据，还会让"最新一局"错位。读档时清一次最省事。
+--- 返回：删掉的条数
+function fmt.dedupe(store)
+    need()
+    if not store or not store.index then return 0 end
+    local best, doomed = {}, {}
+    for i = 1, #store.index do
+        local e = store.index[i]
+        local prev = best[e.id]
+        if not prev then
+            best[e.id] = e
+        elseif e.count > prev.count then
+            doomed[#doomed + 1] = prev
+            best[e.id] = e
+        else
+            doomed[#doomed + 1] = e
+        end
+    end
+    if #doomed == 0 then return 0 end
+    -- 从后往前删，避免前面的 start 偏移失效
+    table.sort(doomed, function(a, b) return a.start > b.start end)
+    for _, e in ipairs(doomed) do fmt.removeEntry(store, e) end
+    return #doomed
+end
+
 --- 把某一局从 store 里摘出来并解码（续接 Save & Quit 用：摘出来继续写，结束时再追加回去）
 function fmt.detachRun(store, entry)
     need()
