@@ -49,8 +49,6 @@ pcall(function() lang = include("ui.lang") end)
 local function log(msg) emit(LOG_PREFIX .. tostring(msg)) end
 local function err(msg) emit(LOG_PREFIX .. "ERROR: " .. tostring(msg)) end
 
-    tostring(editor ~= nil), tostring(configui ~= nil)))
-    type(settings and settings.defaults), tostring(settings and settings.only and settings.only[1])))
 
 if not (rating and jsonmini and storemod) then
     err("模块载入失败（rating=" .. tostring(rating ~= nil) ..
