@@ -1922,3 +1922,22 @@ v0.3 时代评级存在**回顾 mod** 的 `data\highlight-review\saveN.dat` 里�
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\make-cover.ps1
 ```
+## 新增：创意工坊发布文案（2026-10-21 06:2x）
+
+`docs/workshop-item-weight.md` —— 道具权重调节器的完整发布文案，复制即用。
+
+结构：
+1. 标题（含两个备选）
+2. 简介（Steam 列表页只显示两行，单独拆出来）
+3. 详细说明（中文正文，带分隔线的纯文本排版，Steam 不认 Markdown）
+4. 发布页其它字段（分类 / 标签 / DLC / 预览图 / 可见性）
+5. 发布前自检清单 7 项
+6. 首版变更说明
+
+正文里刻意写进去的三件事：
+- **"只能降低"** + 为什么（池子一次只给一个，提高 A 必然压低别人）
+- **"和别的 mod 一起用"** 的冲突排查三步法（作者要求，免得以后报 bug 说不清）
+- **常见问题** 4 条，首条就是"设了 0 为什么还见过它"
+
+正文用 `━━` 分隔线而不是 Markdown 标题——Steam 的描述框不渲染 Markdown，
+`#` 会原样显示出来。
