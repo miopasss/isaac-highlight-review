@@ -568,6 +568,13 @@ local function settleRoom(player)
     -- 与 gained 平行的品质列表（用于识别 4 级起飞 / 0 级封盘）
     local gainedQ = {}
     for k = 1, #gained do gainedQ[k] = qualityOf(gained[k]) end
+    -- 与 it 平行：离开房间这一刻还持有吗？0=临时(已消失) 1=还在
+    local gainedK = {}
+    for k = 1, #gained do
+        local kept = false
+        if player then pcall(function() kept = player:HasCollectible(gained[k]) end) end
+        gainedK[k] = kept and 1 or 0
+    end
 
     local pok = readPockets(player)
     local bossId = p.bossIn or 0
@@ -592,6 +599,7 @@ local function settleRoom(player)
         clr = p.cleared,
         it = gained,
         iq = gainedQ,
+        ik = gainedK,
         dv = p.dmgIn or 0, mu = p.muIn or 1, fm = p.fmIn or "tears",
         foes = p.foes or 0,
         mxhp = p.mxhpIn or 0, mxhpo = snap.maxhp or 0,
