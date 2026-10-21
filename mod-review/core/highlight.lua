@@ -85,6 +85,44 @@ function highlight.bossName(code, useEn)
     return useEn and e.en or e.cn
 end
 
+--- 药丸显示名。已鉴定 → 效果名；未鉴定 → 颜色名 + "（未鉴定）"（剧透保护）
+--- @param effectId number PillEffect
+--- @param colorId  number PillColor（-1 表示未知）
+--- @param useEn    boolean 是否英文
+function highlight.pillName(effectId, colorId, useEn)
+    local effect = tonumber(effectId) or -1
+    local color = tonumber(colorId) or -1
+
+    -- 颜色名（原版 13 种）
+    local COLORS_CN = { "白色", "蓝色", "黄色", "橙色", "红色", "紫色", "浅蓝", "绿色",
+                        "浅绿", "灰白", "粉色", "深灰", "淡黑" }
+    local COLORS_EN = { "White", "Blue", "Yellow", "Orange", "Red", "Purple", "Light Blue",
+                        "Green", "Light Green", "Gray", "Pink", "Dark Gray", "Black" }
+
+    local identified = true
+    pcall(function()
+        local pool = Game():GetItemPool()
+        if pool and pool.IsPillIdentified then
+            identified = pool:IsPillIdentified(effect)
+        end
+    end)
+
+    if identified then
+        local ok, nm = pcall(function()
+            local cfg = Isaac.GetItemConfig():GetPillEffect(effect)
+            return cfg and cfg.Name
+        end)
+        if ok and nm and nm ~= "" then return tostring(nm) end
+        return (useEn and "Pill #" or "药丸 #") .. tostring(effect)
+    end
+
+    local idx = color + 1
+    local cname = (useEn and COLORS_EN or COLORS_CN)[idx]
+    if not cname then return useEn and "Unknown pill" or "未知药丸" end
+    return cname .. (useEn and " Pill (unknown)" or "药丸（未鉴定）")
+end
+
+
 highlight.RESULT_NAMES = { [0] = "死亡", [1] = "通关", [2] = "未完成" }
 
 function highlight.resultName(r)
@@ -289,6 +327,34 @@ function highlight.analyze(run, cfg)
         q0 = q0Items,
     }
     table.insert(book.pages, 1, finale)
+
+    -- 3.6) 药丸账单（作者 2026-10-21 需求）：整局吃了哪些改了属性的药丸，合计是涨还是跌
+    local pills = run.pills or {}
+    if #pills > 0 then
+        local keys = { "dm", "ts", "ss", "rg", "mv", "lk" }
+        local sum = {}
+        for _, k in ipairs(keys) do sum[k] = 0 end
+        local up, down = 0, 0
+        for i = 1, #pills do
+            local pl = pills[i]
+            local any = false
+            for _, k in ipairs(keys) do
+                local v = num(pl[k])
+                sum[k] = sum[k] + v
+                if v > 0.0001 then up = up + 1; any = true
+                elseif v < -0.0001 then down = down + 1; any = true end
+            end
+            pills[i]._any = any
+        end
+        table.insert(book.pages, 2, {
+            kind = "pills",
+            title = "药丸账单",
+            list = pills,
+            sum = sum,
+            up = up,
+            down = down,
+        })
+    end
 
 
     book.pageCount = 1 + #book.pages + #book.floors

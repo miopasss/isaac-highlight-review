@@ -538,6 +538,62 @@ local function drawOverview(s, bk, entry)
 end
 
 --- 「终极Boss与终极道具」页：Boss 战斗时间 + 四级图标 + 零级图标
+--- 「药丸账单」页：整局吃药丸的属性增减，合计看是涨还是跌
+local function drawPills(s, bk, idx)
+    local p = bk.pages[idx]
+    if not p then footer(s, "empty"); return end
+    local cn = getCJK()
+
+    title(s, p.title or (cn and "药丸账单" or "PILL LEDGER"), string.format("%d/%d", 1 + idx, bk.pageCount))
+
+    local y = PADY + 27
+    local list = p.list or {}
+    txt(string.format(cn and "本局吃了 %d 颗改了属性的药丸" or "%d stat-changing pills", #list),
+        (PADX + 12) * s, y * s, s * 0.58, INK_DIM)
+    y = y + 14
+
+    -- 合计
+    local sum = p.sum or {}
+    local parts = {}
+    local labels = { dm = cn and "伤害" or "DMG", ts = cn and "攻速" or "Tears",
+                     ss = cn and "弹速" or "Shot", rg = cn and "射程" or "Range",
+                     mv = cn and "移速" or "Speed", lk = cn and "幸运" or "Luck" }
+    for _, k in ipairs({ "dm", "ts", "ss", "rg", "mv", "lk" }) do
+        local v = sum[k] or 0
+        if math.abs(v) > 0.0001 then
+            parts[#parts + 1] = string.format("%s %+.2f", labels[k], v)
+        end
+    end
+    txt((cn and "合计  " or "TOTAL  ") .. (#parts > 0 and table.concat(parts, "   ") or (cn and "无变化" or "none")),
+        (PADX + 12) * s, y * s, s * 0.6, INK)
+    y = y + 13
+    txt(string.format(cn and "结论  %d 项上涨 / %d 项下降" or "VERDICT  %d up / %d down", p.up or 0, p.down or 0),
+        (PADX + 12) * s, y * s, s * 0.55, INK_DIM)
+    y = y + 16
+
+    -- 逐条
+    local maxRows = 10
+    for i = 1, math.min(#list, maxRows) do
+        local pl = list[i]
+        local nm = deps.hl.pillName(pl.e, pl.c, not cn) or ("#" .. tostring(pl.e))
+        local deltas = {}
+        for _, k in ipairs({ "dm", "ts", "ss", "rg", "mv", "lk" }) do
+            local v = pl[k] or 0
+            if math.abs(v) > 0.0001 then
+                deltas[#deltas + 1] = string.format("%s %+.2f", labels[k], v)
+            end
+        end
+        txt(string.format("F%d-%d  %-22s %s", pl.f or 0, pl.i or 0, nm, table.concat(deltas, "  ")),
+            (PADX + 14) * s, y * s, s * 0.58, INK)
+        y = y + 12
+    end
+    if #list > maxRows then
+        txt(string.format("+%d", #list - maxRows), (PADX + 14) * s, y * s, s * 0.55, INK_DIM)
+    end
+
+    footer(s, cn and "← → 翻页" or "LEFT/RIGHT PAGE")
+end
+
 local function drawFinale(s, bk, idx)
     local p = bk.pages[idx]
     if not p then footer(s, "empty"); return end
@@ -747,8 +803,10 @@ local function render()
         drawOverview(s, bk, list[selRun])
     elseif page <= 1 + #bk.pages then
         local pg = bk.pages[page - 1]
-        if pg and pg.kind == "finale" then
-            drawFinale(s, bk, page - 1)
+            if pg and pg.kind == "finale" then
+                drawFinale(s, bk, page - 1)
+            elseif pg and pg.kind == "pills" then
+                drawPills(s, bk, page - 1)
         else
             drawHighlight(s, bk, page - 1)
         end
