@@ -1,0 +1,33 @@
+自定义任意道具的掉落权重。
+
+· 0　=　完全不出现
+· 0.5　=　出现率减半
+· 1　=　保持原样
+
+也可以覆盖道具评级 —— 装了 Highlight Review 的话，它的「四级道具」判定会用你设的评级。
+
+【用法】游戏内按 F6 打开，也可以在 ImGui 顶栏 Item Weight → 设置 里改键。
+三个入口：搜索 / 已获得道具 / 已修改，不用背道具 id。
+
+【注意】权重目前只能降低，不能提高（填 > 1 不生效）。
+配置按存档槽保存（save1/2/3 各一份）。
+
+需要 REPENTOGON。
+
+—————————————————————————
+
+Change how often any item shows up.
+
+· 0　=　never appears
+· 0.5　=　half as often
+· 1　=　unchanged
+
+Also overrides item quality — if Highlight Review is installed, its "quality 4" list uses the ratings you set here.
+
+How to use: press F6 in game, or rebind it in the ImGui menu: Item Weight → Settings.
+Three ways to find an item: search by id/name, pick from what you own, or browse what you already edited.
+
+Note: weight can only be lowered, not raised (values above 1 are saved but do nothing).
+Settings are stored per save slot (save1/2/3 are separate).
+
+Requires REPENTOGON.
