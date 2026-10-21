@@ -7,14 +7,16 @@
 
 ## 1. 标题（Title）
 
+和 `mod-rating/metadata.xml` 里的 `<name>` 保持一致：
+
 ```
-道具权重调节器 · Item Weight Tuner
+Item Weight Editor · 道具权重编辑器
 ```
 
 备选标题：
 
-- `别再出超模道具了 · Item Weight Tuner`
-- `道具权重调节器（可自定义每个道具的出现率）`
+- `道具权重编辑器 · 每个道具的出现率你说了算`
+- `Item Weight Editor（可自定义每个道具的出现率）`
 
 ---
 
@@ -72,6 +74,8 @@
 改完点「保存修改」，写进存档。
 
 没点保存就关游戏，改动会丢（按钮上会出现一个星号提醒你）。
+
+界面支持**中文 / 英文**切换，在设置窗口里点一下就行。
 
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -169,8 +173,8 @@ A：不会。我们只换抽取结果，不动解锁、成就、完成度这些�
 Q：能提高出现率吗？
 A：这个版本不行，见上面「已知限制」。
 
-Q：Why no English? / Is there an English UI?
-A：界面暂时只有中文，英文说明见下方。
+Q：有英文界面吗？
+A：有。设置窗口里可以切中文 / English，键存在存档里，下次启动还是你选的那个。
 
 ━━━━━━━━━━━━━━━━━━━━
 
@@ -223,10 +227,23 @@ Tested alongside Heaven's Call, the Touhou mods, 塔菲的宇宙 and 明日方�
 
 - [ ] mod 目录名是 `highlight-rating`（`metadata.xml` 里的 `<directory>`）
 - [ ] `metadata.xml` 的 `name` / `version` / `description` 已填
+- [ ] `metadata.xml` 的 `<visibility>` 从 `Private` 改成 `Public`（**发布前必改**）
 - [ ] 打包只含 mod 本体：**不带** `tools/`、`tests/`、`docs/`、`_logs/`、`*.md`
 - [ ] 至少 1 张 16:9 预览图
 - [ ] 说明里"只能降低"这句还在（别删，能挡掉大量提问）
 - [ ] 自己进游戏按一次 F6 确认能开
+
+### metadata.xml 里的 description（游戏内 mod 列表显示）
+
+`mod-rating/metadata.xml` 已经写好双语版本，可直接用：
+
+```
+Change any item's drop weight and quality: 0 = never appears,
+0.5 = half as often, 1 = unchanged. Also lets you override an item's quality
+(used by Highlight Review for 4-tier judgement). Requires REPENTOGON.
+/ 自定义任意道具的掉落权重与评级：0 = 不出现，0.5 = 出现率减半，1 = 不变。
+也可以覆盖道具评级（高光回顾会用它判四级）。需要 REPENTOGON。
+```
 
 ---
 
