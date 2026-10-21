@@ -1773,3 +1773,31 @@ Caught exception, writing minidump...
 
 闪退已消失（进程存活、日志无 `Caught exception`）。
 **英文界面的视觉确认被卡住**：游戏反复重播结局动画，进不去正常界面。等作者正常进一局再看。
+### 修 settings 解析：数字键匹配不到 `f6`
+
+`S.load` 的键名模式原来是 `"(%a+)"` —— **`%a` 只匹配字母**，所以 `"f6":295` 里的 `f6`
+（含数字）**永远解析不出来**。之前没暴露是因为 `f6` 有默认值 295。
+
+改成 `"([%w_]+)"`，两处（字符串值 + 数字值）都改。
+
+离线验证：
+
+```
+in=C={"f6":300,"lang":"en"}   读到 lang=en f6=300   → 写回 C={"f6":300,"lang":"en"}
+```
+
+（改之前 `f6` 读到的是默认 295，300 被丢弃。）
+
+### 另外确认：后来又崩的两次**不是我们的 mod**
+
+查了栈：
+
+```
+[C](-1): RemoveTrinket
+...soul_3290493485/ibs_scripts/commons/classes/marks.lua(126)
+```
+
+是第三方 mod `soul_3290493485` 在换层时调 `RemoveTrinket` 崩的。
+另一次是 reverie（东方）的 `PushRenderTarget: stack overflow!` 断言洪水之后进程消失。
+
+**我们的 `RemoveWindow` 那条栈已经不再出现。**
