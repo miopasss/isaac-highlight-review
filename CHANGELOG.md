@@ -2093,3 +2093,22 @@ Successfully uploaded mod 'Item Weight Editor' to Steam Workshop
 
 页面上手动改的描述，**下次用上传器 re-upload 会被 metadata 里的 description 覆盖**。
 所以两边要保持同步——仓库这份已经是新版本了。
+## 工坊描述第三版（作者改写 + 英文翻译）
+
+作者自己重写了中文稿，要求补英文翻译。内容新增：
+
+- **开场**：刚需 REPENTOGON、只支持忏悔、已测试大部分道具 mod
+- **【你大概遇到过这些】**：三个真实痛点（东方 mod 的交易所门票/D无限、mod 组合的超模道具、随机性不给机会），
+  并点明"不是 mod 做得不好，是它们太强，强到把别的都压平了"
+- **【已知兼容】**：天界呼唤 / 东方系列 / 塔菲的宇宙 / 明日方舟 / 忏悔plus / 愚昧
+- **仓库链接**：https://github.com/miopasss/isaac-highlight-review
+
+英文段照译，保留中文段的结构（【】小标题改成 [ ]，`·` 保留）。
+其中「塔菲的宇宙」「愚昧」没有确定的英文名，英文段里**保留中文**不硬翻，避免写错 mod 名。
+
+总长 2863 字符（上限 8000），两边同步写入 `metadata.xml` 与 `workshop-description.txt`。
+
+### 未做的
+
+`<name>` 保持 `Item Weight Editor` 纯 ASCII（游戏模组列表不支持中文）。
+工坊页面的标题是在网页上单独改的，要双语标题在页面改，不写进 metadata。

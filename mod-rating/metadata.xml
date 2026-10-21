@@ -3,23 +3,63 @@
     <name>Item Weight Editor</name>
     <directory>highlight-rating</directory>
     <id>3824170209</id>
-    <description>自定义任意道具的掉落权重。
+    <description>本MOD刚需 REPENTOGON，目前只支持忏悔，已经测试支持大部分道具MOD
+
+【你大概遇到过这些】
+
+· 某个 mod 的道具运营体验差（比如东方 mod 的交易所门票/D无限），拿到理论无敌，通关，但玩起来不爽
+· 某些 mod 组合总有无敌的道具，给的血量太多拿到根本死不掉，或者数值过于超模，没有正常玩游戏的体验
+· 想玩得花一点，但随机性不给你机会
+
+这是个很尴尬的局面：不是 mod 做得不好，是它们太强，强到把别的都压平了。
+
+这个 mod 就是来收拾这个局面的——给每个道具单独设一个出现频率。
+
+自定义任意道具的掉落权重。
 
 · 0　=　完全不出现
 · 0.5　=　出现率减半
 · 1　=　保持原样
 
+【原理】游戏从道具池里抽出某个道具之后，本 mod 会再掷一次骰子，决定要不要把它换成同池子里的另一个。
+权重 0.5 就是 50% 概率换掉；权重 0 则必定换掉，所以那个道具再也不会出现。
+它不修改道具池本身、不新增道具、不加贴图，只影响"抽到之后要不要换"，所以你身上已有的道具不受影响。
+
 也可以覆盖道具评级 —— 装了 Highlight Review 的话，它的「四级道具」判定会用你设的评级。
 
 【用法】游戏内按 F6 打开，也可以在 ImGui 顶栏 Item Weight → 设置 里改键。
-三个入口：搜索 / 已获得道具 / 已修改，不用背道具 id。
+三个入口：搜索 / 已获得道具 / 已修改，可以用道具id或道具英文名进行搜索。
 
-【注意】权重目前只能降低，不能提高（填 > 1 不生效）。
-配置按存档槽保存（save1/2/3 各一份）。
+【已知兼容】
+· 天界呼唤（Heaven's Call）
+· 东方系列
+· 塔菲的宇宙
+· 明日方舟
+· 忏悔plus
+· 愚昧
+
+【注意】
+· 权重目前只能降低，不能提高（填 > 1 会保存但不生效）。
+  提高需要重新分配整个池子的概率，风险大，留到以后做。
+· 配置按存档槽保存，1/2/3 号档各自一份。
 
 需要 REPENTOGON。
 
+源码与问题反馈：https://github.com/miopasss/isaac-highlight-review
+
 —————————————————————————
+
+REQUIRES REPENTOGON. Repentance only for now; tested with most item mods.
+
+[You have probably run into this]
+
+· A mod's item is badly paced - e.g. Exchange Ticket / D-infinity from the Touhou mods. Picking it up is theoretically a free win, but the run stops being fun.
+· Some mod combinations keep handing out items that are simply too strong - they give so much HP you literally cannot die, or the numbers are so inflated the run stops feeling like a game.
+· You want to play a little more creatively, but the RNG never gives you the chance.
+
+That is an awkward spot: the mods are not badly made, they are just so strong that everything else gets flattened.
+
+This mod exists to fix exactly that - give every item its own appearance rate.
 
 Change how often any item shows up.
 
@@ -27,15 +67,29 @@ Change how often any item shows up.
 · 0.5　=　half as often
 · 1　=　unchanged
 
-Also overrides item quality — if Highlight Review is installed, its "quality 4" list uses the ratings you set here.
+How it works: after the game draws an item from a pool, this mod rolls one more time and decides whether to swap it for another item from the same pool. A weight of 0.5 means a 50% chance of swapping; a weight of 0 always swaps, so the item never shows up. It does not edit the item pools, add items or add graphics - it only affects "what got drawn", so items you already own are unaffected.
 
-How to use: press F6 in game, or rebind it in the ImGui menu: Item Weight → Settings.
-Three ways to find an item: search by id/name, pick from what you own, or browse what you already edited.
+It can also override item quality - if Highlight Review is installed, its "quality 4" list uses the ratings you set here.
 
-Note: weight can only be lowered, not raised (values above 1 are saved but do nothing).
-Settings are stored per save slot (save1/2/3 are separate).
+How to use: press F6 in game, or rebind it in the ImGui menu: Item Weight -> Settings.
+Three ways to find an item: search / owned items / already modified. You can search by item id or English name.
 
-Requires REPENTOGON.</description>
+[Tested with]
+· Heaven's Call
+· Touhou series
+· 塔菲的宇宙
+· Arknights (明日方舟)
+· Repentance+
+· 愚昧
+
+[Notes]
+· Weight can only be lowered, not raised (values above 1 are saved but do nothing).
+  Raising it means redistributing the whole pool, which is risky; left for a later version.
+· Settings are stored per save slot (save1/2/3 are separate).
+
+Requires REPENTOGON.
+
+Source and issue tracker: https://github.com/miopasss/isaac-highlight-review</description>
     <version>0.1.1</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
