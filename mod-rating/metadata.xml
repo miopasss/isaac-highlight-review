@@ -2,7 +2,55 @@
 <metadata>
     <name>Item Weight Editor</name>
     <directory>highlight-rating</directory>
-    <description>Change any item's drop weight - 0 = never appears, 0.5 = half as often, 1 = unchanged. Also overrides item quality (used by Highlight Review for 4-tier judgement). Press F6 in game. Works standalone, no dependencies besides REPENTOGON.</description>
+    <description>[b]REQUIRES REPENTOGON[/b] - this is not a Workshop mod. Install it from the REPENTOGON repo first:
+[url=https://github.com/TeamREPENTOGON/REPENTOGON]TeamREPENTOGON/REPENTOGON[/url]
+
+[b]Change how often any item shows up.[/b]
+Sick of Brimstone in every Devil Room? Set its weight to 0 and it stops appearing.
+
+[list]
+[*] [b]Weight[/b] - 0 = never appears, 0.5 = half as often, 1 = unchanged
+[*] [b]Quality override[/b] - your own 0-4.99 rating instead of the vanilla 0-4
+[*] [b]Three ways to find an item[/b] - search by id/name, pick from what you already hold, or browse what you already edited
+[*] [b]Lightweight[/b] - no new items, no new graphics, changes nothing except the item pools
+[/list]
+
+[b]Press F6 in game.[/b] Rebind it in the ImGui menu: Item Weight -> Settings.
+
+[hr][/hr]
+
+[b]需要 REPENTOGON[/b]（它不是工坊 mod，要自己去上面那个仓库安装）
+
+[b]自定义任意道具的掉落权重。[/b]
+恶魔房老是刷到不想要的硫磺火？把它的权重设成 0，从此不再出现。
+
+[list]
+[*] [b]权重[/b] - 0 = 不出现，0.5 = 出现率减半，1 = 不变
+[*] [b]评级覆盖[/b] - 用你自己的 0~4.99 评级，替代官方的 0~4
+[*] [b]三种找道具的方式[/b] - 搜 id/名字、从你身上已有的道具里选、翻已经改过的
+[*] [b]轻量[/b] - 不新增道具、不新增贴图，除了道具池什么都不动
+[/list]
+
+[b]游戏内按 F6 打开。[/b] 想改键：ImGui 顶栏 Item Weight -> 设置。
+
+[hr][/hr]
+[b]Known limitations / 已知限制[/b]
+[list]
+[*] Weight can only be lowered, not raised. Values above 1 are saved but do nothing.
+[*] 权重只能降低，不能提高。填大于 1 会保存但不生效。
+[*] Settings are stored per save slot (save1/2/3 are separate).
+[*] 配置按存档槽保存，1/2/3 号档各自一份。
+[/list]
+
+[b]Works standalone[/b] - but if [b]Highlight Review[/b] is also installed, it reads this mod's quality ratings for its 4-tier item list.
+[b]可独立运行[/b] - 同时装了 Highlight Review 的话，它的「四级道具」判定会使用这里的评级。
+
+[hr][/hr]
+UI available in [b]English[/b] and [b]Chinese[/b]. Switch in game: Item Weight -> Settings.
+界面支持[b]中英双语[/b]，在 Item Weight -> 设置 里切换。</description>
     <version>0.1.0</version>
     <visibility>Private</visibility>
+    <tag id="Lua"/>
+    <tag id="Tweaks"/>
+    <tag id="Items"/>
 </metadata>

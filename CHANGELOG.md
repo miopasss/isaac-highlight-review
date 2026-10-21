@@ -1969,3 +1969,39 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\make-cover.ps1
 
 `highlight-review/metadata.xml` 的 `<name>` 里也有中文（`Highlight Review (高光回顾)`），
 同样会在列表里乱码。发它之前一并改成 ASCII。
+## metadata 改成工坊正式格式（照 EID 那份）
+
+### 结构
+
+```xml
+<name>Item Weight Editor</name>
+<directory>highlight-rating</directory>
+<description>[b]REQUIRES REPENTOGON[/b] ... BBCode ...</description>
+<version>0.1.0</version>
+<visibility>Private</visibility>
+<tag id="Lua"/>
+<tag id="Tweaks"/>
+<tag id="Items"/>
+```
+
+**标签和说明都存在 metadata.xml 里**（不是上传器里的独立字段），照 EID 那份的写法。
+上传器读的就是这几个字段。
+
+### 说明内容（1741 字符，上限 8000）
+
+- 第一行就是 **REQUIRES REPENTOGON + 仓库链接**（它不是工坊 mod，订阅者得自己去装）
+- 中英双语各一段，用 `[list]` 列功能
+- 已知限制：权重只能降、按存档槽存
+- 说明它可独立运行，装了 Highlight Review 会共享评级
+
+### 顺带
+
+- `<name>` 里不再有中文（游戏模组列表不支持 UTF-8，会显示成 `é·æéçè¯`）
+- 标签在工坊页面上**之后改不了**，所以一次选定：Lua / Tweaks / Items
+
+### 上传
+
+`<游戏目录>\tools\ModUploader\ModUploader.exe`，选 `mods\highlight-rating\metadata.xml`。
+
+⚠️ 上传成功后部署目录的 metadata.xml 会多一行 `<id>`，**必须抄回仓库**，
+否则下次 `deploy.ps1` 覆盖掉它，再传会变成新条目（重复 mod）。
