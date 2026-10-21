@@ -2036,3 +2036,33 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\make-cover.ps1
 | `docs\img\workshop-wide.png` | 1280×720 | 153 KB |
 
 源图存为 `docs\img\src-editor-panel.png`，以后换图重跑脚本即可。
+## 已发布到创意工坊
+
+```
+Initializing Steam API... Success
+Processing 'highlight-rating/metadata.xml'... Success
+Ready to upload mod 'Item Weight Editor'
+Successfully uploaded mod 'Item Weight Editor' to Steam Workshop
+```
+
+- **工坊 ID：`3824170209`**
+- 页面：https://steamcommunity.com/sharedfiles/filedetails/?id=3824170209
+- 上传器自动把 version 改成 `0.1.1`、visibility 设为 `Public`、标签存为 `Lua, Items, Active Items, Tweaks`
+
+### 关键：`<id>` 已抄回仓库
+
+上传器会往 `mods\highlight-rating\metadata.xml` 里写 `<id>3824170209</id>`。
+**这个文件必须抄回仓库**，否则下次 `deploy.ps1` 会用仓库版本覆盖它 →
+再上传就不是更新，而是**创建重复条目**。
+
+已执行：把部署版整份复制回 `mod-rating/metadata.xml`。
+
+### 以后更新流程
+
+1. 改代码
+2. `mod-rating/metadata.xml` 的 `<version>` +1（0.1.2、0.1.3…）
+3. `tools\deploy.ps1 -Mod rating`
+4. 上传器选同一个 `metadata.xml` → Upload（会更新已有条目，不是新建）
+5. 上传后把 metadata.xml 再抄回仓库（`<version>` 可能被上传器改）
+
+**不要改文件夹名，也不要改 `<directory>`** —— 订阅者的安装路径依赖它。
