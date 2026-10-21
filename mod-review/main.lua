@@ -817,7 +817,6 @@ add(ModCallbacks.MC_USE_PILL, function(_, pillEffect, player, _flags)
     local p = state.pending or {}
     pillWatch = {
         effect = pillEffect or 0,
-        c = state.pillColor or -1,
         before = statNow(player or getPlayer()),
         frames = 0,
         f = p.f or state.floorDepth or 0,
@@ -828,14 +827,6 @@ end)
 add(ModCallbacks.MC_POST_UPDATE, function()
     if itemwatch then itemwatch.tick(getPlayer(), 1800) end
 
-    -- 记住当前持有的药丸颜色（MC_USE_PILL 只给 effect，不给 color）
-    pcall(function()
-        local pl = getPlayer()
-        if pl then
-            local c = pl:GetPill(0)
-            if type(c) == "number" and c >= 0 then state.pillColor = c end
-        end
-    end)
     -- 药丸：吃下 3 帧后读一次属性，算出增减；只有真变了才记
     if pillWatch then
         pillWatch.frames = pillWatch.frames + 1
@@ -847,10 +838,10 @@ add(ModCallbacks.MC_POST_UPDATE, function()
                 d[k] = delta
                 if math.abs(delta) > 0.001 then changed = true end
             end
-            if changed and state.current then
+            if state.current then   -- 全部记（要算"改了属性的占比"，就得知道总数）
                 state.current.pills = state.current.pills or {}
                 state.current.pills[#state.current.pills + 1] = {
-                    f = pillWatch.f, i = pillWatch.i, e = pillWatch.effect, c = pillWatch.c or -1,
+                    f = pillWatch.f, i = pillWatch.i, e = pillWatch.effect,
                     dm = d.dm or 0, ts = d.ts or 0, ss = d.ss or 0,
                     rg = d.rg or 0, mv = d.mv or 0, lk = d.lk or 0,
                 }

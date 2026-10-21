@@ -124,7 +124,6 @@ schema.scopes = {
         f    = "i",   -- 第几层
         i    = "i",   -- 本层内第几间
         e    = "i",   -- PillEffect id
-        c    = "i",   -- PillColor（MC_USE_PILL 不提供，靠每帧缓存）
         dm   = "f",   -- 伤害变化
         ts   = "f",   -- 攻速变化（次/秒）
         ss   = "f",   -- 弹速变化

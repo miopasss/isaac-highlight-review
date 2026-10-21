@@ -537,8 +537,7 @@ local function drawOverview(s, bk, entry)
         or "U/D RUN    ENTER OPEN    L/R PAGE    F5 CLOSE   (ESC pauses time)")
 end
 
---- 「终极Boss与终极道具」页：Boss 战斗时间 + 四级图标 + 零级图标
---- 「药丸账单」页：整局吃药丸的属性增减，合计看是涨还是跌
+--- 「药丸账单」页：整局吃药丸对属性是亏还是赚 + 总数 + 改了属性的占比（按层汇总）
 local function drawPills(s, bk, idx)
     local p = bk.pages[idx]
     if not p then footer(s, "empty"); return end
@@ -546,49 +545,59 @@ local function drawPills(s, bk, idx)
 
     title(s, p.title or (cn and "药丸账单" or "PILL LEDGER"), string.format("%d/%d", 1 + idx, bk.pageCount))
 
-    local y = PADY + 27
-    local list = p.list or {}
-    txt(string.format(cn and "本局吃了 %d 颗改了属性的药丸" or "%d stat-changing pills", #list),
-        (PADX + 12) * s, y * s, s * 0.58, INK_DIM)
-    y = y + 14
+    local y = PADY + 28
+    local total = p.total or 0
+    local changed = p.changed or 0
+    local pct = (total > 0) and math.floor(changed * 100 / total + 0.5) or 0
 
-    -- 合计
+    -- 第一行：总数 + 占比
+    txt(string.format(cn and "本局共吃 %d 颗，其中 %d 颗改变了属性（%d%%）"
+                      or "%d pills, %d changed stats (%d%%)", total, changed, pct),
+        (PADX + 12) * s, y * s, s * 0.62, INK)
+    y = y + 18
+
+    local labels = { dm = cn and "伤害" or "DMG", ts = cn and "攻速" or "Tears",
+                     ss = cn and "弹速" or "Shot",  rg = cn and "射程" or "Range",
+                     mv = cn and "移速" or "Speed", lk = cn and "幸运" or "Luck" }
+    local order = { "dm", "ts", "ss", "rg", "mv", "lk" }
+
+    -- 属性合计
     local sum = p.sum or {}
     local parts = {}
-    local labels = { dm = cn and "伤害" or "DMG", ts = cn and "攻速" or "Tears",
-                     ss = cn and "弹速" or "Shot", rg = cn and "射程" or "Range",
-                     mv = cn and "移速" or "Speed", lk = cn and "幸运" or "Luck" }
-    for _, k in ipairs({ "dm", "ts", "ss", "rg", "mv", "lk" }) do
+    for _, k in ipairs(order) do
         local v = sum[k] or 0
         if math.abs(v) > 0.0001 then
             parts[#parts + 1] = string.format("%s %+.2f", labels[k], v)
         end
     end
-    txt((cn and "合计  " or "TOTAL  ") .. (#parts > 0 and table.concat(parts, "   ") or (cn and "无变化" or "none")),
-        (PADX + 12) * s, y * s, s * 0.6, INK)
-    y = y + 13
-    txt(string.format(cn and "结论  %d 项上涨 / %d 项下降" or "VERDICT  %d up / %d down", p.up or 0, p.down or 0),
-        (PADX + 12) * s, y * s, s * 0.55, INK_DIM)
-    y = y + 16
+    txt((cn and "属性合计   " or "TOTAL   ") .. (#parts > 0 and table.concat(parts, "   ") or (cn and "无变化" or "none")),
+        (PADX + 12) * s, y * s, s * 0.62, INK)
+    y = y + 14
 
-    -- 逐条
-    local maxRows = 10
-    for i = 1, math.min(#list, maxRows) do
-        local pl = list[i]
-        local nm = deps.hl.pillName(pl.e, pl.c, not cn) or ("#" .. tostring(pl.e))
-        local deltas = {}
-        for _, k in ipairs({ "dm", "ts", "ss", "rg", "mv", "lk" }) do
-            local v = pl[k] or 0
-            if math.abs(v) > 0.0001 then
-                deltas[#deltas + 1] = string.format("%s %+.2f", labels[k], v)
+    -- 结论
+    txt(string.format(cn and "结论   %d 项上涨 / %d 项下降" or "VERDICT   %d up / %d down", p.up or 0, p.down or 0),
+        (PADX + 12) * s, y * s, s * 0.58, INK_DIM)
+    y = y + 20
+
+    -- 按层
+    local floors = p.floors or {}
+    if #floors > 0 then
+        txt(cn and "按层" or "BY FLOOR", (PADX + 12) * s, y * s, s * 0.56, INK_DIM)
+        y = y + 13
+        for i = 1, math.min(#floors, 9) do
+            local f = floors[i]
+            local fp = {}
+            for _, k in ipairs(order) do
+                local v = f[k] or 0
+                if math.abs(v) > 0.0001 then
+                    fp[#fp + 1] = string.format("%s %+.2f", labels[k], v)
+                end
             end
+            txt(string.format("F%-2d %2d %s   %s", f.f or 0, f.n or 0, cn and "颗" or "pills",
+                #fp > 0 and table.concat(fp, "  ") or (cn and "无变化" or "none")),
+                (PADX + 14) * s, y * s, s * 0.58, INK)
+            y = y + 12
         end
-        txt(string.format("F%d-%d  %-22s %s", pl.f or 0, pl.i or 0, nm, table.concat(deltas, "  ")),
-            (PADX + 14) * s, y * s, s * 0.58, INK)
-        y = y + 12
-    end
-    if #list > maxRows then
-        txt(string.format("+%d", #list - maxRows), (PADX + 14) * s, y * s, s * 0.55, INK_DIM)
     end
 
     footer(s, cn and "← → 翻页" or "LEFT/RIGHT PAGE")

@@ -89,37 +89,15 @@ end
 --- @param effectId number PillEffect
 --- @param colorId  number PillColor（-1 表示未知）
 --- @param useEn    boolean 是否英文
-function highlight.pillName(effectId, colorId, useEn)
+--- 药丸效果名（作者：吃药丸必然有效果，不做"未鉴定"区分）
+function highlight.pillName(effectId, useEn)
     local effect = tonumber(effectId) or -1
-    local color = tonumber(colorId) or -1
-
-    -- 颜色名（原版 13 种）
-    local COLORS_CN = { "白色", "蓝色", "黄色", "橙色", "红色", "紫色", "浅蓝", "绿色",
-                        "浅绿", "灰白", "粉色", "深灰", "淡黑" }
-    local COLORS_EN = { "White", "Blue", "Yellow", "Orange", "Red", "Purple", "Light Blue",
-                        "Green", "Light Green", "Gray", "Pink", "Dark Gray", "Black" }
-
-    local identified = true
-    pcall(function()
-        local pool = Game():GetItemPool()
-        if pool and pool.IsPillIdentified then
-            identified = pool:IsPillIdentified(effect)
-        end
+    local ok, nm = pcall(function()
+        local cfg = Isaac.GetItemConfig():GetPillEffect(effect)
+        return cfg and cfg.Name
     end)
-
-    if identified then
-        local ok, nm = pcall(function()
-            local cfg = Isaac.GetItemConfig():GetPillEffect(effect)
-            return cfg and cfg.Name
-        end)
-        if ok and nm and nm ~= "" then return tostring(nm) end
-        return (useEn and "Pill #" or "药丸 #") .. tostring(effect)
-    end
-
-    local idx = color + 1
-    local cname = (useEn and COLORS_EN or COLORS_CN)[idx]
-    if not cname then return useEn and "Unknown pill" or "未知药丸" end
-    return cname .. (useEn and " Pill (unknown)" or "药丸（未鉴定）")
+    if ok and nm and nm ~= "" then return tostring(nm) end
+    return (useEn and "Pill #" or "药丸 #") .. tostring(effect)
 end
 
 
@@ -328,6 +306,52 @@ function highlight.analyze(run, cfg)
     }
     table.insert(book.pages, 1, finale)
 
+    -- 3.6) 药丸账单（作者 2026-10-21 需求 v2）：整局吃药丸对属性是亏还是赚 + 总数 + 改了属性的占比
+    --    不按房间列（房间级没意义），按**层**汇总
+    local pills = run.pills or {}
+    if #pills > 0 then
+        local STATS = { "dm", "ts", "ss", "rg", "mv", "lk" }
+        local sum = { dm = 0, ts = 0, ss = 0, rg = 0, mv = 0, lk = 0 }
+        local changed, up, down = 0, 0, 0
+        local byFloor, floorOrder = {}, {}
+
+        for i = 1, #pills do
+            local pl = pills[i]
+            local any = false
+            for _, k in ipairs(STATS) do
+                local v = num(pl[k])
+                sum[k] = sum[k] + v
+                if v > 0.0001 then up = up + 1; any = true
+                elseif v < -0.0001 then down = down + 1; any = true end
+            end
+            if any then changed = changed + 1 end
+
+            local f = num(pl.f)
+            local row = byFloor[f]
+            if not row then
+                row = { f = f, n = 0, dm = 0, ts = 0, ss = 0, rg = 0, mv = 0, lk = 0 }
+                byFloor[f] = row
+                floorOrder[#floorOrder + 1] = f
+            end
+            row.n = row.n + 1
+            for _, k in ipairs(STATS) do row[k] = row[k] + num(pl[k]) end
+        end
+        table.sort(floorOrder)
+
+        local floors = {}
+        for i = 1, #floorOrder do floors[i] = byFloor[floorOrder[i]] end
+
+        table.insert(book.pages, 2, {
+            kind    = "pills",
+            title   = "药丸账单",
+            total   = #pills,
+            changed = changed,
+            sum     = sum,
+            up      = up,
+            down    = down,
+            floors  = floors,
+        })
+    end
     -- 3.6) 药丸账单（作者 2026-10-21 需求）：整局吃了哪些改了属性的药丸，合计是涨还是跌
     local pills = run.pills or {}
     if #pills > 0 then
