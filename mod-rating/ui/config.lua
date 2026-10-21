@@ -76,7 +76,7 @@ function config.init(d)
         ImGui.AddElement(MENU, ITEM, ImGuiElement.MenuItem, T("menu_settings"))
 
         ImGui.CreateWindow(WIN, T("set_title"))
-        if ImGui.SetWindowSize then ImGui.SetWindowSize(WIN, 540, 260) end
+        if ImGui.SetWindowSize then ImGui.SetWindowSize(WIN, 620, 260) end
         if ImGui.SetWindowPosition then ImGui.SetWindowPosition(WIN, 530, 300) end
         ImGui.LinkWindowToElement(WIN, ITEM)
 

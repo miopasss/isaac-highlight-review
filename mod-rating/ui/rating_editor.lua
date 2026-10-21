@@ -257,8 +257,8 @@ end
 local function buildUI()
     tryStep("CreateWindow", function()
         ImGui.CreateWindow(WIN, T("win_title"))
-        if ImGui.SetWindowSize then ImGui.SetWindowSize(WIN, 620, 560) end
-        if ImGui.SetWindowPosition then ImGui.SetWindowPosition(WIN, 490, 170) end
+        if ImGui.SetWindowSize then ImGui.SetWindowSize(WIN, 780, 560) end
+        if ImGui.SetWindowPosition then ImGui.SetWindowPosition(WIN, 400, 170) end
     end)
 
     tryStep("menu", function()

@@ -48,11 +48,11 @@ function S.load(store)
         if line:sub(1, #S.PREFIX) == S.PREFIX then
             local body = line:sub(#S.PREFIX + 1)
             -- 字符串值："key":"value"
-            for k, v in body:gmatch('"(%a+)"%s*:%s*"([^"]*)"') do
+            for k, v in body:gmatch('"([%w_]+)"%s*:%s*"([^"]*)"') do
                 if S.defaults[k] then S.values[k] = v end
             end
             -- 数字值："key":123
-            for k, v in body:gmatch('"(%a+)"%s*:%s*(%-?%d+%.?%d*)') do
+            for k, v in body:gmatch('"([%w_]+)"%s*:%s*(%-?%d+%.?%d*)') do
                 if S.defaults[k] and type(S.defaults[k]) == "number" then
                     S.values[k] = tonumber(v)
                 end

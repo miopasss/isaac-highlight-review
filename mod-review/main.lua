@@ -41,7 +41,7 @@ local dump   = tryRequire("core.dump", "core/dump")
 
 -- ── 与外部评级 mod 的兼容（Item Weight Editor 会发布 _G.HLR）──
 local itemwatch = tryRequire("core.itemwatch", "core/itemwatch")
-local settings  = tryRequire("core.settings", "core/settings")
+local settings  = tryRequire("core.hlr_settings", "core/hlr_settings")
 
 --- 读外部评级：读不到就返回 nil，调用方回退官方品质。加载顺序无关。
 local function externalQuality(id)

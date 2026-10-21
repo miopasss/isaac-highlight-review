@@ -1801,3 +1801,57 @@ in=C={"f6":300,"lang":"en"}   读到 lang=en f6=300   → 写回 C={"f6":300,"la
 另一次是 reverie（东方）的 `PushRenderTarget: stack overflow!` 断言洪水之后进程消失。
 
 **我们的 `RemoveWindow` 那条栈已经不再出现。**
+## 修双语的三个真 bug（都是实测挖出来的）
+
+### ① `RemoveWindow` 崩游戏 → 见上一条
+
+### ② `local` 作用域：`saveData` 在 `initUI` 之后定义
+
+改成前置声明 `local saveData` + `saveData = function()`。
+
+### ③ **两个 mod 共用 `core/settings.lua` → `require` 缓存串台**
+
+这是双语一直不生效的真正原因。
+
+REPENTOGON 的 `require` **按模块名全局缓存**。两个 mod 都有 `core/settings.lua`，
+谁先加载谁赢。实测：评级 mod 拿到的是**回顾 mod 那份**（main 分支的旧版本，**没有 `lang` 键**），
+于是 `settings.get("lang")` 返回 nil，语言永远是默认的 zh。
+
+诊断日志：
+
+```
+[BOOT2] getType=function f6=295 lang=nil defaultsType=table
+[I18N]  settings=true rawLang=n/a
+[I18N]  lang=zh
+```
+
+`f6=295` 有值（那份旧文件有 f6），`lang=nil`（旧文件没有）—— 一眼看出拿错了文件。
+
+**修法**：共享代码按 mod 改文件名。
+
+```powershell
+$sharedMap = @{
+    "highlight-rating" = @{ "core\settings.lua" = "core\iwe_settings.lua" }
+    "highlight-review" = @{ "core\settings.lua" = "core\hlr_settings.lua" }
+}
+```
+
+两个 main 的 `tryRequire` 也跟着改，仓库里的两份 `core/settings.lua` 删掉。
+
+### ④ `settings` 解析漏掉含数字的键
+
+键名模式 `"(%a+)"` 里 `%a` 只匹配字母，`"f6":295` 永远解析不出来（之前没暴露是因为有默认值）。
+改成 `"([%w_]+)"`。
+
+### 验证
+
+```
+[I18N] settings=true rawLang=en
+[I18N] lang=en
+```
+
+界面截图确认变成英文：`Item Weight Editor` / `Edit` / `Modified` / `Search` / `Owned` /
+`Pick an item below` / `Rating` / `Weight` / `Save` / `Disable` / `Delete (vanilla)`。
+
+窗口从 620 加宽到 **780**，英文文案另做了缩短（`Search (digits = id, letters = name)` →
+`Search (id or name)`），避免被右边切掉。

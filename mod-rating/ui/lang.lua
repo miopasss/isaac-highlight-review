@@ -8,7 +8,15 @@
 -- ============================================================================
 local L = {}
 
-L.current = "zh"
+--- 语言状态放在 _G 上：main / editor / config 三处各 include 一次这个文件，
+--- 如果状态是本模块的 local，init() 只改到其中一份，另外两份还是默认 zh。
+--- （实测就是这样：标题变了、标签没变。）
+local STATE = rawget(_G, "IWE_LANG_STATE")
+if not STATE then
+    STATE = { code = "zh" }
+    rawset(_G, "IWE_LANG_STATE", STATE)
+end
+L._state = STATE
 
 local STR = {
     zh = {
@@ -64,30 +72,30 @@ local STR = {
         tab_edit        = "Edit",
         tab_list        = "Modified",
 
-        search_label    = "Search (digits = id, letters = name)",
+        search_label    = "Search (id or name)",
         result_label    = "Results",
-        result_hint     = "(type to search)",
+        result_hint     = "(search)",
         result_empty    = "(no match)",
-        owned_label     = "Owned items",
-        owned_empty     = "(no items yet)",
+        owned_label     = "Owned",
+        owned_empty     = "(none)",
         edited_label    = "Modified",
-        edited_empty    = "(nothing modified yet)",
+        edited_empty    = "(nothing yet)",
 
         info_none       = "Pick an item below",
         info_official   = "vanilla",
         info_rating     = "Rating",
         info_weight     = "Weight",
         info_unset      = "not set",
-        info_up_warn    = "Weight > 1 is not supported yet (only lowering works)",
+        info_up_warn    = "Weight > 1: not supported yet",
 
-        rating_label    = "Rating (0.00 - 4.99)",
-        weight_label    = "Weight (0 = never / 1 = normal / >1 unsupported)",
+        rating_label    = "Rating 0-4.99",
+        weight_label    = "Weight 0-1",
 
-        btn_save        = "Save changes",
-        btn_save_dirty  = "Save changes *",
-        btn_disable     = "Disable this entry",
-        btn_enable      = "Enable this entry",
-        btn_delete      = "Delete (restore vanilla)",
+        btn_save        = "Save",
+        btn_save_dirty  = "Save *",
+        btn_disable     = "Disable",
+        btn_enable      = "Enable",
+        btn_delete      = "Delete (vanilla)",
 
         list_empty      = "Nothing modified yet.",
 
@@ -103,20 +111,20 @@ local STR = {
 }
 
 --- 当前语言代码
-function L.code() return L.current end
+function L.code() return STATE.code end
 
 --- 是否中文
-function L.isZh() return L.current ~= "en" end
+function L.isZh() return STATE.code ~= "en" end
 
 --- 取文案
 function L.t(key)
-    local set = STR[L.current] or STR.zh
+    local set = STR[STATE.code] or STR.zh
     return set[key] or (STR.zh[key]) or tostring(key)
 end
 
 --- 切语言后提示（ImGui 窗口不能在运行时重建，需要重启游戏）
 function L.needRestart()
-    if L.current == "en" then
+    if STATE.code == "en" then
         return "Saved. Restart the game to apply."
     end
     return "已保存，重启游戏后生效"
@@ -129,14 +137,14 @@ function L.init(settings)
         local ok, v = pcall(function() return settings.get("lang") end)
         if ok and type(v) == "string" then code = v end
     end
-    L.current = (code == "en") and "en" or "zh"
+    STATE.code = (code == "en") and "en" or "zh"
 end
 
 --- 切换语言并写回 settings
 function L.set(settings, code)
-    L.current = (code == "en") and "en" or "zh"
+    STATE.code = (code == "en") and "en" or "zh"
     if settings then
-        local ok = pcall(function() settings.set("lang", L.current) end)
+        local ok = pcall(function() settings.set("lang", STATE.code) end)
         return ok
     end
     return false

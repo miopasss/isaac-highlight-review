@@ -36,7 +36,7 @@ local jsonmini = tryRequire("core.jsonmini", "core/jsonmini")
 local rating   = tryRequire("core.rating", "core/rating")
 local ratedata = tryRequire("core.rating_data", "core/rating_data")
 local poolmod  = tryRequire("core.pool", "core/pool")
-local settings = tryRequire("core.settings", "core/settings")
+local settings = tryRequire("core.iwe_settings", "core/iwe_settings")
 local storemod = tryRequire("core.store", "core/store")
 local rates    = rating
 
@@ -48,6 +48,9 @@ pcall(function() lang = include("ui.lang") end)
 
 local function log(msg) emit(LOG_PREFIX .. tostring(msg)) end
 local function err(msg) emit(LOG_PREFIX .. "ERROR: " .. tostring(msg)) end
+
+    tostring(editor ~= nil), tostring(configui ~= nil)))
+    type(settings and settings.defaults), tostring(settings and settings.only and settings.only[1])))
 
 if not (rating and jsonmini and storemod) then
     err("模块载入失败（rating=" .. tostring(rating ~= nil) ..
@@ -116,7 +119,10 @@ local function loadData()
 
     -- 语言必须在**读过存档之后**才能确定（settings 在 init 时全是默认值）
     if lang then
+        log(string.format("[I18N] settings=%s rawLang=%s", tostring(settings ~= nil),
+            tostring(settings and settings.get("lang") or "n/a")))
         lang.init(settings)
+        log("[I18N] lang=" .. tostring(lang.code and lang.code() or "?"))
         -- 语言可能和启动时不同：重建两个窗口的文字
         initUI()
     end
