@@ -1902,3 +1902,23 @@ v0.3 时代评级存在**回顾 mod** 的 `data\highlight-review\saveN.dat` 里�
 
 拆分涉及数据搬家时，"只有 N 条、不值得迁移" 是危险判断 ——
 玩家手设的东西，哪怕一行，也比写一个导入脚本贵得多。
+## 创意工坊封面图（`tools\make-cover.ps1`）
+
+准备单发 Item Weight Editor，需要预览图。用 PowerShell + System.Drawing 直接画，
+不依赖设计软件，改文案只要改脚本里的字。
+
+产物：
+
+| 文件 | 尺寸 | 用途 |
+|---|---|---|
+| `docs\img\workshop-cover.png` | 512×512 | 创意工坊预览图 |
+| `docs\img\workshop-wide.png` | 1280×720 | 页面内大图 |
+
+风格照 mod 自己的 ImGui 面板：深色底 + 蓝色标题栏 + 四行道具（含权重 0 / Rating 4 / 权重 0.5 / Disabled），
+底部一行说明 `0 = never   0.5 = half   1 = unchanged`。
+
+重新生成：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\make-cover.ps1
+```
