@@ -2005,3 +2005,34 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\make-cover.ps1
 
 ⚠️ 上传成功后部署目录的 metadata.xml 会多一行 `<id>`，**必须抄回仓库**，
 否则下次 `deploy.ps1` 覆盖掉它，再传会变成新条目（重复 mod）。
+## 封面改用真实界面截图（`tools\make-cover-from-shot.ps1`）
+
+作者给了一张编辑器窗口截图，要求用它做封面。
+
+**关键处理**：截图顶部窗口标题写的是 `Highlight Review · 道具评级` —— 那是**拆分前的旧名字**，
+和这个 mod（Item Weight Editor）对不上，所以合成时**裁掉顶部 34px 标题栏**，
+只保留面板内容。
+
+版面：
+
+```
+深色渐变底 + 顶部蓝条
+  Item Weight Editor        （32px 粗体）
+  道具权重编辑器              （17px）
+  ┌──────────────────┐
+  │  真实截图（裁标题栏）  │      ← 等比缩放，最大占 66% 高
+  └──────────────────┘
+  0 = never   0.5 = half   1 = unchanged
+  The Binding of Isaac: Repentance - requires REPENTOGON
+```
+
+参数化：标题块高度 `96 * Scale`、底部留 `18% * H`，这样 512×512 和 1280×720 都不会压字。
+
+产物（都在 1 MB 以内，工坊要求）：
+
+| 文件 | 尺寸 | 大小 |
+|---|---|---|
+| `docs\img\workshop-cover.png` | 512×512 | 106 KB |
+| `docs\img\workshop-wide.png` | 1280×720 | 153 KB |
+
+源图存为 `docs\img\src-editor-panel.png`，以后换图重跑脚本即可。
