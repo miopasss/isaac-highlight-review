@@ -70,6 +70,20 @@ foreach ($t in $targets) {
         $copied++
     }
     Write-Host ("已同步 {0} 个文件 -> {1}" -f $copied, $target)
+
+    # 清理：目标里存在、但源里已经没有的文件（拆分/删文件后必须清，否则旧模块还在）
+    $copiedRel = @{}
+    foreach ($f in $items) { $copiedRel[$f.FullName.Substring($source.Length).TrimStart('\\')] = $true }
+    $pruned = 0
+    foreach ($f in (Get-ChildItem -Path $target -Recurse -File)) {
+        if ($f.Extension -notin $exts) { continue }
+        $rel = $f.FullName.Substring($target.Length).TrimStart('\\')
+        if (-not $copiedRel.ContainsKey($rel)) {
+            Remove-Item $f.FullName -Force -ErrorAction SilentlyContinue
+            $pruned++
+        }
+    }
+    if ($pruned -gt 0) { Write-Host ("  清理了 {0} 个残留文件（源里已没有）" -f $pruned) -ForegroundColor Yellow }
 }
 
 Write-Host ""

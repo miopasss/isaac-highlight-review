@@ -369,3 +369,4 @@ powershell -File tools\pack.ps1                 # → dist\highlight-{rating,rev
 | Lua 的 `local function` **只从定义位置往后可见** | `num()` 定义在使用它的函数**之后** → 那些函数里的 `num` 编译成全局查找 → nil → `pcall` 吞掉错误 → 悄悄返回 0。**Boss 识别因此整整失效了两轮。** |
 | `MC_POST_GAME_END` 的第一个参数是 **mod**，不是 `isGameOver` | `function(isGameOver)` 拿到的是表 → 永远是真值 → **所有通关都被标成死亡** |
 | 按 `^do$` 匹配删除代码块 | 命中了更早的另一个 `do`，**一次删掉 65 行**。删代码块必须按**行号**，且删除前把行内容打印出来核对 |
+| **`deploy.ps1` 只复制不删除** | 删掉/移走文件后游戏目录里仍留着旧模块 → 出现"新 main + 旧模块"的混合体，症状诡异且**不报错**。已给 deploy 加自动清理（目标里多出来的文件删掉） |

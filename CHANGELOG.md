@@ -1698,3 +1698,36 @@ ImGui 的控件标签只能在创建时给定，所以切语言会**重建窗口
 - luacheck 23 文件 0 失败；rating_test 22/22、fmt_test PASS、identity_test 20/20
 
 **游戏内暂未测试**（作者要求等通知）。
+## 修：deploy 只复制不删除，导致拆分后的旧文件一直留在游戏目录
+
+作者发现 ImGui 顶栏的 `Highlight Review` 菜单下面**还挂着「道具评级」**。
+
+根因：`deploy.ps1` 只把源文件复制过去，**从不删除目标里多出来的文件**。
+拆分时把 `core/{rating,rating_data,pool,jsonmini}.lua` 和 `ui/rating_editor.lua` 从 repo 删掉了，
+但游戏目录 `mods\highlight-review\` 里那 7 个旧文件一直在。
+
+- 仓库 `mod-review`：24 个文件
+- 游戏目录实际：**30 个文件**（多 7 个旧文件 + 2 个旧资源 `hl_panel.*`）
+
+旧 `ui/rating_editor.lua` 里写着 `MENU = "highlight_review_menu"` + `AddElement(..., "道具评级")`，
+所以菜单项还在。它**并不报错**，因为新的 `main.lua` 已经不再 `include` 它了。
+
+### 修法
+
+`deploy.ps1` 复制完之后**对比源和目标**，把目标里多余的、扩展名在同步范围内的文件删掉，
+打印「清理了 N 个残留文件」。
+
+实测清理：
+
+```
+已同步 23 个文件 -> mods\highlight-review
+  清理了 7 个残留文件（源里已没有）
+```
+
+清理后 `mods\highlight-review` 只剩 23 个文件，与 repo 一致；
+全库再搜「道具评级」只剩注释，没有任何 `AddElement`。
+
+### 教训
+
+**拆分/删文件之后必须 `deploy -Clean` 或者依赖现在这个自动清理**，
+否则游戏里跑的是"新 main + 旧模块"的混合体，症状诡异且不报错。
