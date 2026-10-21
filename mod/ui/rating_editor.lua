@@ -28,12 +28,14 @@ local S_RATING = "hlr_rating"
 local S_WEIGHT = "hlr_weight"
 local B_ENABLE = "hlr_btn_enable"
 local B_DELETE = "hlr_btn_delete"
+local B_SAVE   = "hlr_btn_save"
 local S_LIST   = "hlr_list_text"
 
 local READY  = false
 local opened = false
 local deps   = nil
 local curId  = nil
+local dirty  = false   -- 评级/权重改过但还没点保存
 
 local searchResults = {}
 local ownedList     = {}
@@ -152,6 +154,14 @@ end
 
 -- ── 详情与列表刷新 ──────────────────────────────────────────────────────────
 
+--- 保存按钮的文字随"有没有未保存改动"变化
+local function refreshSaveBtn()
+    if not B_SAVE or not ImGui.UpdateText then return end
+    pcall(function()
+        ImGui.UpdateText(B_SAVE, dirty and "保存修改 *" or "保存修改")
+    end)
+end
+
 local function refreshInfo()
     if not S_INFO then return end
     if not curId then
@@ -184,7 +194,7 @@ local function pushValues()
         ImGui.UpdateData(S_RATING, ImGuiData.Value, q or math.max(0, officialQuality(curId)))
         ImGui.UpdateData(S_WEIGHT, ImGuiData.Value, w or 1.0)
         if ImGui.UpdateText then
-            ImGui.UpdateText(B_ENABLE, on and "状态：启用（点击停用）" or "状态：停用（点击启用）")
+            ImGui.UpdateText(B_ENABLE, on and "停用此条" or "启用此条")
         end
     end)
 end
@@ -264,6 +274,8 @@ local function build()
             if #searchResults > 0 then
                 ImGui.UpdateData(C_RESULT, ImGuiData.ListValues, listLabels(searchResults, "（无结果）"))
                 ImGui.UpdateData(C_RESULT, ImGuiData.Value, 0)
+                -- 搜索出结果就自动选中第一个（只有一个结果时等于直接选中它）
+                if searchResults[1] then selectId(searchResults[1].id) end
             end
         end, "")
     end)
@@ -297,6 +309,8 @@ local function build()
             if not curId or not v then return end
             if v < 0 then v = 0 elseif v > 4.99 then v = 4.99 end
             deps.rating.set(curId, v, nil, nil)
+            dirty = true
+            refreshSaveBtn()
             pushValues(); refreshInfo(); refreshLists()
         end, 0.0, 0.01, 0.05, "%.2f")
     end)
@@ -307,12 +321,24 @@ local function build()
             if not curId or not v then return end
             if v < 0 then v = 0 elseif v > 5 then v = 5 end
             deps.rating.set(curId, nil, v, nil)
+            dirty = true
+            refreshSaveBtn()
             pushValues(); refreshInfo(); refreshLists()
         end, 1.0, 0.05, 0.1, "%.2f")
     end)
 
+tryStep("保存按钮", function()
+        ImGui.AddButton(TAB_EDIT, B_SAVE, "保存修改", function()
+            if deps.onChanged then deps.onChanged() end
+            dirty = false
+            refreshSaveBtn()
+            refreshLists()   -- 保存后立刻刷新"已修改"列表
+            if deps.log then deps.log(string.format("[EDITOR] 已保存，当前共 %d 条覆盖", deps.rating.count())) end
+        end)
+    end)
+
     tryStep("启用按钮", function()
-        ImGui.AddButton(TAB_EDIT, B_ENABLE, "状态：启用（点击停用）", function()
+        ImGui.AddButton(TAB_EDIT, B_ENABLE, "停用此条", function()
             if not curId then return end
             local e = deps.rating.entries[curId]
             local on = not (e and e.on == false)

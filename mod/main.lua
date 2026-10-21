@@ -830,6 +830,14 @@ add(ModCallbacks.MC_POST_UPDATE, function()
         local room = Game():GetRoom()
         local t = num(room:GetType())
         if t ~= 5 and t ~= 17 then return end
+            if not p.bossDiag then
+                p.bossDiag = true
+                local g1, r1 = pcall(function() return Game():GetRoom():GetBossID() end)
+                local g2, r2 = pcall(function() return Game():GetLevel():GetCurrentRoomDesc().Data.Subtype end)
+                local g3, r3 = pcall(function() return Game():GetRoom():GetSecondBossID() end)
+                log(string.format("[BOSSDIAG] type=%d  GetBossID=(%s)%s  descSub=(%s)%s  2nd=(%s)%s",
+                    t, tostring(g1), tostring(r1), tostring(g2), tostring(r2), tostring(g3), tostring(r3)))
+            end
         if (p.bossIn or 0) == 0 then p.bossIn = bossIdNow() end
         if (p.ubIn or 0) == 0 then p.ubIn = ultimateBossNow() end
     end)
@@ -837,6 +845,18 @@ end)
 
 add(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function()
     if state.pending then state.pending.cleared = true end
+        -- Boss 房：清房这一刻 GetBossID() 才可靠（cuerlib / antibirth music 都是死后才读）
+        if state.pending then
+            local t = 0
+            pcall(function() t = num(Game():GetRoom():GetType()) end)
+            if t == 5 or t == 17 then
+                local b = bossIdNow()
+                if b and b ~= 0 then state.pending.bossIn = b end   -- 只在取到非 0 时覆盖（清房瞬间可能返回 0）
+                local u = ultimateBossNow()
+                if u and u ~= 0 then state.pending.ubIn = u end
+                log(string.format("[BOSSCLEAR] type=%d boss=%d ub=%d", t, state.pending.bossIn, state.pending.ubIn))
+            end
+        end
 end)
 
 local dmgProbed, dmgLogged = false, false
@@ -897,6 +917,11 @@ add(ModCallbacks.MC_PRE_GAME_EXIT, function()
     if state.current then
         settleRoom(getPlayer())
         state.current.res = 2
+        -- 撤掉换层检查点写进去的那一份，否则每小退一次就多一条（作者实测存了 3 份）
+        if state.currentEntry then
+            fmt.removeEntry(state.store, state.currentEntry)
+            state.currentEntry = nil
+        end
         fmt.appendRun(state.store, state.current)
         state.current = nil
     end
