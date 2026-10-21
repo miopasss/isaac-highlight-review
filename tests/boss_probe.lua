@@ -5,8 +5,8 @@ local DATA = (os and os.getenv and os.getenv("HLR_DATA")) or "data/highlight-rev
 if DATA:sub(-1) ~= "/" then DATA = DATA .. "/" end
 
 local function loadmod(p) return loadfile(ROOT .. p)() end
-local schema = loadmod("mod/core/schema.lua")
-local fmt    = loadmod("mod/core/fmt.lua")
+local schema = loadmod("mod-review/core/schema.lua")
+local fmt    = loadmod("mod-review/core/fmt.lua")
 fmt.setSchema(schema)
 
 local STAGE = {

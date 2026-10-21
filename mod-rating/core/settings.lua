@@ -16,6 +16,8 @@ S.defaults = {
     f6 = 295,   -- Keyboard.KEY_F6
 }
 
+--- 每个 mod 只写自己用到的键（例：{"f6"}）。nil 表示全写。
+S.only = nil
 S.values = {}
 
 function S.init()
@@ -65,7 +67,14 @@ function S.save(store)
 
     local parts = {}
     local keys = {}
-    for k in pairs(S.defaults) do keys[#keys + 1] = k end
+    local allow = nil
+    if S.only then
+        allow = {}
+        for _, k in ipairs(S.only) do allow[k] = true end
+    end
+    for k in pairs(S.defaults) do
+        if not allow or allow[k] then keys[#keys + 1] = k end
+    end
     table.sort(keys)
     for _, k in ipairs(keys) do
         parts[#parts + 1] = string.format('"%s":%d', k, S.get(k))

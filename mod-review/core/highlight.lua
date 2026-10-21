@@ -274,8 +274,10 @@ function highlight.analyze(run, cfg)
         local r = rooms[i]
         for k = 1, #r.it do
             local q = num(r.iq[k])
-            if q >= 4 then q4Items[#q4Items + 1] = r.it[k] end
-            if q == 0 and #q0Items == 0 then q0Items[#q0Items + 1] = r.it[k] end
+            -- 只统计"离开房间时还持有"的：临时塞进来的（如被 mod 短暂给的斗篷）不算
+            local kept = (r.ik == nil) or (num(r.ik[k]) ~= 0)
+            if q >= 4 and kept then q4Items[#q4Items + 1] = r.it[k] end
+            if q == 0 and kept and #q0Items == 0 then q0Items[#q0Items + 1] = r.it[k] end
         end
     end
 

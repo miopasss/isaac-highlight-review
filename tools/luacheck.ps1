@@ -47,7 +47,8 @@ public static class LuaHost {
 Add-Type -TypeDefinition $src
 
 if (-not $Paths -or $Paths.Count -eq 0) {
-    $Paths = @((Join-Path (Split-Path $PSScriptRoot -Parent) "mod"))
+      $base = (Split-Path $PSScriptRoot -Parent)
+      $Paths = @((Join-Path $base "mod-review"), (Join-Path $base "mod-rating"), (Join-Path $base "shared"))
 }
 
 $files = @()

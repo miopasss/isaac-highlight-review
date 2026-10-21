@@ -1463,3 +1463,199 @@ function R.save(store)
 ### README 新增「创意工坊发布清单」
 
 明确写清只打包 `mod/`，**不带** `tools/`（含 exe）、`tests/`、`_logs/`、`_archive/`、`_backup/`、`*.md`。
+## 修「从菜单打开编辑器时已获得道具为空」+ 评级上限 4.99（2026-10-21 05:3x）
+
+### 问题
+
+从 ImGui 菜单 `Highlight Review → 道具评级` 打开窗口时，`已获得道具` 是空的。
+
+根因：列表只在 **F6 那条路**（`E.toggle` → `E.refresh`）里刷新过；
+菜单入口是 `LinkWindowToElement` 直接把窗口显示出来，**不经过 toggle**，所以从来没刷过。
+
+### 修法
+
+不做周期刷新（作者明确否掉），改成**可见性变化触发一次**：
+
+```lua
+local lastVisible = false
+function E.watch()
+    local vis = ImGui.IsVisible(WIN)
+    if vis and not lastVisible then E.refresh() end   -- 刚变可见 → 刷一次
+    lastVisible = vis
+end
+```
+
+主循环每帧调 `ratingEditor.watch()`。开销只有一次 `ImGui.IsVisible` 查询。
+
+### 评级上限
+
+`0.00 ~ 4.00` → **`0.00 ~ 4.99`**。向下取整判四级，所以 4.99 仍算四级。
+
+### 实测
+
+进入 1 号档 → 打开编辑器（菜单/F6 都走 `watch`）→
+`已获得道具` 显示 `105 The D6`，`已修改` 显示 `1 The Sad Onion 评级 4...` ✅
+## README 增加「它是怎么工作的」+ 冲突排查（2026-10-21 05:5x）
+
+作者要给 Workshop 写介绍，发现 README 里对"权重到底怎么生效"只有一句
+"目前只能降低"，没解释机制。补了一节：
+
+- 三步流程图（抽结果 → 决定发给你 → 拿到手），标明我们插在第 2 步
+- 三条白话说明：1.00 放行 / 0.50 一半机会否掉 / 0.00 每次都否掉
+- 明确写"不修改任何东西"：不改池文件、不改道具属性、不改别的 mod 数据
+- 四个"因此你会看到的行为"（概率性、0 = 摘除、大量设低会刷不到、重掷不跨池子）
+- 冲突排查三步法 + "只有会改道具池的 mod 才可能撞车"
+
+**措辞上刻意避开了"前流程/后流程"** —— 对玩家没有信息量，还容易和
+"修改道具生成表"混淆。改成流程图更直观，也正好是排查冲突时最需要的信息。
+## README 贴界面截图（2026-10-21 06:1x）
+
+作者提供了一张 1600×900 的编辑器截图（窗口完整、无遮挡），存为
+`docs/img/rating-editor.png`，嵌进 README 的「道具评级与权重」小节。
+
+- 尺寸 16:9，可直接用作 Workshop 预览图
+- 图里有：三个入口（搜索 / 已获得道具 / 已修改）、评级与权重输入、
+  保存修改 / 停用此条 / 删除此条 四个按钮
+
+**排查记录（花了两轮才搞对）**：自己从旧截图里裁窗口一直切掉左边缘，
+原因是我们窗口的左边界在 x≈590，而 ImGui 窗口背景色 (16,17,18) 和
+游戏暗部颜色接近，靠"找暗色区域"自动定位会认错。最后直接用作者给的整图。
+## 拆成两个 mod（2026-10-21 06:xx）
+
+作者拍板：拆。理由不是"受众不同"这么简单——**v0.3 让回顾挂了 `MC_POST_GET_COLLECTIBLE`，
+它从只读观察者变成了会改游戏的 mod**，这才是必须拆的根因。
+
+### 新结构
+
+```
+shared/settings.lua        唯一一份源码，deploy 时复制进两个 mod
+mod-rating/                Item Weight Editor（目录 highlight-rating，v0.1.0）
+mod-review/                Highlight Review（目录 highlight-review，v0.3.0）
+```
+
+### 评级 mod（新）
+
+| 文件 | 内容 |
+|---|---|
+| `main.lua` | 只做三件事：装评级数据、挂 pool 钩子、开编辑器 |
+| `core/store.lua` | 自己的存档容器（`IWE1` + `Q=` / `C=` 行） |
+| `core/{jsonmini,rating,rating_data,pool,settings}.lua` | 从回顾搬过来 |
+| `ui/rating_editor.lua` | 从回顾搬过来 |
+| `ui/config.lua` | 只绑 F6 |
+
+### 回顾 mod（改）
+
+- 移除：`core/{pool,rating,rating_data,jsonmini}.lua`、`ui/rating_editor.lua`、`MC_POST_GET_COLLECTIBLE` 钩子、F6 处理
+- 新增：`externalQuality(id)` —— 读 `_G.HLR`，读不到返回 nil 由调用方回退官方
+- `qualityOf()` 改为优先用 `externalQuality`
+- 设置窗口只剩 F5
+- 描述加一句"配合 Item Weight Editor 可显示自定义评级"
+
+### 工具
+
+- `deploy.ps1`：`-Mod both|review|rating`，同步前把 `shared/` 复制进两个 mod
+- `luacheck.ps1`：默认检查 `mod-review` + `mod-rating` + `shared`（22 个文件）
+- **新增 `pack.ps1`**：打 `dist\highlight-{rating,review}.zip`，只含各自目录
+- `tests/*` 路径从 `mod/core` 改为 `mod-review/core` / `mod-rating/core`
+
+### 顺带修的两个真 bug（都是拆分时发现的）
+
+1. **`num()` 作用域**：`local function num` 定义在 `ultimateBossNow` / `bossIdNow` **之后**，
+   这两个函数里的 `num` 被编译成全局查找 → nil → `pcall` 吞错 → 返回 0。
+   **Boss 识别失效两轮的真正原因。** 已把 `num` 提到最前。
+2. **`MC_POST_GAME_END` 签名**：第一个参数是 `mod`，不是 `isGameOver`。
+   `function(isGameOver)` 收到的是表（永远真值）→ **所有通关都标成死亡**。改为 `function(_, isGameOver)`。
+
+### 测试
+
+- luacheck：22 个文件，0 失败
+- `rating_test.lua` 22/22、`identity_test.lua` 20/20、`fmt_test.lua` PASS
+## 修重复存档（小退一次多一条空记录）
+
+作者实测：打完一局 10 层 327 房，存档里同一局存了 **6 份**，其中 5 份是空记录：
+
+```
+#5  seq=2 E41A634F-0 res=2 rooms=0   final=17.46
+#6  seq=2 E41A634F-0 res=2 rooms=0   final=22.95
+#7  seq=2 E41A634F-0 res=2 rooms=0   final=57.24
+#8  seq=2 E41A634F-0 res=2 rooms=0   final=303.09
+#9  seq=2 E41A634F-0 res=2 rooms=0   final=321.50
+#10 seq=2 E41A634F-0 res=1 rooms=327 final=321.50  ← 只有这份是完整的
+```
+
+`final` 一路递增 = 每次小退都多写一条。
+
+### 修法：读档时按 run id 去重
+
+`fmt.dedupe(store)`：同一局 id 只保留**行数最多**的那一份，其余删除（从后往前删，避免 start 偏移失效）。
+`loadData` 里调用，清理条数写日志。
+
+### 离线验证（真实存档）
+
+| 存档 | 去重前 | 去重后 | 删掉 |
+|---|---|---|---|
+| save1 | 13 条 | 8 条 | 5 |
+| save3 | 10 条 | 2 条 | 8 |
+
+保留的都是最完整的那份（`2047CBC3-0` 留 rooms=43，`E41A634F-0` 留 rooms=327）。
+
+### 根因还没定位
+
+`state.current` 只有两处赋值（续接 / 新开局），续接分支看着是对的。
+空记录说明某次 `PRE_GAME_EXIT` 时 `state.current` 是个 0 房间的新对象。
+**去重能兜住症状**（每次读档自动清掉），根因留待后续用 run id 诊断。
+
+---
+
+## 顺带确认：Boss 识别 + 通关判定已完全修复
+
+同一局的日志：
+
+```
+[BOSSCLEAR] boss=63 ub=1     ← Hush
+[BOSSCLEAR] boss=70 ub=6     ← 百变怪
+收局诊断 isGameOver=false     ← 是布尔了
+收局 E41A634F-0  res=1        ← 正确记成通关
+```
+
+落盘数据里 10 个 Boss 房全部有 id（60/2/91/67/15/78/6/25/63/70），Hush 和百变怪都带 `ub`。
+## 三处按作者决定的修改
+
+### ① 弹幕数不计入战力（作者决定 2026-10-21）
+
+`power.lua` 普通泪弹分支从 `dmg × rate × multi` 改为 **`dmg × rate`**。
+
+原因就是 E30 记的那件事：随机多发道具（书套）会让同一套面板属性下战力乱跳，
+而 UI 按作者要求不显示弹幕数，于是玩家看到「战力暴涨但六维不动」，无从解释。
+
+多发道具**以后单独维护**。快照里仍然记录 `multiShot`，只是不再进公式。
+
+### ② 四级/零级道具只统计「离开时还持有」的
+
+作者报：一局里「四级道具（3）：神圣屏障(313) × 3」，但他**从来没拿过**这个道具。
+
+根因：`itemwatch` 为了抓住「麦苗」这种**加了又没**的衍生道具，是按"每帧比对持有数量、增加了就记"。
+代价是**任何 mod 临时塞给你的道具都会被记成"拿到了"**。
+
+修法：房间记录新增平行数组 `ik`（0/1），在 `settleRoom`（离开房间那一刻）用
+`player:HasCollectible(id)` 采样：
+
+```
+it = [313, 355]   拿到什么
+iq = [4, 3]       评级
+ik = [0, 1]       离开时还在吗
+```
+
+- **楼层明细**：`it` 全部照旧显示（临时道具看得到）
+- **四级/零级汇总**：只统计 `ik == 1`
+- 旧存档没有 `ik` → 视为全部为 1，不影响历史数据
+
+### ③ Boss 房回访
+
+作者确认「打完回头是正常运营」，选择**保持多条记录**，只要在册子里标出来。
+实测 `firstVisitNow()` 用的是引擎的 `Room:IsFirstVisit()`，回访时返回 false，
+战力提升页已经会显示 `(revisit)`，**无需改动**。
+
+### 测试
+
+luacheck 22 文件 0 失败；fmt_test PASS、identity_test 20/20、rating_test 22/22。

@@ -39,14 +39,19 @@ local bookui = include("ui.book")
 local configui = include("ui.config")
 local dump   = tryRequire("core.dump", "core/dump")
 
--- ── 评级 / 权重 相关（v0.3）──
-local jsonmini  = tryRequire("core.jsonmini", "core/jsonmini")
-local rating    = tryRequire("core.rating", "core/rating")
-local ratedata  = tryRequire("core.rating_data", "core/rating_data")
-local poolmod   = tryRequire("core.pool", "core/pool")
+-- ── 与外部评级 mod 的兼容（Item Weight Editor 会发布 _G.HLR）──
 local itemwatch = tryRequire("core.itemwatch", "core/itemwatch")
 local settings  = tryRequire("core.settings", "core/settings")
-local ratingui  = include("ui.rating_editor")
+
+--- 读外部评级：读不到就返回 nil，调用方回退官方品质。加载顺序无关。
+local function externalQuality(id)
+    local ok, q = pcall(function()
+        local hlr = rawget(_G, "HLR")
+        if hlr and hlr.getQuality then return hlr.getQuality(id) end
+    end)
+    if ok and type(q) == "number" then return q end
+    return nil
+end
 
 if not schema or not fmt or not power or not config then
     emit("[CHRONICLE] FATAL: module load failed (schema=" .. tostring(schema ~= nil) ..
@@ -56,12 +61,7 @@ if not schema or not fmt or not power or not config then
 end
 fmt.setSchema(schema)
 
--- 评级数据层：先装默认表，再发布 _G.HLR 给外部读
-if rating and jsonmini then
-    rating.init(jsonmini, ratedata or {})
 if settings then settings.init() end
-    rating.publish()
-end
 
 local function log(msg) if config.debug then emit(LOG_PREFIX .. tostring(msg)) end end
 local function err(msg) emit(LOG_PREFIX .. "ERROR: " .. tostring(msg)) end
@@ -161,11 +161,9 @@ end
 --- 道具品质（0~4）。带缓存，同一个 id 只查一次。
 local qualityCache = {}
 local function qualityOf(id)
-    -- 自定义评级优先（作者要求：四级道具的判断优先用新评级）；不缓存，编辑器随时会改
-    if rating then
-        local rq = rating.getQuality(id)
-        if rq then return rq end
-    end
+    -- 外部评级 mod 优先；读不到就回退官方品质
+    local rq = externalQuality(id)
+    if rq then return rq end
     local q = qualityCache[id]
     if q then return q end
     q = -1
@@ -306,6 +304,7 @@ end
 --     Boss Rush 没有 bossID，靠房型 17
 local UB = { HUSH = 1, BOSSRUSH = 2, MEGASATAN = 3, MOTHER = 4, BEAST = 5, DELIRIUM = 6 }
 
+local function num(v) if type(v) == "number" and v == v then return v end return 0 end
 local function ultimateBossNow()
     local code = 0
     pcall(function()
@@ -354,7 +353,6 @@ end
 
 --- 房间身份
 
-local function num(v) if type(v) == "number" and v == v then return v end return 0 end
 
 local function readRoomIdentity()
     local ident = { type = 0, shape = 0, doors = 0, stageId = 0, variant = 0,
@@ -570,6 +568,13 @@ local function settleRoom(player)
     -- 与 gained 平行的品质列表（用于识别 4 级起飞 / 0 级封盘）
     local gainedQ = {}
     for k = 1, #gained do gainedQ[k] = qualityOf(gained[k]) end
+    -- 与 it 平行：离开房间这一刻还持有吗？0=临时(已消失) 1=还在
+    local gainedK = {}
+    for k = 1, #gained do
+        local kept = false
+        if player then pcall(function() kept = player:HasCollectible(gained[k]) end) end
+        gainedK[k] = kept and 1 or 0
+    end
 
     local pok = readPockets(player)
     local bossId = p.bossIn or 0
@@ -594,6 +599,7 @@ local function settleRoom(player)
         clr = p.cleared,
         it = gained,
         iq = gainedQ,
+        ik = gainedK,
         dv = p.dmgIn or 0, mu = p.muIn or 1, fm = p.fmIn or "tears",
         foes = p.foes or 0,
         mxhp = p.mxhpIn or 0, mxhpo = snap.maxhp or 0,
@@ -652,7 +658,6 @@ saveData = function()
     if removed > 0 then
         log(string.format("超出字节预算，又淘汰了 %d 局", removed))
     end
-    if rating then rating.save(state.store) end
     if settings then settings.save(state.store) end
     local blob = fmt.buildBlob(state.store)
     if blob == lastBlob then
@@ -685,11 +690,10 @@ loadData = function()
     local store, warns = fmt.splitBlob(blob)
     state.store = store
     state.store.bytes = nil
+    local dups = fmt.dedupe(store)
+    if dups > 0 then log(string.format("清理重复记录 %d 条（同一局存了多份）", dups)) end
     if settings then settings.load(store) end
     if rating then
-        rating.load(store)
-        local n = rating.count()
-        if n > 0 then log(string.format("载入自定义评级 %d 条", n)) end
     end
     log(string.format("载入 %d 局 / %d 行 / %d 字节（未解析房间体）",
         #store.index, #store.lines, #blob))
@@ -744,42 +748,18 @@ end
 
 -- 输入必须在 POST_RENDER 里读：POST_UPDATE 里读 IsButtonTriggered 会漏触发
 add(ModCallbacks.MC_POST_RENDER, function()
-    local f6 = (settings and settings.get("f6")) or Keyboard.KEY_F6
-    if ratingui and ratingui.isReady() and Input.IsButtonTriggered(f6, 0) then
-        ratingui.toggle()
-    end
     uiGuard("update", bookui.update)
     uiGuard("render", bookui.render)
 end)
 
 configui.init({ settings = settings, log = log, onChanged = function() pcall(saveData) end })
-do
-    local editorDeps = {
-        rating = rating, pool = poolmod, getPlayer = getPlayer, log = log,
-        onChanged = function() pcall(saveData) end,
-    }
-    if ratingui and ratingui.init(editorDeps) then
-        log("评级编辑器已就绪（F6 打开）")
-    elseif not ratingui then
-        log("评级编辑器缺失")
-    end
-end
 
 -- 每帧监视道具变化；局开始时快照权重并重建基线
 add(ModCallbacks.MC_POST_GAME_STARTED, function()
     local p = getPlayer()
     if itemwatch then itemwatch.reset(p, 1800) end
-    if poolmod then
-        local n = poolmod.snapshot(poolmod.COMMON_POOLS)
-        log(string.format("[POOL] 权重快照：%d 个池子", n))
-    end
 end)
 
--- 抽到道具后：按权重倍数决定要不要重掷（排最后，只微调别人的结果）
-add(ModCallbacks.MC_POST_GET_COLLECTIBLE, function(_, itemID, poolType, decrease, seed)
-    if not (poolmod and rating) then return nil end
-    return poolmod.onPostGet(rating, itemID, poolType, decrease, seed, log)
-end, CallbackPriority.LATE)
 if configui.isReady() then log("ImGui 配置菜单已挂上") else log("ImGui 不可用（或挂载失败），跳过配置菜单") end
 
 add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
@@ -829,6 +809,14 @@ add(ModCallbacks.MC_POST_UPDATE, function()
         local room = Game():GetRoom()
         local t = num(room:GetType())
         if t ~= 5 and t ~= 17 then return end
+            if not p.bossDiag then
+                p.bossDiag = true
+                local g1, r1 = pcall(function() return Game():GetRoom():GetBossID() end)
+                local g2, r2 = pcall(function() return Game():GetLevel():GetCurrentRoomDesc().Data.Subtype end)
+                local g3, r3 = pcall(function() return Game():GetRoom():GetSecondBossID() end)
+                log(string.format("[BOSSDIAG] type=%d  GetBossID=(%s)%s  descSub=(%s)%s  2nd=(%s)%s",
+                    t, tostring(g1), tostring(r1), tostring(g2), tostring(r2), tostring(g3), tostring(r3)))
+            end
         if (p.bossIn or 0) == 0 then p.bossIn = bossIdNow() end
         if (p.ubIn or 0) == 0 then p.ubIn = ultimateBossNow() end
     end)
@@ -836,6 +824,18 @@ end)
 
 add(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function()
     if state.pending then state.pending.cleared = true end
+        -- Boss 房：清房这一刻 GetBossID() 才可靠（cuerlib / antibirth music 都是死后才读）
+        if state.pending then
+            local t = 0
+            pcall(function() t = num(Game():GetRoom():GetType()) end)
+            if t == 5 or t == 17 then
+                local b = bossIdNow()
+                if b and b ~= 0 then state.pending.bossIn = b end   -- 只在取到非 0 时覆盖（清房瞬间可能返回 0）
+                local u = ultimateBossNow()
+                if u and u ~= 0 then state.pending.ubIn = u end
+                log(string.format("[BOSSCLEAR] type=%d boss=%d ub=%d", t, state.pending.bossIn, state.pending.ubIn))
+            end
+        end
 end)
 
 local dmgProbed, dmgLogged = false, false
@@ -875,7 +875,7 @@ add(ModCallbacks.MC_ENTITY_TAKE_DMG, function(...)
     return nil
 end)
 
-add(ModCallbacks.MC_POST_GAME_END, function(isGameOver)
+add(ModCallbacks.MC_POST_GAME_END, function(_, isGameOver)   -- 第一个参数是 mod，不是 isGameOver
     -- 收局诊断：isGameOver 到底靠不靠得住，靠这几个值判断
     local p = getPlayer()
     local info = "?"
@@ -896,6 +896,11 @@ add(ModCallbacks.MC_PRE_GAME_EXIT, function()
     if state.current then
         settleRoom(getPlayer())
         state.current.res = 2
+        -- 撤掉换层检查点写进去的那一份，否则每小退一次就多一条（作者实测存了 3 份）
+        if state.currentEntry then
+            fmt.removeEntry(state.store, state.currentEntry)
+            state.currentEntry = nil
+        end
         fmt.appendRun(state.store, state.current)
         state.current = nil
     end

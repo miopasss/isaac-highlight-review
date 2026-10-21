@@ -299,3 +299,72 @@ git push origin v0.2.0
 本地 `user.email` 是 Gitee 的 `...@user.noreply.gitee.com`，
 所以 GitHub 上部分提交显示作者为 `piiiika`，贡献者统计里不计入 `miopasss`。
 作者决定「就这样吧」，不改。
+---
+
+## 13. 两个 mod 的拆分（v0.3 之后的结构，作者 2026-10-21 拍板）
+
+### 结论先看
+
+| 项 | 决定 |
+|---|---|
+| 仓库 | **一个仓库**，两个 mod 目录 + `shared/` |
+| `mod-rating/` | Item Weight Editor，目录名 **`highlight-rating`**，版本 `0.1.0` |
+| `mod-review/` | Highlight Review，目录名 **`highlight-review`**（不变），版本 `0.3.0` |
+| 共享代码 | `shared/settings.lua`，由 `deploy.ps1` 复制进两个 mod（沙箱不能跨 mod `require`） |
+| 契约 | `_G.HLR = { version, getQuality, getWeightMul, has, count }`；读不到= nil = 回退官方品质 |
+| 数据迁移 | **不迁移**。回顾存档里旧 `Q=` 行原样留着，不再使用 |
+| 旧 `Q=` 行 | **不删**（保住回退能力） |
+
+### 为什么要拆
+
+v0.3 让回顾挂了 `MC_POST_GET_COLLECTIBLE`，于是它从「只读观察者」变成「会改游戏的 mod」，
+和 tyuniverse / cuerlib / reverie+ / sacred-dreams 四个同类 mod 形成潜在冲突面。
+拆分后 **回顾退回纯只读**，权重归评级 mod。
+
+### 硬规则（拆分后新增）
+
+1. **回顾的代码里不许再出现 `MC_POST_GET_COLLECTIBLE` / `core/pool`**。要做只读观察者。
+2. **两个 mod 之间只能通过 `_G.HLR` 通信**，不许读对方的存档目录（本来也读不到）。
+3. **改 `shared/` 里的文件后必须跑一次 `tools\deploy.ps1`**（它会把 `shared/` 复制进两个 mod）。
+   忘了跑 → 两个 mod 里还是旧代码。
+4. `mod-review/core/settings.lua` 和 `mod-rating/core/settings.lua` 是**生成物**，也在 git 里。
+   要改就改 `shared/settings.lua`，别直接改这两份。
+5. 各 mod 只写自己用到的设置键：回顾 `S.only = {"f5"}`、评级 `S.only = {"f6"}`，
+   避免两个 mod 互相覆盖对方的 `C=` 行。
+
+### 命令变化
+
+```powershell
+# 同步两个 mod（默认两个）
+powershell -File tools\deploy.ps1
+powershell -File tools\deploy.ps1 -Mod rating     # 只同步评级
+powershell -File tools\deploy.ps1 -Mod review     # 只同步回顾
+
+# 语法校验：默认检查 mod-review + mod-rating + shared（22 个文件）
+C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\luacheck.ps1
+
+# 离线单测
+... tools\luarun.ps1 tests\rating_test.lua    # 22 项，测评级 mod
+... tools\luarun.ps1 tests\fmt_test.lua       # 回顾的数据格式
+... tools\luarun.ps1 tests\identity_test.lua  # 回顾的房间身份
+
+# 打包上传创意工坊
+powershell -File tools\pack.ps1                 # → dist\highlight-{rating,review}.zip
+```
+
+### 日志前缀
+
+| mod | 前缀 | 看什么 |
+|---|---|---|
+| Highlight Review | `[HIGHLIGHT]` | `F...` 房间行、`落盘 OK`、`[BOSSCLEAR]` |
+| Item Weight Editor | `[WEIGHT]` | `loaded v0.1.0`、`载入 N 条评级配置`、`[POOL] 重掷 X -> Y` |
+
+**两个 mod 都装上时，日志里两个前缀都会出现**，这是正常的。
+
+### 踩过的坑（拆分时新增）
+
+| 坑 | 后果 |
+|---|---|
+| Lua 的 `local function` **只从定义位置往后可见** | `num()` 定义在使用它的函数**之后** → 那些函数里的 `num` 编译成全局查找 → nil → `pcall` 吞掉错误 → 悄悄返回 0。**Boss 识别因此整整失效了两轮。** |
+| `MC_POST_GAME_END` 的第一个参数是 **mod**，不是 `isGameOver` | `function(isGameOver)` 拿到的是表 → 永远是真值 → **所有通关都被标成死亡** |
+| 按 `^do$` 匹配删除代码块 | 命中了更早的另一个 `do`，**一次删掉 65 行**。删代码块必须按**行号**，且删除前把行内容打印出来核对 |

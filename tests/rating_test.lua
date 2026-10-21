@@ -6,8 +6,8 @@ local ROOT = (os and os.getenv and os.getenv("HLR_ROOT")) or "D:/00000/aiStudy/i
 if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
 local function loadmod(p) return loadfile(ROOT .. p)() end
 
-local J = loadmod("mod/core/jsonmini.lua")
-local R = loadmod("mod/core/rating.lua")
+local J = loadmod("mod-rating/core/jsonmini.lua")
+local R = loadmod("mod-rating/core/rating.lua")
 
 local pass, fail = 0, 0
 local function check(name, cond, detail)

@@ -78,6 +78,13 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
     if P.inCallback then return nil end
 
     if not itemID or itemID <= 0 then return nil end
+    -- 探针：只记录"被配置过"的道具被抽到的时刻（这类才是我们真正会干预的）
+    do
+        local m0 = ratings.getWeightMul(itemID)
+        if m0 ~= nil and log then
+            log(string.format("[POOL] 抽到受控道具 id=%d pool=%s 倍数=%.2f", itemID, tostring(poolType), m0))
+        end
+    end
     local mul = ratings.getWeightMul(itemID)
     if mul == nil then return nil end              -- 没配置：完全不动
     if mul >= 1 then
@@ -123,6 +130,11 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
     P.inCallback = false
 
     if result then
+        -- 验证用日志：权重是否真的在改抽签结果（每局最多 30 行，避免刷屏）
+        P.logged = (P.logged or 0) + 1
+        if log and P.logged <= 30 then
+            log(string.format("[POOL] 重掷 %d -> %d  （倍数 %.2f）", itemID, result, mul))
+        end
         P.stats.reRolled = P.stats.reRolled + 1
         if mul <= 0 then P.stats.banned = P.stats.banned + 1 end
         return result

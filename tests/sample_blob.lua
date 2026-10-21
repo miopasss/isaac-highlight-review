@@ -5,7 +5,7 @@
 local ROOT = (os and os.getenv and os.getenv("HLR_ROOT")) or "D:/00000/aiStudy/issacmod/"
 if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
 
-local fmt = loadfile(ROOT .. "mod/core/fmt.lua")()
+local fmt = loadfile(ROOT .. "mod-review/core/fmt.lua")()
 
 -- 一局打 4 个房间的样子（数值取自"初始以撒 3.5 伤害 / 2.73 攻速"）
 local run = {

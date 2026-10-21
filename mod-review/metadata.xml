@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>Highlight Review (高光回顾)</name>
+    <directory>highlight-review</directory>
+    <description>After every run, review where your power actually spiked: which floor, which room, and what you picked up. Works together with Item Weight Editor for custom item quality. Requires REPENTOGON. / 每局结束后回看战力到底在哪儿起飞的：哪一层、哪个房间、拿到了什么。配合 Item Weight Editor 可显示自定义道具评级。需要 REPENTOGON。</description>
+    <version>0.3.0</version>
+    <visibility>Private</visibility>
+</metadata>

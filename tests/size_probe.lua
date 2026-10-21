@@ -1,7 +1,7 @@
 local ROOT = (os and os.getenv and os.getenv("HLR_ROOT")) or "D:/00000/aiStudy/issacmod/"
 if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
-local schema = loadfile(ROOT.."mod/core/schema.lua")()
-local fmt = loadfile(ROOT.."mod/core/fmt.lua")()
+local schema = loadfile(ROOT.."mod-review/core/schema.lua")()
+local fmt = loadfile(ROOT.."mod-review/core/fmt.lua")()
 fmt.setSchema(schema)
 local r = {
   r=1,f=1,i=3,t=4,s=1,d=15,st=30,v=12,list=7,

@@ -30,10 +30,10 @@ local function itemName(id)
     return nil
 end
 
-local schema = loadmod("mod/core/schema.lua")
-local fmt     = loadmod("mod/core/fmt.lua")
-local hl      = loadmod("mod/core/highlight.lua")
-local text    = loadmod("mod/core/text_render.lua")
+local schema = loadmod("mod-review/core/schema.lua")
+local fmt     = loadmod("mod-review/core/fmt.lua")
+local hl      = loadmod("mod-review/core/highlight.lua")
+local text    = loadmod("mod-review/core/text_render.lua")
 fmt.setSchema(schema)
 
 -- 与 config.lua 的默认值保持一致

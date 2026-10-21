@@ -8,7 +8,7 @@ local ROOT = (os and os.getenv and os.getenv("HLR_ROOT")) or "D:/00000/aiStudy/i
 if ROOT:sub(-1) ~= "/" then ROOT = ROOT .. "/" end
 local function loadmod(p) return loadfile(ROOT .. p)() end
 
-local hl = loadmod("mod/core/highlight.lua")
+local hl = loadmod("mod-review/core/highlight.lua")
 
 -- 构造：2 层 6 间房
 --   层1：r1 普通(无道具) → r2 宝箱(拿 Q4 道具1，战力 10→20) → r3 Boss(拿 Q0 道具2，20→25)

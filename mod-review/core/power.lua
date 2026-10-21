@@ -65,7 +65,10 @@ function power.output(s)
     end
 
     -- 普通泪弹
-    return dmg * rate * multi, "tears"
+    -- 作者决定（2026-10-21）：弹幕数**不计入**战力。
+    -- 原因：随机多发的道具（书套之类）会让战力在同一套面板属性下乱跳。
+    -- 多发道具以后单独维护（DESIGN.md E30）。
+    return dmg * rate, "tears"
 end
 
 --- 生存值（半心为单位）。
