@@ -23,6 +23,14 @@ config.dumpOnce = true
 -- 不只是道具座。默认关闭，等做了"按 EntityType/Subtype 过滤"再开。
 config.capturePeds = false
 
+-- 道具采集黑名单：这些 id 永远不会被记成"本房获得"。
+-- 313 = 神圣屏障（Holy Mantle）：别的 mod 会往身上反复挂这个效果，
+-- 实测一局被误记 4 次，玩家根本没拿过。作者 2026-10-21 要求排除。
+-- 加新条目就照格式加一行 [id] = true。
+config.itemBlacklist = {
+    [313] = true,
+}
+
 -- 高光判定阈值（v0.1 **不使用**，只记录；等跑出真实分布再定，见 DESIGN.md §6）
 config.thresholds = {
     relPct       = 15,   -- 相对进房战力增长 ≥ 15%
