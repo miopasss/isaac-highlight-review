@@ -192,7 +192,7 @@ function highlight.analyze(run, cfg)
         local f = run.floors[i]
         map[num(f.i)] = {
             i = num(f.i), stage = f.stage, curse = num(f.curse),
-            rooms = 0, firstRooms = 0, items = {}, ms = 0, dmg = 0,
+            rooms = 0, firstRooms = 0, items = {}, itemsQ = {}, ms = 0, dmg = 0,
             powerIn = nil, powerOut = 0, gain = 0,
         }
     end
@@ -210,7 +210,10 @@ function highlight.analyze(run, cfg)
         if r.first then f.firstRooms = f.firstRooms + 1 end
         if f.powerIn == nil then f.powerIn = r.p end
         f.powerOut = r.po
-        for k = 1, #r.it do f.items[#f.items + 1] = r.it[k] end
+        for k = 1, #r.it do
+            f.items[#f.items + 1]  = r.it[k]
+            f.itemsQ[#f.itemsQ + 1] = num(r.iq and r.iq[k])
+        end
     end
     local order = {}
     for i in pairs(map) do order[#order + 1] = i end
@@ -240,6 +243,41 @@ function highlight.analyze(run, cfg)
         end
         book.floors[#book.floors + 1] = f
         book.curve[#book.curve + 1] = { floor = f.i, power = f.powerOut }
+    -- 2.4) 战力跃迁事件（作者 2026-10-22）
+    -- 只算「拿到道具」造成的跳变；脏 id（iq<0）与负增量不算
+    -- 规则：先按单次增量降序取前 N 个（N=config.jumpTopN，默认 50），
+    --       再按时间顺序排，展示时最多 24 个，其余只报个数
+    local jumpMin = (cfg and cfg.jumpMin) or 0.30
+    local jumpN   = (cfg and cfg.jumpTopN) or 50
+    local evs = {}
+    for ri = 1, #run.rooms do
+        local r = run.rooms[ri]
+        local it, iq, ie = r.it or {}, r.iq or {}, r.ie or {}
+        for k = 1, #it do
+            local d = tonumber(ie[k]) or 0
+            local q = tonumber(iq[k]) or -1
+            if q >= 0 and d >= jumpMin then
+                local pIn  = tonumber(r.p) or 0
+                local pOut = tonumber(r.po) or 0
+                local pct  = (pIn > 0.01) and (d / pIn) or 0
+                evs[#evs + 1] = {
+                    id = it[k], delta = d, pct = pct, pIn = pIn, pOut = pOut,
+                    floor = num(r.f), room = num(r.i),
+                    ord = ri * 1000 + k,
+                }
+            end
+        end
+    end
+    local bySize = {}
+    for i = 1, #evs do bySize[i] = evs[i] end
+    table.sort(bySize, function(a, b) return a.delta > b.delta end)
+    local picked = {}
+    for i = 1, math.min(#bySize, jumpN) do picked[#picked + 1] = bySize[i] end
+    table.sort(picked, function(a, b) return a.ord < b.ord end)
+    book.jumps      = picked
+    book.jumpTotal  = #evs
+    book.jumpShown  = math.min(#picked, 24)
+    book.jumpRest   = #evs - book.jumpShown
     end
 
     -- 2.5) 终极 Boss（只收"已清房"的；最多 4 个）
@@ -263,10 +301,12 @@ function highlight.analyze(run, cfg)
         if rooms[i].delta > 0 then pool[#pool + 1] = rooms[i] end
     end
     table.sort(pool, function(a, b) return a.delta > b.delta end)
+    if (cfg.pagesPower ~= false) then   -- config.pagesPower = false → 不生成 Top3 页
     for i = 1, math.min(cfg.powerTopN, #pool) do
         book.pages[#book.pages + 1] = {
             kind = "power", rank = i, room = pool[i], title = "战力提升",
         }
+    end
     end
 
     -- 3.5) 页序：整页「终极Boss与终极道具」放最前（总是存在，内容可为空），再接战力 Top3
@@ -286,10 +326,20 @@ function highlight.analyze(run, cfg)
         kind = "finale",
         title = "终极Boss与终极道具",
         bosses = book.finalBosses,   -- 已清房的终极 Boss（最多显示 4 个）
-        q4 = q4Items,
-        q0 = q0Items,
+        q4 = (cfg.showQ4 ~= false) and q4Items or {},
+        q0 = (cfg.showQ0 ~= false) and q0Items or {},
     }
     table.insert(book.pages, 1, finale)
+
+    -- 3.8) 战力跃迁页（作者 2026-10-22）：替代原来的 Top3/四级/零级三页
+    book.pages[#book.pages + 1] = {
+        kind = "jumps",
+        title = "战力跃迁",
+        events = book.jumps or {},
+        shown = book.jumpShown or 0,
+        rest = book.jumpRest or 0,
+        total = book.jumpTotal or 0,
+    }
 
 
     book.pageCount = 1 + #book.pages + #book.floors

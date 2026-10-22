@@ -2273,3 +2273,39 @@ main.lua:434: attempt to call a nil value (global 'nowSec')
 | ≤300s | C |
 | >300s | E |
 | 没打终极 Boss | D |
+## 局内 HUD 战力行 + 战力跃迁页
+
+### 数据
+
+- `schema` 房间作用域新增 `ie`（与 `it` 平行：每件道具带来的战力增量）
+- `fmt` 的列表编码支持小数：整数值仍按 `%d`（旧存档字节不变），带小数按 `%.4f`；解码不再强制四舍五入
+- 采集：房间进/出战力的差是准确值，单件归因按「本房有效道具数」平摊；`iq<0` 的脏 id 记 0 不参与排序
+
+### 派生（`highlight.analyze`）
+
+```
+jumps = 所有 (道具, 增量 >= config.jumpMin) 的事件
+按增量降序取前 N（config.jumpTopN=50）→ 再按时间顺序排
+展示前 24 个（config.jumpShown），其余只报个数
+```
+
+### 页面
+
+- 新增「战力跃迁」页（`kind = "jumps"`）：图标 + 百分比 + `F<层>`，2 排 × 12
+- 楼层详情加 `JUMPS` 小块：最多 8 条，超出 `+N`
+- 「战力提升 Top3」页、「四级/零级」列表改为配置开关：
+  `config.pagesPower / showQ4 / showQ0`，默认 `false`
+
+### 局内 HUD
+
+`MC_POST_RENDER` 里画一行：`▮ PWR 9.55 +1.41`，位置基准 168（Rep+ 170）+ `config.hudPowerOffsetY`
+（默认 18，因为 168 会压住原生面板最后两行）。增量 3 秒后消失，每 20 帧刷新数值。
+
+### 踩的坑
+
+1. `bookui.init` 的 deps 表里 `config` 写了**两遍**，我加的 `config = config` 被后面的硬编码表覆盖 → 所有开关失效。
+   改成「硬编码默认值 + config.lua 合并（后者优先）」。
+2. 楼层记录有**两处**初始化，只补了一处 `itemsQ` → `identity_test` 直接报
+   `attempt to get length of a nil value (field 'itemsQ')`。
+3. 我插入跃迁页时把 `table.insert(book.pages, 1, finale)` 复制成了两行 → 册子出现两个终局页。
+4. `identity_test` 是按「Top3 页存在」写的，开关默认关掉后必须让测试自己传 `pagesPower = true`。

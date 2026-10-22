@@ -604,6 +604,40 @@ local function settleRoom(player)
         gainedK[k] = kept and 1 or 0
     end
 
+    -- 与 it 平行：这件道具带来的战力增量（作者 2026-10-22 要的「跃迁」依据）
+    -- 房间进/出战力的差是准确值，但没有单件归因，所以：
+    --   · 本房只有 1 件有效道具 → 增量 = 出战 - 进战（精确）
+    --   · 多件 → 均摊，并打日志标记（罕见）
+    --   · iq < 0（mod 道具整表写入的脏 id）→ 记 0，不参与跃迁排序
+    local gainedE = {}
+    local validN, dirtyN = 0, 0
+    for k = 1, #gained do
+        if (gainedQ[k] or -1) < 0 then dirtyN = dirtyN + 1 else validN = validN + 1 end
+    end
+    local dPower = (snap.power or 0) - (tonumber(p.p) or 0)   -- 进房 p.p → 出房 snap.power
+    for k = 1, #gained do
+        if (gainedQ[k] or -1) < 0 then
+            gainedE[k] = 0
+        elseif validN > 0 then
+            gainedE[k] = dPower / validN
+        else
+            gainedE[k] = 0
+        end
+    end
+    -- 局内 HUD 数据（作者 2026-10-22）：当前战力 + 本次增量，3 秒后增量消失
+    if bookui and bookui.hud then
+        bookui.hud.power = snap.power
+        bookui.hud.delta = dPower
+        local fc = 0
+        pcall(function() fc = Isaac.GetFrameCount() end)
+        bookui.hud.untilFrame = fc + math.floor((config.hudPowerFadeMs or 3000) / 1000 * 30)
+    end
+
+    if validN > 1 then
+        log(string.format("[ATTR] 同房 %d 件有效道具（脏 %d），战力差 %.2f 均摊",
+            validN, dirtyN, dPower))
+    end
+
     local pok = readPockets(player)
     local bossId = p.bossIn or 0
     local firstVisit = p.firstIn or false
@@ -628,6 +662,7 @@ local function settleRoom(player)
         it = gained,
         iq = gainedQ,
         ik = gainedK,
+        ie = gainedE,
         dv = p.dmgIn or 0, mu = p.muIn or 1, fm = p.fmIn or "tears",
         foes = p.foes or 0,
         mxhp = p.mxhpIn or 0, mxhpo = snap.maxhp or 0,
@@ -751,9 +786,16 @@ end
 bookui.init({
     hotkeyF5 = function() return (settings and settings.get("f5")) or Keyboard.KEY_F5 end,
     getStore = function() return state.store end,
+    -- 合并：硬编码默认值 + config.lua（config.lua 优先）
+    config = (function()
+        local c = { powerTopN = 3, q4MaxPages = 3, absDelta = 0.5, relPct = 15 }
+        if type(config) == "table" then
+            for k, v in pairs(config) do c[k] = v end
+        end
+        return c
+    end)(),
     fmt      = fmt,
     hl       = highlight,
-    config   = { powerTopN = 3, q4MaxPages = 3, absDelta = 0.5, relPct = 15 },
     log      = log,
 })
 
@@ -778,6 +820,18 @@ end
 add(ModCallbacks.MC_POST_RENDER, function()
     uiGuard("update", bookui.update)
     uiGuard("render", bookui.render)
+    -- HUD 战力定期刷新（每 20 帧）：开局/换层的快照可能太早，数值会不准
+    do
+        local fcOk, fc = pcall(function() return Isaac.GetFrameCount() end)
+        if fcOk and fc and (fc % 20) == 0 and bookui and bookui.hud then
+            local okp, p0 = pcall(function() return Isaac.GetPlayer(0) end)
+            if okp and p0 then
+                local okS, s0 = pcall(snapshot, p0)
+                if okS and s0 and s0.power then bookui.hud.power = s0.power end
+            end
+        end
+    end
+    if bookui and bookui.renderHud then uiGuard("renderHud", bookui.renderHud) end
 end)
 
 configui.init({ settings = settings, log = log, onChanged = function() pcall(saveData) end })

@@ -7,6 +7,25 @@ local config = {}
 -- 存档留多少局（超出按 seq 淘汰最旧）。见 FORMAT.md §6
 config.maxRuns = 50
 
+-- ── 册子页面开关（作者 2026-10-22）────────────────────────────────────────
+-- 关掉「战力提升 Top3」那几页；四级/零级列表也从终极Boss页里去掉。
+-- 改成 true 就恢复。
+config.pagesPower = false     -- 战力提升 Top3 独立页
+config.showQ4     = false     -- 终极Boss页里的四级道具列表
+config.showQ0     = false     -- 终极Boss页里的零级道具列表
+
+-- ── 战力跃迁（新页）────────────────────────────────────────────────────
+-- 只算「拿到道具」造成的战力跳变；脏 id（品质<0）和负增量不算。
+config.jumpMin   = 0.30       -- 单次增量门槛（战力绝对值）
+config.jumpTopN  = 50         -- 先按增量取前 N 个，再按时间排
+config.jumpShown = 24         -- 一页最多展示几个（2 排 × 12）
+
+-- ── 局内 HUD：六维下面那一行战力 ──────────────────────────────────────
+config.hudPower       = true
+config.hudPowerOffsetY = 18   -- 错位时调这个（480x270 空间里的像素：正数往下）
+config.hudPowerFadeMs  = 3000 -- 拿到道具后「+x.xx」保留多久
+config.maxRuns = 50
+
 -- 字节预算硬线：超过就从最旧的局开始整局淘汰。
 -- 参照：你机器上最大的 mod 存档是 reverie 的 291 KB；这里留到 1.2 MB 的余量。
 config.maxBlobBytes = 1200000

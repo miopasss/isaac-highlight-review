@@ -57,7 +57,15 @@ local function encodeValue(t, v)
     elseif t == "l" then
         local out = {}
         for k = 1, #v do
-            if isFinite(v[k]) then out[#out + 1] = string.format("%d", math.floor(v[k] + 0.5)) end
+            if isFinite(v[k]) then
+                local x = v[k]
+                if x == math.floor(x) then
+                    out[#out + 1] = string.format("%d", math.floor(x + 0.5))   -- 整数：保持旧格式
+                else
+                    if x > 1e6 then x = 1e6 elseif x < -1e6 then x = -1e6 end
+                    out[#out + 1] = string.format("%.4f", x)                     -- 小数：ie 的战力增量
+                end
+            end
         end
         return table.concat(out, fmt.SEP_LIST)
     elseif t == "h" then
@@ -81,7 +89,7 @@ local function decodeValue(t, s)
         local out = {}
         for piece in s:gmatch("[^" .. fmt.SEP_LIST .. "]+") do
             local n = tonumber(piece)
-            if n and isFinite(n) then out[#out + 1] = math.floor(n + 0.5) end
+            if n and isFinite(n) then out[#out + 1] = n end
         end
         return out
     end

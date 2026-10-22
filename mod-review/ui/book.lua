@@ -715,6 +715,51 @@ y = statRow(s, y, r.stats[i], bk, PADX + 12, PADW - 40)
         or "L/R PAGE    ESC BACK    F5 CLOSE   (ESC pauses time)")
 end
 
+--- 「战力跃迁」页（作者 2026-10-22）
+--- 只列「拿到道具」造成的战力跳变：图标 + 提升百分比，按时间顺序，2 排 × 12
+local function drawJumps(s, bk, idx)
+    local p = bk.pages[idx]
+    if not p then footer(s, "empty"); return end
+    local evs = p.events or {}
+
+    title(s, (getCJK() and "战力跃迁") or "POWER JUMPS",
+        string.format("%d/%d", 1 + idx, bk.pageCount))
+
+    local y = PADY + 27
+    txt(string.format("%s  %d/%d", (getCJK() and "只算拿到道具造成的跳变" or "item-driven only"),
+        p.shown or 0, p.total or 0), (PADX + 12) * s, y * s, s * 0.52, INK_DIM)
+    y = y + 16
+
+    local x0 = PADX + 14
+    local PERROW = 12
+    local CELLW = 27
+    local shown = math.min(#evs, p.shown or 24)
+    for k = 1, shown do
+        local ev = evs[k]
+        local row = math.floor((k - 1) / PERROW)
+        local col = (k - 1) % PERROW
+        local cx = x0 + col * CELLW
+        local cy = y + row * 42
+        local sp = itemIcon(ev.id)
+        if sp then
+            sp.Scale = Vector(s * 0.62, s * 0.62)
+            sp:Render(Vector(cx * s, cy * s))
+        else
+            txt(tostring(ev.id), cx * s, (cy + 4) * s, s * 0.42, INK_DIM)
+        end
+        -- 百分比（负值红色）与层/房号
+        local txtPct = string.format("+%.0f%%", (ev.pct or 0) * 100)
+        txt(txtPct, cx * s, (cy + 18) * s, s * 0.40, (ev.delta or 0) >= 0 and INK_UP or INK_DN)
+        txt(string.format("F%d", ev.floor or 0), cx * s, (cy + 26) * s, s * 0.36, INK_DIM)
+    end
+
+    if (p.rest or 0) > 0 then
+        txt(string.format("+%d", p.rest), (PADX + PADW - 40) * s, (PADY + PADH - 24) * s, s * 0.54, INK_DIM)
+    end
+    footer(s, isGamePaused() and "TIME PAUSED    L/R PAGE    ESC BACK    F5 CLOSE"
+        or "L/R PAGE    ESC BACK    F5 CLOSE   (ESC pauses time)")
+end
+
 local function drawFloor(s, bk, idx)
     local f = bk.floors[idx]
     if not f then footer(s, "empty"); return end
@@ -782,6 +827,35 @@ y = statRow(s, y, f.stats[i], bk, PADX + 12, PADW - 40)
             y = y + 15
         end
     end
+    -- 本层战力跃迁（作者 2026-10-22）：最多 8 条，按时间顺序，超出 +N
+    local fJumps = {}
+    if bk.jumps then
+        for i = 1, #bk.jumps do
+            if bk.jumps[i].floor == f.i then fJumps[#fJumps + 1] = bk.jumps[i] end
+        end
+    end
+    if #fJumps > 0 then
+        y = y + 5
+        txt(string.format("JUMPS  %d", #fJumps), (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
+        y = y + 11
+        for i = 1, math.min(#fJumps, 8) do
+            local e = fJumps[i]
+            local sp = itemIcon(e.id)
+            if sp then
+                sp.Scale = Vector(s * 0.5, s * 0.5)
+                sp:Render(Vector((PADX + 12) * s, y * s))
+            end
+            txt(string.format("#%d  %.2f>%.2f  %+.1f%%",
+                e.room or 0, e.pIn or 0, e.pOut or 0, (e.pct or 0) * 100),
+                (PADX + 28) * s, (y + 1) * s, s * 0.5,
+                (e.delta or 0) >= 0 and INK_UP or INK_DN)
+            y = y + 11
+        end
+        if #fJumps > 8 then
+            txt(string.format("+%d", #fJumps - 8), (PADX + 12) * s, y * s, s * 0.5, INK_DIM)
+        end
+    end
+
     footer(s, isGamePaused() and "TIME PAUSED    L/R PAGE    ESC BACK    F5 CLOSE"
         or "L/R PAGE    ESC BACK    F5 CLOSE   (ESC pauses time)")
 end
@@ -825,11 +899,42 @@ local function render()
         local pg = bk.pages[page - 1]
         if pg and pg.kind == "finale" then
             drawFinale(s, bk, page - 1)
+            elseif pg and pg.kind == "jumps" then
+                drawJumps(s, bk, page - 1)
         else
             drawHighlight(s, bk, page - 1)
         end
     else
         drawFloor(s, bk, page - 1 - #bk.pages)
+    end
+end
+
+-- ── 局内 HUD：六维下面一行战力（作者 2026-10-22）────────────────────────
+-- 数据由 main 每帧写入（power 当前战力、delta 最近一次增量、untilFrame 过期帧）
+book.hud = { power = 0, delta = 0, untilFrame = 0 }
+
+function book.renderHud()
+    local cfg = (deps and deps.config) or {}
+    if cfg.hudPower == false then return end
+    local hud = book.hud
+    if not hud or not hud.power or hud.power <= 0 then return end
+
+    local _, _, s = scr()
+    -- 原生属性面板在 480x270 空间里的行距是 11；基准 168（Rep+ 是 170）
+    local plus = rawget(_G, "REPENTANCE_PLUS") or rawget(_G, "REPENTOGON_PLUS")
+    local hy = (plus and 170 or 168) + (cfg.hudPowerOffsetY or 0)
+    local hx = 11
+
+    -- 占位图标（一个小方块），后面可以换成真正的图标
+    rect(hx * s, (hy + 1.5) * s, 6 * s, 6 * s, 0.75, 0.20, 0.18, 0.9)
+    txt("PWR", (hx + 8) * s, hy * s, s * 0.42, INK_DIM)
+    txt(string.format("%.2f", hud.power), (hx + 36) * s, hy * s, s * 0.58, INK)
+
+    local fc = 0
+    pcall(function() fc = Isaac.GetFrameCount() end)
+    if hud.delta and math.abs(hud.delta) > 0.005 and fc < (hud.untilFrame or 0) then
+        txt(string.format("%+.2f", hud.delta), (hx + 70) * s, hy * s, s * 0.5,
+            hud.delta >= 0 and INK_UP or INK_DN)
     end
 end
 
