@@ -727,36 +727,38 @@ local function drawJumps(s, bk, idx)
     title(s, (getCJK() and "战力跃迁") or "POWER JUMPS",
         string.format("%d/%d", 1 + idx, bk.pageCount))
 
-    local y = PADY + 27
+    local y = PADY + 26
     txt(string.format("%s  %d/%d", (getCJK() and "只算拿到道具造成的跳变" or "item-driven only"),
         p.shown or 0, p.total or 0), (PADX + 12) * s, y * s, s * 0.52, INK_DIM)
-    y = y + 16
+    y = y + 14
 
-    local x0 = PADX + 14
-    local PERROW = 12
-    local CELLW = 27
+    -- 双列 × 12 行：图标 + 旧>新 + 百分比（作者 2026-10-22 要求数值也要）
+    local PERCOL = 12
+    local x0 = PADX + 12
+    local colW = (PADW - 30) / 2
     local shown = math.min(#evs, p.shown or 24)
     for k = 1, shown do
         local ev = evs[k]
-        local row = math.floor((k - 1) / PERROW)
-        local col = (k - 1) % PERROW
-        local cx = x0 + col * CELLW
-        local cy = y + row * 42
+        local col = math.floor((k - 1) / PERCOL)
+        local row = (k - 1) % PERCOL
+        local cx = x0 + col * (colW + 6)
+        local cy = y + row * 13
+
         local sp = itemIcon(ev.id)
         if sp then
-            sp.Scale = Vector(s * 0.62, s * 0.62)
+            sp.Scale = Vector(s * 0.46, s * 0.46)
             sp:Render(Vector(cx * s, cy * s))
-        else
-            txt(tostring(ev.id), cx * s, (cy + 4) * s, s * 0.42, INK_DIM)
         end
-        -- 百分比（负值红色）与层/房号
-        local txtPct = string.format("+%.0f%%", (ev.pct or 0) * 100)
-        txt(txtPct, cx * s, (cy + 18) * s, s * 0.40, (ev.delta or 0) >= 0 and INK_UP or INK_DN)
-        txt(string.format("F%d", ev.floor or 0), cx * s, (cy + 26) * s, s * 0.36, INK_DIM)
+        local line = string.format("%.2f>%.2f  %+.1f%%",
+            ev.pIn or 0, ev.pOut or 0, (ev.pct or 0) * 100)
+        txt(line, (cx + 15) * s, (cy + 1) * s, s * 0.46,
+            (ev.delta or 0) >= 0 and INK_UP or INK_DN)
+        txt(string.format("F%d#%d", ev.floor or 0, ev.room or 0),
+            (cx + colW - 22) * s, (cy + 1) * s, s * 0.40, INK_DIM)
     end
 
     if (p.rest or 0) > 0 then
-        txt(string.format("+%d", p.rest), (PADX + PADW - 40) * s, (PADY + PADH - 24) * s, s * 0.54, INK_DIM)
+        txt(string.format("+%d", p.rest), (PADX + PADW - 42) * s, (PADY + PADH - 22) * s, s * 0.54, INK_DIM)
     end
     footer(s, isGamePaused() and "TIME PAUSED    L/R PAGE    ESC BACK    F5 CLOSE"
         or "L/R PAGE    ESC BACK    F5 CLOSE   (ESC pauses time)")
@@ -829,35 +831,6 @@ y = statRow(s, y, f.stats[i], bk, PADX + 12, PADW - 40)
             y = y + 15
         end
     end
-    -- 本层战力跃迁（作者 2026-10-22）：最多 8 条，按时间顺序，超出 +N
-    local fJumps = {}
-    if bk.jumps then
-        for i = 1, #bk.jumps do
-            if bk.jumps[i].floor == f.i then fJumps[#fJumps + 1] = bk.jumps[i] end
-        end
-    end
-    if #fJumps > 0 then
-        y = y + 5
-        txt(string.format("JUMPS  %d", #fJumps), (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
-        y = y + 11
-        for i = 1, math.min(#fJumps, 8) do
-            local e = fJumps[i]
-            local sp = itemIcon(e.id)
-            if sp then
-                sp.Scale = Vector(s * 0.5, s * 0.5)
-                sp:Render(Vector((PADX + 12) * s, y * s))
-            end
-            txt(string.format("#%d  %.2f>%.2f  %+.1f%%",
-                e.room or 0, e.pIn or 0, e.pOut or 0, (e.pct or 0) * 100),
-                (PADX + 28) * s, (y + 1) * s, s * 0.5,
-                (e.delta or 0) >= 0 and INK_UP or INK_DN)
-            y = y + 11
-        end
-        if #fJumps > 8 then
-            txt(string.format("+%d", #fJumps - 8), (PADX + 12) * s, y * s, s * 0.5, INK_DIM)
-        end
-    end
-
     footer(s, isGamePaused() and "TIME PAUSED    L/R PAGE    ESC BACK    F5 CLOSE"
         or "L/R PAGE    ESC BACK    F5 CLOSE   (ESC pauses time)")
 end
@@ -915,6 +888,20 @@ end
 -- 数据由 main 每帧写入（power 当前战力、delta 最近一次增量、untilFrame 过期帧）
 book.hud = { power = 0, delta = 0, untilFrame = 0 }
 
+--- 星象房概率 mod 在不在（在的话我们那行排到它下面）
+local planetariumPresent = nil
+local function hasPlanetarium()
+    if planetariumPresent ~= nil then return planetariumPresent end
+    planetariumPresent = false
+    if Isaac and Isaac.GetModByName then
+        for _, nm in ipairs({ "planetarium chance", "Planetarium Chance", "planetariumchance" }) do
+            local ok, m = pcall(function() return Isaac.GetModByName(nm) end)
+            if ok and m then planetariumPresent = true; break end
+        end
+    end
+    return planetariumPresent
+end
+
 function book.renderHud()
     local cfg = (deps and deps.config) or {}
     if cfg.hudPower == false then return end
@@ -925,22 +912,24 @@ function book.renderHud()
 
     local _, _, s = scr()
     local plus = rawget(_G, "REPENTANCE_PLUS") or rawget(_G, "REPENTOGON_PLUS")
+    local baseY = plus and 170 or 168
+    -- 星象房那条占 168；我们排在它下面一行（作者 2026-10-22 指定箭头位置）
+    if hasPlanetarium() then baseY = baseY + 11 end
     local hx = 16
-    local hy = (plus and 170 or 168) + (cfg.hudPowerOffsetY or 0)
+    local hy = baseY + (cfg.hudPowerOffsetY or 0)
 
-    -- 描边字：白色数值 + 3 秒内的增量（绿涨红跌），和星象房那条并排同款
+    -- 半透明底衬：不加的话在木地板上几乎看不清
+    rect((hx - 3) * s, (hy - 2) * s, 62 * s, 10 * s, 0.05, 0.03, 0.02, 0.55)
+    hudFont:DrawString("[]", hx, hy + 1, KColor(0.9, 0.35, 0.28, 0.95), 0, false)
     hudFont:DrawString(string.format("%.2f", hud.power), hx + 14, hy + 1,
-        KColor(1, 1, 1, 0.95), 0, false)
+        KColor(1, 1, 1, 1), 0, false)
     local fc = 0
     pcall(function() fc = Isaac.GetFrameCount() end)
     if hud.delta and math.abs(hud.delta) > 0.005 and fc < (hud.untilFrame or 0) then
         local d = hud.delta
         hudFont:DrawString(string.format("%+.2f", d), hx + 42, hy + 1,
-            d >= 0 and KColor(0.35, 1, 0.35, 0.95) or KColor(1, 0.35, 0.35, 0.95), 0, false)
+            d >= 0 and KColor(0.35, 1, 0.35, 1) or KColor(1, 0.35, 0.35, 1), 0, false)
     end
-    -- 小方块当图标
-    -- 图标与文字必须用同一个坐标系（DrawString 用的是 480x270 的 HUD 空间）
-    hudFont:DrawString("[]", hx, hy + 1, KColor(0.9, 0.3, 0.25, 0.95), 0, false)
 end
 
 book.update = update

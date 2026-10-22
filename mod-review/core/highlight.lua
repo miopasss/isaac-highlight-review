@@ -268,12 +268,26 @@ function highlight.analyze(run, cfg)
             end
         end
     end
-    local bySize = {}
-    for i = 1, #evs do bySize[i] = evs[i] end
-    table.sort(bySize, function(a, b) return a.delta > b.delta end)
+    -- 按楼层分组：每层取增量最大的前 8 个，层与层之间按层号升序
+    -- 展示上限仍是 24 行（2 列 × 12），超出只报个数
+    local perFloor = {}
+    for i = 1, #evs do
+        local f = evs[i].floor or 0
+        perFloor[f] = perFloor[f] or {}
+        local g = perFloor[f]
+        g[#g + 1] = evs[i]
+    end
+    local floorKeys = {}
+    for f in pairs(perFloor) do floorKeys[#floorKeys + 1] = f end
+    table.sort(floorKeys)
+
     local picked = {}
-    for i = 1, math.min(#bySize, jumpN) do picked[#picked + 1] = bySize[i] end
-    table.sort(picked, function(a, b) return a.ord < b.ord end)
+    for _, f in ipairs(floorKeys) do
+        local g = perFloor[f]
+        table.sort(g, function(a, b) return a.delta > b.delta end)
+        for i = 1, math.min(#g, 8) do picked[#picked + 1] = g[i] end
+    end
+
     book.jumps      = picked
     book.jumpTotal  = #evs
     book.jumpShown  = math.min(#picked, 24)
