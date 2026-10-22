@@ -110,13 +110,17 @@ local function nowMs()
     return 0
 end
 
---- 墙钟时间（epoch 秒）。
---- 实测：Isaac 沙盒里 os.time() 返回 0（1970），REPENTOGON 也没有真实时间 API，
---- 所以这里只认 >= 2001-09-09 的值；拿不到就返回 nil，册子上就不显示时间那一行。
-local function wallSec()
-    local ok, t = pcall(function() return os.time() end)
-    if ok and type(t) == "number" and t > 1e9 then return t end
-    return nil
+local function nowSec() return math.floor(nowMs() / 1000) end
+
+--- 墙钟时间文本（"2026/10/22 14:36"）。
+--- 实测：os.time() 被沙盒换成返回 0，但 os.date()（不传时间戳）拿到的是**真实系统时间**
+--- （明日方舟 mod 也这么用：os.date("%Y%m%d") 判每日）。年份合理才认，否则返回 nil。
+local function wallText()
+    local ok, t = pcall(function() return os.date("%Y/%m/%d %H:%M") end)
+    if not ok or type(t) ~= "string" then return nil end
+    local y = tonumber(t:sub(1, 4))
+    if not y or y < 2001 then return nil end
+    return t
 end
 
 -- ---------------------------------------------------------------- 道具读取
@@ -431,7 +435,7 @@ local function beginRun(player)
     state.current = {
         seq = fmt.nextSeq(state.store),
         id = id, seed = seed, char = char,
-        base = 0, final = 0, max = 1, res = 2, t0 = nowSec(), w0 = wallSec(), hl = 0,
+        base = 0, final = 0, max = 1, res = 2, t0 = nowSec(), ws = wallText(), hl = 0,
         floors = {}, rooms = {},
     }
     -- 开局自带道具也算"获得"（角色初始道具、伊甸的随机道具、start with 类 mod 给的东西）

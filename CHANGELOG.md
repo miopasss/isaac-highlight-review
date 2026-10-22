@@ -2235,3 +2235,41 @@ if fracTotal < fracBase then fracTotal = fracBase end
 
 如果要真时间，只能走外部注入（PowerShell 起游戏时写一个时间戳文件让 mod 读），
 但那样订阅者拿到的是打包时的旧值，**不能发布**，所以没做。
+### 修：`nowSec` 被误删（3 号档每间房报错）
+
+```
+main.lua:434: attempt to call a nil value (global 'nowSec')
+```
+
+上一轮替换 `wallSec` 那段时，把紧邻的 `local function nowSec()` 一起删了 →
+`nowSec` 变成全局查找 → nil → `beginRun` 里的 `t0 = nowSec()` 报错。
+`MC_POST_PLAYER_INIT` / `MC_POST_NEW_ROOM` 都被 pcall 包着，所以**只报错不崩**。
+
+### 时间改用 `os.date()`（有真实系统时间）
+
+作者指出明日方舟 mod 能拿到外部时间。查了 `arknights_terra_a_journey_3631023221`：
+
+- `sunny_side_cream.lua:49` → `os.date("%Y%m%d")`（判每日）
+- `calendar_of_the_overlord_of_ages.lua:33` → `os.date("*t")`
+- `sui_hours.lua:115` → `os.date("%H")`
+
+结论：**`os.time()` 被换成返回 0，但 `os.date()` 不传时间戳时拿的是真实系统时间**。
+所以不再存 epoch，直接存格式化文本：
+
+- schema：`ws = "s"`（`"2026/10/22 14:36"`）
+- `main.wallText()`：`os.date("%Y/%m/%d %H:%M")`，年份 < 2001 视为无效
+- `book.whenText()`：只接受字符串，`1970` 开头的一律不显示
+
+### Boss 评级改档次
+
+作者要求：**30 / 60 / 120 / 200 / 300** 秒分档，**多个终极 Boss 取平均**。
+
+| 平均用时 | 评级 |
+|---|---|
+| ≤30s | S+ |
+| ≤60s | S |
+| ≤120s | A |
+| ≤200s | B |
+| ≤300s | C |
+| >300s | E |
+| 没打终极 Boss | D |

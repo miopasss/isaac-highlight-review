@@ -467,30 +467,31 @@ end
 --- S+ <=30s, S <=60s, A <=90s, B <=120s, C <=150s, D <=180s, E 更慢
 --- 没打终极 Boss 直接记 D
 local function bossGrade(bk)
-    local best
+    local sum, n = 0, 0
     for i = 1, #bk.rooms do
         local r = bk.rooms[i]
         if (r.ub or 0) > 0 then
-            if not best or (r.ms or 0) < (best.ms or 0) then best = r end
+            sum = sum + (r.ms or 0)
+            n = n + 1
         end
     end
-    if not best then return "D" end
-    local sec = (best.ms or 0) / 1000
+    if n == 0 then return "D" end          -- 没打终极 Boss：直接 D
+    local sec = (sum / n) / 1000           -- 多个终极 Boss 取平均
     if sec <= 30 then return "S+" end
     if sec <= 60 then return "S" end
-    if sec <= 90 then return "A" end
-    if sec <= 120 then return "B" end
-    if sec <= 150 then return "C" end
-    if sec <= 180 then return "D" end
+    if sec <= 120 then return "A" end
+    if sec <= 200 then return "B" end
+    if sec <= 300 then return "C" end
     return "E"
 end
 
 --- 墙钟时间文本：2026/10/22 14:36。取不到（os.date 不可用或旧记录没 w0）就返回 nil
-local function whenText(w0)
-    if not w0 or w0 <= 1e9 then return nil end   -- 沙盒 os.time 返回 0，别显示 1970
-    local ok, txt2 = pcall(function() return os.date("%Y/%m/%d %H:%M", w0) end)
-    if ok and type(txt2) == "string" then return txt2 end
-    return nil
+local function whenText(ws)
+    if type(ws) ~= "string" then return nil end
+    ws = ws:gsub("^%s+", ""):gsub("%s+$", "")
+    if ws == "" then return nil end
+    if ws:find("^1970") then return nil end
+    return ws
 end
 
 local function drawOverview(s, bk, entry)
@@ -501,7 +502,7 @@ local function drawOverview(s, bk, entry)
         tostring(entry.id), RES_NAME[bk.result] or "?", bossGrade(bk), bk.maxFloor, #bk.rooms),
         (PADX + 12) * s, y * s, s * 0.64, INK_DIM)
     y = y + 11
-    local whenStr = whenText(bk.w0)
+    local whenStr = whenText(bk.ws)
     if whenStr then
         txt(whenStr, (PADX + 14) * s, y * s, s * 0.52, INK_DIM)
         y = y + 10

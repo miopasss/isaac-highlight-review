@@ -142,7 +142,7 @@ function highlight.analyze(run, cfg)
         maxFloor = run.max or 0, base = run.base or 0, final = run.final or 0,
         floors = {}, rooms = {}, pages = {},
         statMax = {}, statMin = {}, curve = {},
-        w0 = tonumber(run.w0) or nil,
+        ws = run.ws,
     }
 
     -- 1) 展平房间 + 六维进出
