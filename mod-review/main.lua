@@ -427,6 +427,8 @@ local function beginRun(player)
         base = 0, final = 0, max = 1, res = 2, t0 = nowSec(), hl = 0,
         floors = {}, rooms = {},
     }
+    -- 开局自带道具也算"获得"（角色初始道具、伊甸的随机道具、start with 类 mod 给的东西）
+    state.startItems = readCollectibles(player)
     log(string.format("开局 %s（seed=%d char=%d，历史 %d 局）", id, seed, char, #state.store.index))
 end
 
@@ -551,9 +553,14 @@ local function settleRoom(player)
         seen[id] = (seen[id] or 0) + 1
         if seen[id] > (p.itemsIn[id] or 0) then gained[#gained + 1] = id end
     end
-    -- 第一间房不记"获得"类字段：那多半是角色自带/初始化顺序造成的假阳性
+    -- 第一间房：把开局自带道具记成"获得"（作者 2026-10-22 要求：初始道具也算获得）
+    -- 以前这里直接清空，因为初始化顺序会造出假阳性；现在改成用 beginRun 时拍下的快照
     local firstRoom = (#run.rooms == 0)
-    if firstRoom then gained = {} end
+    if firstRoom then
+        gained = {}
+        local st = state.startItems or {}
+        for k = 1, #st do gained[k] = st[k] end
+    end
     -- 实时监视补采：修掉"同房获得又失去""跨房瞬间获得"两个盲区
     if itemwatch then
         local extra = itemwatch.drain()

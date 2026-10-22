@@ -29,7 +29,8 @@ local INK_DN  = { 0.50, 0.08, 0.05 }   -- 下跌红
 local BAR_ON  = { 0.36, 0.52, 0.26 }
 local BAR_OFF = { 0.62, 0.58, 0.50 }
 local BAR_BASE = { 0.55, 0.36, 0.18 }   -- 原有属性（棕）
-local BAR_GAIN = { 0.26, 0.60, 0.28 }   -- 本房增加（绿）
+local BAR_GAIN = { 0.26, 0.60, 0.28 }
+local BAR_DOWN = { 0.72, 0.24, 0.24 }   -- 属性下降的格子（红）
 
 local bodyFont, titleFont, fontTried = nil, nil, false
 local cjkFont, cjkTried = nil, false
@@ -263,12 +264,16 @@ local function segBar2(x, y, w, h, fracBase, fracTotal, n)
     local gap = 0.9
     local bw = (w - gap * (n - 1)) / n
     if bw <= 0 then return end
-    if fracTotal < fracBase then fracTotal = fracBase end
+    -- 上升/下降都要能画：取出两端的较小/较大值，中间那段按方向着色
+    local inc = (fracTotal >= fracBase)
+    local lo  = inc and fracBase or fracTotal
+    local hi  = inc and fracTotal or fracBase
     for i = 1, n do
         local mid = ((i - 1) / n + i / n) / 2
         local col, a
-        if mid <= fracBase then col, a = BAR_BASE, 0.85
-        elseif mid <= fracTotal then col, a = BAR_GAIN, 0.95
+        if mid <= lo then col, a = BAR_BASE, 0.85
+        elseif mid <= hi then
+            if inc then col, a = BAR_GAIN, 0.95 else col, a = BAR_DOWN, 1.0 end
         else col, a = BAR_OFF, 0.25 end
         rect(x + (i - 1) * (bw + gap), y, bw, h, col[1], col[2], col[3], a)
     end
@@ -500,38 +505,50 @@ local function drawOverview(s, bk, entry)
 
     local x0 = PADX + 12
     local colW = PADW - 40
-    y = y + 15
-    for i = 1, math.min(#bk.floors, 10) do
+    y = y + 14
+    -- 楼层可能很多（作者反馈总览写不下）：改双栏，最多 24 层，超出显示 +N
+    local nF = #bk.floors
+    local MAXF = 24
+    local shown = math.min(nF, MAXF)
+    local perCol = math.min(12, math.ceil(shown / 2))
+    local colGap = 16
+    local colW2 = (colW - colGap) / 2
+    for i = 1, shown do
         local f = bk.floors[i]
-        local sc = s * 0.6
-        local lab = string.format("Floor %d", f.i)
-        txt(lab, x0 * s, y * s, sc, INK)
+        local col = (i <= perCol) and 0 or 1
+        local row = (i <= perCol) and (i - 1) or (i - perCol - 1)
+        local xx = x0 + col * (colW2 + colGap)
+        local yy = y + row * 12.5
+        local sc = s * 0.54
+
+        local lab = string.format("%dF", f.i)
+        txt(lab, xx * s, yy * s, sc, INK)
         local wLab = textW(lab, sc) / s
 
         local valStr = string.format("%.2f", f.powerOut)
-        local xVal = x0 + wLab + 8
-        txt(valStr, xVal * s, y * s, sc, INK)
+        local xVal = xx + wLab + 5
+        txt(valStr, xVal * s, yy * s, sc, INK)
         local wVal = textW(valStr, sc) / s
 
         local gainStr
         if f.powerIn and math.abs(f.powerIn) > 0.005 then
-            gainStr = string.format("%+.1f%%", f.gain / f.powerIn * 100)
+            gainStr = string.format("%+.0f%%", f.gain / f.powerIn * 100)
         else
             gainStr = "0%"
         end
         local wGain = textW(gainStr, sc) / s
-        local durStr = deps.hl.durationEn(f.ms)
-        local wDur = textW(durStr, s * 0.52) / s
-        local durX = PADX + PADW - 14 - wDur
-        local gainX = durX - 8 - wGain
-        local xBar = xVal + wVal + 8
-        local barW = math.max(30, gainX - 8 - xBar)
-        segBar2(xBar * s, (y + 2.2) * s, barW * s, 6 * s,
-            f.powerIn / maxP, f.powerOut / maxP, 40)
+        local gainX = xx + colW2 - wGain - 1
+        local xBar = xVal + wVal + 5
+        local barW = math.max(16, gainX - 4 - xBar)
+        segBar2(xBar * s, (yy + 2) * s, barW * s, 5 * s,
+            f.powerIn / maxP, f.powerOut / maxP, 24)
 
-        txt(gainStr, gainX * s, y * s, sc, f.gain >= 0 and INK_UP or INK_DN)
-        txt(durStr, durX * s, y * s, s * 0.52, INK_DIM)
-        y = y + 14.5
+        txt(gainStr, gainX * s, yy * s, sc, f.gain >= 0 and INK_UP or INK_DN)
+    end
+    y = y + perCol * 12.5
+    if nF > shown then
+        txt(string.format("+%d floors", nF - shown), (PADX + 12) * s, y * s, s * 0.5, INK_DIM)
+        y = y + 10
     end
     footer(s, isGamePaused() and "TIME PAUSED    U/D RUN    ENTER OPEN    L/R PAGE    F5 CLOSE"
         or "U/D RUN    ENTER OPEN    L/R PAGE    F5 CLOSE   (ESC pauses time)")

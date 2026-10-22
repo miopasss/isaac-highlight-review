@@ -135,8 +135,8 @@ Save-WindowShot $w "_logs\verify\manual.png"
 
 | 噪音 | 来源 |
 |---|---|
-| `[ASSERT] - PushRenderTarget: stack overflow!`（每秒上百行） | **reverie（东方组合）**，`scripts/items/th14/d_flip.lua` 那套，开场刷到关游戏 |
-| `[Lua Debug] Pair: [...]` | 同上（reverie） |
+| `[ASSERT] - PushRenderTarget: stack overflow!`（每秒约 120 行） | **引擎的 FBO 栈爆了**（上限 16 层），不是某个 mod 报的错。实测：进局后每帧叠到 18 层 → 每帧 2 行。是**一堆自定义 shader 叠出来的**（heaven's call 6 个、reverie 3 个、stageapi 2、arknights 2、benighted 1、cuerlib 1）；只关 reverie 或只关 heaven's call 都能让它归零。细节见 `_debug/render-target-flood.md` |
+| `[Lua Debug] Pair: [...]` | reverie `scripts/items/th14/d_flip.lua:305`，文件作用域里的普通 `DebugString`（**跟上面那条断言无关**，只是碰巧挨在一起） |
 | 屏幕下半部分的米色横条 + 红字 | External Item Descriptions 的道具说明浮层 |
 | `[ASSERT] - invalid tag: ...` / `unlockachievement` | 其它第三方 mod 的旧写法 |
 | `逐件读取失败（GetCollectible）→ 全量扫描` | 我们自己的**降级**路径，属正常 |
@@ -222,8 +222,8 @@ Save-WindowShot $w "_logs\verify\manual.png"
   ✓ 游戏已正常退出（存档已写盘）
 ```
 
-对应判读：截图 1600×900 说明窗口完整；`[UI]` 有响应说明 F5 生效；断言洪水是 reverie 的，
-不管；结论里没有 FATAL/报错 → 这一轮算通过。
+对应判读：截图 1600×900 说明窗口完整；`[UI]` 有响应说明 F5 生效；断言洪水是第三方 shader mod
+叠出来的（见 §6 噪音表），不管；结论里没有 FATAL/报错 → 这一轮算通过。
 
 ---
 
