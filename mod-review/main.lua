@@ -140,33 +140,34 @@ end
 local function readCollectibles(player)
     local list = {}
     if not player then return list end
-    if itemAccessBroken then return scanCollectibles(player) end
 
-    local okN, n = pcall(function() return player:GetCollectibleCount() end)
-    if not okN or type(n) ~= "number" then
+    -- 首选 GetCollectiblesList()：返回 { id = 数量 }。
+    -- 注意：没有 player:GetCollectible(i) 这个方法（Repentance 无此 API），
+    -- 以前用它逐件读，必然失败 → 每次都退回 2000 次全量扫描，日志里那条
+    -- "attempt to call a nil value (method 'GetCollectible')" 就是它。
+    if not itemAccessBroken then
+        local okL, m = pcall(function() return player:GetCollectiblesList() end)
+        if okL and type(m) == "table" then
+            for id, cnt in pairs(m) do
+                local c = tonumber(cnt) or 1
+                if c < 1 then c = 1 end
+                for _ = 1, c do list[#list + 1] = id end
+            end
+            table.sort(list)
+            if not itemsProbed2 and #list > 0 then
+                itemsProbed2 = true
+                log("道具读取正常（列表法）：共 " .. #list .. " 件，首件 id=" .. tostring(list[1]))
+            end
+            return list
+        end
         if not itemsProbed then
             itemsProbed = true
-            log("GetCollectibleCount 不可用 → " .. safeToString(n) .. "，改用全量扫描")
+            log("GetCollectiblesList 不可用 → " .. safeToString(m) .. "，改用全量扫描")
             itemAccessBroken = true
         end
-        return scanCollectibles(player)
     end
 
-    for i = 0, n - 1 do
-        local ok, id = pcall(function() return player:GetCollectible(i) end)
-        if ok and type(id) == "number" then
-            list[#list + 1] = id
-        elseif not itemAccessBroken then
-            itemAccessBroken = true
-            log("逐件读取失败（" .. safeToString(id) .. "），本会话改用全量扫描")
-            return scanCollectibles(player)
-        end
-    end
-    if not itemsProbed2 and #list > 0 then
-        itemsProbed2 = true
-        log("道具读取正常：共 " .. #list .. " 件，首件 id=" .. tostring(list[1]))
-    end
-    return list
+    return scanCollectibles(player)
 end
 
 --- 道具品质（0~4）。带缓存，同一个 id 只查一次。

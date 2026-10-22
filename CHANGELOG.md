@@ -2337,3 +2337,17 @@ self.font = Font(); self.font:Load("font/luaminioutlined.fnt")
 基准 y 从 168/170 再加 11（星象房占一行，我们排它下面）。
 
 另外加了一层半透明底衬 `rect(...alpha 0.55)`——木地板背景下裸字看不清。
+### 修：`GetCollectible` 那条「正常噪音」其实是 bug
+
+```
+main.lua:156: attempt to call a nil value (method 'GetCollectible')
+```
+
+**`player:GetCollectible(i)` 这个 API 在 Repentance 里不存在**，
+所以逐件读取 100% 失败 → 每次进房都退回 **2000 次 `HasCollectible` 全量扫描**，
+还每局在日志里刷一条错误。之前把它当成"降级路径，属正常"，判断错了。
+
+改成首选 `player:GetCollectiblesList()`（返回 `{ id = 数量 }`，`itemwatch` 里本来就在用），
+按数量展开成列表；只有它也不可用时才退全量扫描。
+
+附带好处：每次进房少 2000 次 API 调用。

@@ -139,7 +139,7 @@ Save-WindowShot $w "_logs\verify\manual.png"
 | `[Lua Debug] Pair: [...]` | reverie `scripts/items/th14/d_flip.lua:305`，文件作用域里的普通 `DebugString`（**跟上面那条断言无关**，只是碰巧挨在一起） |
 | 屏幕下半部分的米色横条 + 红字 | External Item Descriptions 的道具说明浮层 |
 | `[ASSERT] - invalid tag: ...` / `unlockachievement` | 其它第三方 mod 的旧写法 |
-| `逐件读取失败（GetCollectible）→ 全量扫描` | 我们自己的**降级**路径，属正常 |
+| ~~`逐件读取失败（GetCollectible）→ 全量扫描`~~ | **已修**：`player:GetCollectible(i)` 这个方法不存在，改用 `GetCollectiblesList()` |
 
 `verify.ps1` 已经把断言降级成"提示"，不参与退出码；判断我们有没有事，只看 FATAL / Lua 报错 / `[UI]` 行。
 
