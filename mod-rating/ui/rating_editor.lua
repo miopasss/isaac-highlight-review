@@ -211,8 +211,29 @@ local function selectId(id)
     refreshInfo()
 end
 
+-- 获得的先后顺序（本会话内近似）：第一次在持有列表里看到就记一个递增序号
+local seenOrder, seenSeq = {}, 0
+local function touchOrder(ids)
+    for i = 1, #ids do
+        local id = ids[i]
+        if not seenOrder[id] then
+            seenSeq = seenSeq + 1
+            seenOrder[id] = seenSeq
+        end
+    end
+end
+
 local function refreshLists()
     local ids = heldIds()
+    -- 已获得道具按获得时间倒序（作者 2026-10-22）。
+    -- 没有真实时间戳，用"第一次在持有列表里看到它的序号"近似；读档前就有的按 id 排最后。
+    touchOrder(ids)
+    table.sort(ids, function(a, b)
+        local oa = seenOrder[a] or 0
+        local ob = seenOrder[b] or 0
+        if oa ~= ob then return oa > ob end
+        return a < b
+    end)
     ownedList = {}
     for i = 1, #ids do ownedList[i] = { id = ids[i], label = label(ids[i]) } end
     pcall(function()

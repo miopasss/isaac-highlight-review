@@ -142,6 +142,7 @@ function highlight.analyze(run, cfg)
         maxFloor = run.max or 0, base = run.base or 0, final = run.final or 0,
         floors = {}, rooms = {}, pages = {},
         statMax = {}, statMin = {}, curve = {},
+        w0 = tonumber(run.w0) or nil,
     }
 
     -- 1) 展平房间 + 六维进出
@@ -200,7 +201,7 @@ function highlight.analyze(run, cfg)
         local f = map[r.floor]
         if not f then
             f = { i = r.floor, curse = 0, rooms = 0, firstRooms = 0,
-                  items = {}, ms = 0, dmg = 0, gain = 0 }
+                  items = {}, itemsQ = {}, ms = 0, dmg = 0, gain = 0 }
             map[r.floor] = f
         end
         f.rooms = f.rooms + 1

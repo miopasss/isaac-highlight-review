@@ -431,7 +431,13 @@ local function statRow(s, y, st, bk, x0, colWidth)
     txt(label, x0 * s, y * s, sc, INK)
     local wLab = textW(label, sc) / s
 
-    local valStr = string.format("%.2f", st.outV)
+    -- 数值 + 百分比都要（作者 2026-10-22）：有变化时显示 旧>新，让"增加后的数值"也看得见
+    local valStr
+    if st.inV and math.abs((st.outV or 0) - (st.inV or 0)) > 0.005 then
+        valStr = string.format("%.2f>%.2f", st.inV, st.outV)
+    else
+        valStr = string.format("%.2f", st.outV)
+    end
     local xVal = x0 + wLab + 5
     txt(valStr, xVal * s, y * s, sc, INK)
     local wVal = textW(valStr, sc) / s
@@ -457,13 +463,49 @@ end
 
 -- ---------------------------------------------------------------- 各页
 
+--- 终极 Boss 评级（作者 2026-10-22）：按击杀用时，30 秒一档
+--- S+ <=30s, S <=60s, A <=90s, B <=120s, C <=150s, D <=180s, E 更慢
+--- 没打终极 Boss 直接记 D
+local function bossGrade(bk)
+    local best
+    for i = 1, #bk.rooms do
+        local r = bk.rooms[i]
+        if (r.ub or 0) > 0 then
+            if not best or (r.ms or 0) < (best.ms or 0) then best = r end
+        end
+    end
+    if not best then return "D" end
+    local sec = (best.ms or 0) / 1000
+    if sec <= 30 then return "S+" end
+    if sec <= 60 then return "S" end
+    if sec <= 90 then return "A" end
+    if sec <= 120 then return "B" end
+    if sec <= 150 then return "C" end
+    if sec <= 180 then return "D" end
+    return "E"
+end
+
+--- 墙钟时间文本：2026/10/22 14:36。取不到（os.date 不可用或旧记录没 w0）就返回 nil
+local function whenText(w0)
+    if not w0 or w0 <= 1e9 then return nil end   -- 沙盒 os.time 返回 0，别显示 1970
+    local ok, txt2 = pcall(function() return os.date("%Y/%m/%d %H:%M", w0) end)
+    if ok and type(txt2) == "string" then return txt2 end
+    return nil
+end
+
 local function drawOverview(s, bk, entry)
     title(s, (getCJK() and "总览") or "Overview", string.format("1/%d", bk.pageCount))
     local y = PADY + 27
-    txt(string.format("%s   %s   %dF   %d rooms",
-        tostring(entry.id), RES_NAME[bk.result] or "?", bk.maxFloor, #bk.rooms),
+    -- 评级放在 WIN 右边、楼层数前面（作者 2026-10-22）
+    txt(string.format("%s   %s   %s   %dF   %d rooms",
+        tostring(entry.id), RES_NAME[bk.result] or "?", bossGrade(bk), bk.maxFloor, #bk.rooms),
         (PADX + 12) * s, y * s, s * 0.64, INK_DIM)
-    y = y + 12
+    y = y + 11
+    local whenStr = whenText(bk.w0)
+    if whenStr then
+        txt(whenStr, (PADX + 14) * s, y * s, s * 0.52, INK_DIM)
+        y = y + 10
+    end
 
     -- 本局四级道具（最多 8 个一行）
     local fin = bk.pages and bk.pages[1]
@@ -700,28 +742,44 @@ y = statRow(s, y, f.stats[i], bk, PADX + 12, PADW - 40)
         end
     end
 
-    -- 道具图标网格
+    -- 道具按品质分行（作者 2026-10-22）：Q0~Q5 每个等级一行，每行 8 个，多的用 +N
     y = y + 4
-    txt(string.format("ITEMS  %d", #f.items), (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
-    local wLab = textW(string.format("ITEMS  %d", #f.items), s * 0.54) / s
-    local xIcon = PADX + 12 + wLab + 8
-    y = y + 11
-    local perRow, shown = 10, math.min(#f.items, 20)
-    for k = 1, shown do
-        local row = math.floor((k - 1) / perRow)
-        local col = (k - 1) % perRow
-        local sp = itemIcon(f.items[k])
-        if sp then
-            sp.Scale = Vector(s * 0.62, s * 0.62)
-            sp:Render(Vector((xIcon + col * 26) * s, (y + row * 24) * s))
-        else
-            txt(tostring(f.items[k]), (xIcon + col * 26) * s, (y + row * 24) * s, s * 0.5, INK_DIM)
-        end
+    local PERROW = 8
+    local groups, total = {}, 0
+    for k = 1, #f.items do
+        local q = (f.itemsQ and f.itemsQ[k]) or 0
+        q = math.floor(tonumber(q) or 0)
+        if q < 0 then q = 0 end
+        if q > 5 then q = 5 end
+        groups[q] = groups[q] or {}
+        groups[q][#groups[q] + 1] = f.items[k]
+        total = total + 1
     end
-    if #f.items > 20 then
-        txt(string.format("+%d", #f.items - 20),
-            (xIcon + (shown % perRow) * 26) * s,
-            (y + math.floor(shown / perRow) * 24) * s, s * 0.54, INK_DIM)
+
+    txt(string.format("ITEMS  %d", total), (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
+    y = y + 12
+
+    for q = 5, 0, -1 do
+        local g = groups[q]
+        if g and #g > 0 then
+            txt(string.format("Q%d", q), (PADX + 12) * s, (y + 3) * s, s * 0.5, INK_DIM)
+            local xIcon = PADX + 12 + 22
+            local n = math.min(#g, PERROW)
+            for k = 1, n do
+                local sp = itemIcon(g[k])
+                if sp then
+                    sp.Scale = Vector(s * 0.62, s * 0.62)
+                    sp:Render(Vector((xIcon + (k - 1) * 24) * s, y * s))
+                else
+                    txt(tostring(g[k]), (xIcon + (k - 1) * 24) * s, (y + 3) * s, s * 0.46, INK_DIM)
+                end
+            end
+            if #g > n then
+                txt(string.format("+%d", #g - n),
+                    (xIcon + n * 24) * s, (y + 3) * s, s * 0.5, INK_DIM)
+            end
+            y = y + 15
+        end
     end
     footer(s, isGamePaused() and "TIME PAUSED    L/R PAGE    ESC BACK    F5 CLOSE"
         or "L/R PAGE    ESC BACK    F5 CLOSE   (ESC pauses time)")
