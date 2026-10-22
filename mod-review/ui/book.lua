@@ -32,7 +32,7 @@ local BAR_BASE = { 0.55, 0.36, 0.18 }   -- 原有属性（棕）
 local BAR_GAIN = { 0.26, 0.60, 0.28 }
 local BAR_DOWN = { 0.72, 0.24, 0.24 }   -- 属性下降的格子（红）
 
-local bodyFont, titleFont, fontTried = nil, nil, false
+local bodyFont, titleFont, hudFont, fontTried = nil, nil, nil, false
 local cjkFont, cjkTried = nil, false
 
 -- 借用 EID 的中文字体（EID 没装就回退英文）
@@ -122,6 +122,8 @@ local function loadFonts()
     if fontTried then return end
     fontTried = true
     pcall(function() local f = Font(); f:Load("font/teammeatfont12.fnt"); bodyFont = f end)
+    -- HUD 那行用星象房同款描边字（原生字太小看不清，作者 2026-10-22）
+    pcall(function() local f = Font(); f:Load("font/luaminioutlined.fnt"); hudFont = f end)
     pcall(function() local f = Font(); f:Load("font/teammeatfontextended16bold.fnt"); titleFont = f end)
 end
 
@@ -918,24 +920,27 @@ function book.renderHud()
     if cfg.hudPower == false then return end
     local hud = book.hud
     if not hud or not hud.power or hud.power <= 0 then return end
+    loadFonts()
+    if not hudFont then return end
 
     local _, _, s = scr()
-    -- 原生属性面板在 480x270 空间里的行距是 11；基准 168（Rep+ 是 170）
     local plus = rawget(_G, "REPENTANCE_PLUS") or rawget(_G, "REPENTOGON_PLUS")
+    local hx = 16
     local hy = (plus and 170 or 168) + (cfg.hudPowerOffsetY or 0)
-    local hx = 11
 
-    -- 占位图标（一个小方块），后面可以换成真正的图标
-    rect(hx * s, (hy + 1.5) * s, 6 * s, 6 * s, 0.75, 0.20, 0.18, 0.9)
-    txt("PWR", (hx + 8) * s, hy * s, s * 0.42, INK_DIM)
-    txt(string.format("%.2f", hud.power), (hx + 36) * s, hy * s, s * 0.58, INK)
-
+    -- 描边字：白色数值 + 3 秒内的增量（绿涨红跌），和星象房那条并排同款
+    hudFont:DrawString(string.format("%.2f", hud.power), hx + 14, hy + 1,
+        KColor(1, 1, 1, 0.95), 0, false)
     local fc = 0
     pcall(function() fc = Isaac.GetFrameCount() end)
     if hud.delta and math.abs(hud.delta) > 0.005 and fc < (hud.untilFrame or 0) then
-        txt(string.format("%+.2f", hud.delta), (hx + 70) * s, hy * s, s * 0.5,
-            hud.delta >= 0 and INK_UP or INK_DN)
+        local d = hud.delta
+        hudFont:DrawString(string.format("%+.2f", d), hx + 42, hy + 1,
+            d >= 0 and KColor(0.35, 1, 0.35, 0.95) or KColor(1, 0.35, 0.35, 0.95), 0, false)
     end
+    -- 小方块当图标
+    -- 图标与文字必须用同一个坐标系（DrawString 用的是 480x270 的 HUD 空间）
+    hudFont:DrawString("[]", hx, hy + 1, KColor(0.9, 0.3, 0.25, 0.95), 0, false)
 end
 
 book.update = update

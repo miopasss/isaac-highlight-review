@@ -2309,3 +2309,16 @@ jumps = 所有 (道具, 增量 >= config.jumpMin) 的事件
    `attempt to get length of a nil value (field 'itemsQ')`。
 3. 我插入跃迁页时把 `table.insert(book.pages, 1, finale)` 复制成了两行 → 册子出现两个终局页。
 4. `identity_test` 是按「Top3 页存在」写的，开关默认关掉后必须让测试自己传 `pagesPower = true`。
+### HUD 字体改成描边字（作者 2026-10-22）
+
+原生位图字太小，看不清。照 `planetarium chance_2489006943` 的做法：
+
+```lua
+self.font = Font(); self.font:Load("font/luaminioutlined.fnt")
+```
+
+我们也加载同一个 `font/luaminioutlined.fnt`，HUD 那行改成 `hudFont:DrawString(...)`：
+白色数值 + 3 秒内的增量（绿涨红跌）。
+
+**踩的坑**：`Font:DrawString` 的坐标是 **480×270 的 HUD 空间**，而我原来的图标用 `rect(x*s, ...)`
+（屏幕像素），两者差了一个缩放 → 文字和图标错位。统一改成同一个坐标系。
