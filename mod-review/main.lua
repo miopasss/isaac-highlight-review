@@ -138,25 +138,30 @@ local SCAN_MAX_ID    = 2000    -- 同版本最大道具 id = 1763（READABLE-DAT
 
 --- 全量扫描：升序 id 列表，每件一次（HasCollectible 只回答"有没有"）
 local function scanCollectibles(player)
+    -- 2026-10-24 实测：本 REPENTOGON 版本**没有** GetCollectiblesList()，
+    -- 而 HasCollectible(id) 会对 110 多个未持有的 mod 道具返回 true（"图鉴里有"语义）。
+    -- GetCollectibleNum(id) 才是准确持有数，优先用它。
     local list = {}
-    if not player then return list end
+    local okNum, any = pcall(function() return player:GetCollectibleNum(1) end)
+    local useNum = okNum and type(any) == "number"
 
-    -- 方法只取一次：循环里每 id 新建闭包是这条路径最大的开销
-    local okLook, fn = pcall(function() return player.HasCollectible end)
-    if not okLook or type(fn) ~= "function" then return list end   -- 与旧实现一致：读不到就当没有
-
-    -- 快路径：整段只包一层 pcall，2000 次直接调用、不建闭包
-    local okAll = pcall(function()
+    if useNum then
         for id = 1, SCAN_MAX_ID do
-            if fn(player, id) then list[#list + 1] = id end
+            local ok, n = pcall(function() return player:GetCollectibleNum(id) end)
+            if ok and type(n) == "number" and n > 0 then
+                for _ = 1, n do list[#list + 1] = id end
+            end
         end
-    end)
-    if okAll then return list end
+        scanCount = (scanCount or 0) + 1
+        if scanCount <= 3 then
+            log(string.format("[SCAN] GetCollectibleNum 扫描：%d 件", #list))
+        end
+        if scanCount == 1 then itemsProbed2 = true end
+    end
 
-    -- 中途抛错（极罕见）：退回逐 id pcall，语义与旧实现完全相同
-    list = {}
+    -- 兜底：老的 HasCollectible（会多报，只能靠"每房新增 > 12 件"兜住）
     for id = 1, SCAN_MAX_ID do
-        local ok, has = pcall(fn, player, id)
+        local ok, has = pcall(function() return player:HasCollectible(id) end)
         if ok and has then list[#list + 1] = id end
     end
     return list
@@ -647,19 +652,6 @@ local function beginRoom(player)
     ensureFloor(run)
 
     local ident = readRoomIdentity()
-    -- 探针：持有列表一次性暴涨时打出上下文，用来定位是哪个 mod 在批量塞道具
-    -- （2026-10-24：静态搜索找不到覆盖 HasCollectible 的 mod，只能实测）
-    do
-        local n = #items
-        local prev = state.lastItemCount or 0
-        if n - prev >= 20 then
-            local sample = {}
-            for k = 1, math.min(n, 10) do sample[k] = tostring(items[k]) end
-            log(string.format("[PROBE] 持有数 %d → %d（+%d）  样本: %s",
-                prev, n, n - prev, table.concat(sample, ",")))
-        end
-        state.lastItemCount = n
-    end
 
     local snap  = snapshot(player)
     state.roomInFloor = state.roomInFloor + 1
@@ -705,6 +697,15 @@ local function settleRoom(player)
 
     local snap  = snapshot(player)
     local items = readCollectibles(player)
+    -- 探针：持有数一次性暴涨时打上下文（2026-10-24 定位幽灵 id 用）
+    do
+        local n = #items
+        local prev = state.lastItemCount or 0
+        if n - prev >= 20 then
+            log(string.format("[PROBE] 持有数 %d → %d（+%d），疑似误报", prev, n, n - prev))
+        end
+        state.lastItemCount = n
+    end
 
     local gained, seen = {}, {}
     for i = 1, #items do
@@ -1055,7 +1056,7 @@ add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
     state.store = nil
     state.runActive = true
     state.loaded = false
-    loadData()
+
     if isMainPlayer(player) then beginRun(player) end
 end)
 

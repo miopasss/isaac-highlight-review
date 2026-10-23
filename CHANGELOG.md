@@ -2660,3 +2660,33 @@ Q={"v":1,"e":{"1":{"q":4,"w":1},"105":{"q":0,"w":0.5},"1166":{"q":4,"w":0.1},
 - 一旦 `itemAccessBroken`（走了扫描）→ **本房不记获得**，宁可漏不可脏
 - 兜底：一房新增 > **12** 件 → 判定为伪影，全部丢弃并打 `[FILTER]` 日志
   （真实房间最多 3~4 件）
+## 「一房 121 个道具」真因：我们自己的降级路径（不是 mod 的锅）
+
+作者要求查是哪个 mod 并去提 PR。查完的结论是：**没有 mod 的问题，是我们自己的 bug**。
+
+### 证据链
+
+1. 房间里那 121 个 id 中，110 个落在 `1764~2000`，全部**没有对应的 ItemConfig**
+   （`[OWN]` 探针只打印出 `1700~1763` 这 64 个，1764 以上全是 nil）
+2. `GetCollectiblesList()` 在 `MC_POST_PLAYER_INIT` 传进来的 `player` 上**不存在**：
+   ```
+   attempt to call a nil value (method 'GetCollectiblesList')
+   ```
+   但在 `getPlayer()`（`Isaac.GetPlayer(0)`）上**正常**，返回 1 件（id=105 = D6）
+3. 一旦上一步失败，代码就回退到 `HasCollectible(id)` 从 1 扫到 2000。
+   **`HasCollectible` 的语义是"图鉴里有/曾经有"**，对 110 多个未持有的 mod 道具返回 true
+4. 采集逻辑是「和进房时比，变多了就算本局获得」→ 一次扫描结果变化就把它们全部记成获得
+
+所以是「**错误的 API 回退 × 差值判定**」的化学反应，和 id 大小、和任何 mod 都无关。
+
+### 修法
+
+- `scanCollectibles` 改用 **`GetCollectibleNum(id) > 0`**（准确持有数），`HasCollectible` 只作最后兜底
+- 扫描结果打 `[SCAN] GetCollectibleNum 扫描：N 件`（前 3 次）便于对照
+- 保留「一房新增 > 12 件 → 判定伪影」的上限
+- 删掉误导人的 `[LIST]` 诊断（它用的是 POST_PLAYER_INIT 的对象，方法不存在是正常的）
+
+### 教训
+
+`HasCollectible` 不能当"持有判定"用；要数量就用 `GetCollectibleNum`。
+另外：不同回调传进来的 `player` 对象能力可能不一样，跨回调复用要小心。
