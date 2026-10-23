@@ -915,7 +915,7 @@ function book.renderHud()
     local baseY = plus and 170 or 168
     -- 星象房那条占 168；我们排在它下面一行（作者 2026-10-22 指定箭头位置）
     if hasPlanetarium() then baseY = baseY + 11 end
-    local hx = 16
+    local hx = 16 + (cfg.hudPowerOffsetX or 0)
     local hy = baseY + (cfg.hudPowerOffsetY or 0)
 
     -- 半透明底衬：不加的话在木地板上几乎看不清

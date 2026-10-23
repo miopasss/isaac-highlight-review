@@ -22,7 +22,8 @@ config.jumpShown = 24         -- 一页最多展示几个（2 排 × 12）
 
 -- ── 局内 HUD：六维下面那一行战力 ──────────────────────────────────────
 config.hudPower       = true
-config.hudPowerOffsetY = 18   -- 错位时调这个（480x270 空间里的像素：正数往下）
+config.hudPowerOffsetY = 33   -- 480x270 空间里的偏移：正数往下。33 ≈ 再下移 50 屏幕像素
+config.hudPowerOffsetX = 6    -- 正数往右。6 ≈ 右移 20 屏幕像素
 config.hudPowerFadeMs  = 3000 -- 拿到道具后「+x.xx」保留多久
 config.maxRuns = 50
 
