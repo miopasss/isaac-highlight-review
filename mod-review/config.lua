@@ -34,6 +34,10 @@ config.maxBlobBytes = 1200000
 -- 是否往 log.txt 打印采集细节（v0.1 必须开，否则什么都看不见）
 config.debug = true
 
+-- 自测开关（开发用，作者 2026-10-23）：true 时进局后自动逐件给道具 → 记战力 → 再移除。
+-- 结果打在 [HIGHLIGHT] [TEST] 行。**平时必须 false。**
+config.selfTest = false
+
 -- 是否在本次会话第一次进房时，把"游戏实际能给的字段"全量导出到日志
 -- （道具全表 + 当前房间全字段 + 道具池探针）
 config.dumpOnce = true

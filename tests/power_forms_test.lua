@@ -52,9 +52,9 @@ print("== 宝宝倍数（只当倍率，不做加法）==")
 check("Incubus 单独 1.75×",  pf.output({ damage = 3.5, maxFireDelay = 10, family = { "incubus" } }), 16.70)
 check("双生宝单独 1.75×",     pf.output({ damage = 3.5, maxFireDelay = 10, family = { "twisted_pair" } }), 16.70)
 check("Incubus+双生宝 2.5×",  pf.output({ damage = 3.5, maxFireDelay = 10, family = { "incubus", "twisted_pair" } }), 23.86)
-check("+Succubus",            pf.output({ damage = 3.5, maxFireDelay = 10, family = { "incubus", "succubus" } }), 25.06)
-check("四件全拿 5.625×",      pf.output({ damage = 3.5, maxFireDelay = 10,
-    mult = 1.5, family = { "incubus", "twisted_pair", "succubus" } }), 53.69)
+check("Succubus 不再单独乘（面板已含）", pf.output({ damage = 3.5, maxFireDelay = 10, family = { "incubus", "succubus" } }), 16.70)
+check("宝宝套 + 双宝宝 3.75×",  pf.output({ damage = 3.5, maxFireDelay = 10,
+    mult = 1.5, family = { "incubus", "twisted_pair", "succubus" } }), 35.80)
 
 print("== 附加固定 DPS ==")
 check("Tech.5 +8.75", pf.output({ damage = 3.5, maxFireDelay = 10, addDps = 8.75 }), 18.30)
@@ -106,8 +106,8 @@ check("双生宝 + BFFS = 2.50×", pf.output({ damage = 3.5, maxFireDelay = 10,
     family = { "twisted_pair" }, bffs = true }), 23.86)
 check("两件 + BFFS = 4.00×", pf.output({ damage = 3.5, maxFireDelay = 10,
     family = { "incubus", "twisted_pair" }, bffs = true }), 38.18)
-check("Succubus 不吃 BFFS", pf.output({ damage = 3.5, maxFireDelay = 10,
-    family = { "succubus" }, bffs = true }), 14.32)
+check("Succubus 不影响宝宝倍数（不吃 BFFS）", pf.output({ damage = 3.5, maxFireDelay = 10,
+    family = { "succubus" }, bffs = true }), 9.5455)
 check("无宝宝时 BFFS 无效", pf.output({ damage = 3.5, maxFireDelay = 10, bffs = true }), 9.5455)
 
 print("== 莉莉丝特判（Incubus/双生宝 0.75 → 1.00）==")
@@ -117,8 +117,8 @@ check("莉莉丝 双生宝 = 2.00×", pf.output({ damage = 3.5, maxFireDelay = 1
     family = { "twisted_pair" }, lilith = true }), 19.09)
 check("莉莉丝 + BFFS = 3.00×", pf.output({ damage = 3.5, maxFireDelay = 10,
     family = { "incubus" }, lilith = true, bffs = true }), 28.64)
-check("莉莉丝 Succubus 不变", pf.output({ damage = 3.5, maxFireDelay = 10,
-    family = { "succubus" }, lilith = true }), 14.32)
+check("莉莉丝 Succubus 也不变", pf.output({ damage = 3.5, maxFireDelay = 10,
+    family = { "succubus" }, lilith = true }), 9.5455)
 
 print("== 边界 ==")
 check("空表 → 0",        pf.output({}), 0)

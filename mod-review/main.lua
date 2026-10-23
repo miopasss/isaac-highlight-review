@@ -34,6 +34,7 @@ end
 local schema = tryRequire("core.schema", "core/schema")
 local fmt    = tryRequire("core.fmt", "core/fmt")
 local power  = tryRequire("core.power", "core/power")
+local powerForms = tryRequire("core.power_forms", "core/power_forms")
 local config = tryRequire("config")
 local highlight = include("core.highlight")
 local bookui = include("ui.book")
@@ -276,13 +277,67 @@ local function detectForm(player)
         local ok, res = pcall(function() return player:HasCollectible(id) end)
         return ok and res or false
     end
+    -- 数字 id 是 EID 的表里核对过的（docs/special-attack-power.md §4.6）
     if has(CollectibleType.COLLECTIBLE_LUDOVICO_TECHNIQUE) then return "ludovico" end
     if has(CollectibleType.COLLECTIBLE_BRIMSTONE)         then return "brimstone" end
     if has(CollectibleType.COLLECTIBLE_TECH_X)            then return "techx" end
-    if has(CollectibleType.COLLECTIBLE_TECHNOLOGY_2)      then return "tech" end
-    if has(CollectibleType.COLLECTIBLE_TECHNOLOGY)        then return "tech" end
-    if has(CollectibleType.COLLECTIBLE_CHOCOLATE_MILK)    then return "choco" end
+    if has(114) then return "momsknife" end   -- 妈刀
+    if has(52)  then return "drfetus"  end    -- 婴儿博士
+    if has(168) then return "epicfetus" end   -- 史诗婴儿
+    if has(579) then return "spirsword" end   -- 灵剑
+    if has(CollectibleType.COLLECTIBLE_TECHNOLOGY_2)      then return "technology" end
+    if has(CollectibleType.COLLECTIBLE_TECHNOLOGY)        then return "technology" end
+    if has(CollectibleType.COLLECTIBLE_CHOCOLATE_MILK)    then return "chocomilk" end
     return "tears"
+end
+
+-- 宝宝 / 幸运 / 乘区（口径见 docs/special-attack-power.md §4.9 / §4.11）
+local FAMILY_BY_ID = { [360] = "incubus", [698] = "twisted_pair" }   -- Succubus(417) 不单独乘：面板已含且只在光环内生效
+local LUCK_BY_ID = {
+    [150] = "tough_love", [374] = "holy_light", [496] = "euthanasia",
+    [503] = "little_horn", [637] = "knockout", [55] = "moms_eye", [87] = "loki_horns",
+}
+local B_FORM = { brimstone = true, momsknife = true, drfetus = true,
+                 epicfetus = true, techx = true, ludovico = true }
+
+local function readKit(player, form, damage)
+    local kit = { family = {}, luckItems = {}, bffs = false, lilith = false,
+                  mult = 1, addDps = 0 }
+    if not player then return kit end
+    local function has(id)
+        local ok, res = pcall(function() return player:HasCollectible(id) end)
+        return ok and res or false
+    end
+
+    local fk = {}
+    for id, key in pairs(FAMILY_BY_ID) do
+        if has(id) then fk[#fk + 1] = key end
+    end
+    table.sort(fk)
+    kit.family = fk
+
+    local lk = {}
+    for id, key in pairs(LUCK_BY_ID) do
+        if has(id) then lk[#lk + 1] = key end
+    end
+    table.sort(lk)
+    kit.luckItems = lk
+
+    kit.bffs = has(247)
+    pcall(function()
+        local t = player:GetPlayerType()
+        kit.lilith = (t == PlayerType.PLAYER_LILITH) or (t == PlayerType.PLAYER_TAINTED_LILITH)
+    end)
+
+    -- 死眼：与 B 类形态共存时冻结为 1（wiki 明示）
+    if has(373) and not B_FORM[form] then kit.mult = kit.mult * 1.91 end
+    pcall(function()
+        if player:HasPlayerForm(PlayerForm.PLAYER_FORM_BOOKWORM)  then kit.mult = kit.mult * 1.5 end
+        if player:HasPlayerForm(PlayerForm.PLAYER_FORM_CONJOINED) then kit.mult = kit.mult * 1.5 end
+    end)
+    -- Tech.5：额外激光 2.5 次/秒 × 面板伤害（加法）
+    if has(244) then kit.addDps = 2.5 * (damage or 0) end
+    return kit
 end
 
 local function readMultiShot(player)
@@ -337,10 +392,44 @@ local function snapshot(player)
     end)
     s.tears = 30 / ((s.maxFireDelay or 10) + 1)
     s.survival = power.survival({ red = s.red, soul = s.soul, bone = s.bone })
-    s.power = power.output({
-        damage = s.damage, maxFireDelay = s.maxFireDelay,
-        multiShot = s.multiShot, form = s.form, chargeFactor = 1.0,
-    })
+
+    -- 战力：优先新公式（查表 + 宝宝 + 幸运），模块缺失时退回旧口径
+    -- 整段包 pcall：新路径任何一处抛错都退回旧公式，绝不能把采集打断
+    -- （snapshot 被 beginRoom/settleRoom 直接调用，抛错会让整间房记不下来）
+    local kit
+    local okNew, newPower = pcall(function()
+        kit = readKit(player, s.form, s.damage)
+        return powerForms.output({
+            damage = s.damage, maxFireDelay = s.maxFireDelay,
+            form = s.form, numTearsAvg = s.multiShot,
+            luck = s.luck, luckItems = kit.luckItems,
+            family = kit.family, bffs = kit.bffs, lilith = kit.lilith,
+            mult = kit.mult, addDps = kit.addDps,
+        })
+    end)
+    if okNew and type(newPower) == "number" then
+        s.power = newPower
+        s.kit = kit
+    else
+        s.power = power.output({
+            damage = s.damage, maxFireDelay = s.maxFireDelay,
+            multiShot = s.multiShot, form = s.form, chargeFactor = 1.0,
+        })
+        if powerForms and not state.pwrWarned then
+            state.pwrWarned = true
+            log("新战力公式失败，已退回旧口径：" .. safeToString(newPower))
+        end
+    end
+
+    -- 调试：战力变化时打一行，方便用控制台批量实测（作者 2026-10-23）
+    kit = kit or { family = {}, luckItems = {}, bffs = false, mult = 1, addDps = 0 }
+    if config.debug and math.abs((s.power or 0) - (state.lastPower or -1)) > 0.05 then
+        state.lastPower = s.power
+        log(string.format("[PWR] %s D=%.2f FR=%.3f n=%d luck=%.0f fam=%s bffs=%s mult=%.2f add=%.2f -> %.2f",
+            s.form, s.damage, 30 / ((s.maxFireDelay or 10) + 1), s.multiShot,
+            s.luck or 0, table.concat(kit.family, "+"), tostring(kit.bffs),
+            kit.mult, kit.addDps, s.power))
+    end
     return s
 end
 
@@ -922,8 +1011,44 @@ end)
 -- Boss 房补采：进房瞬间 Boss 还没生成，GetBossID() 会返回 0。
 -- 每帧检查一次，读到非 0 就停（只在 Boss 房 / Boss Rush 房做）。
 
+-- 自测：config.selfTest=true 时，进局后自动逐件给道具 → 记战力 → 移除。
+-- 为什么不用控制台：盲按 ~ 打字在控制台没打开时会变成游戏操作（作者 2026-10-23 提）。
+local TEST_IDS = {
+    -- 先测形态（互斥，按 detectForm 的优先级**从低到高**给，后给的覆盖先给的）
+    69, 68, 579, 168, 52, 114, 395, 118, 329,
+    -- 再测宝宝 / 幸运 / 乘区（不影响形态）
+    360, 698, 374, 244, 373, 150,
+}
+local testState = { i = 0, phase = 0, tick = 0, done = false }
+
+local function selftestTick(player)
+    if not config.selfTest or not player or testState.done then return end
+    testState.tick = testState.tick + 1
+    if testState.tick % 15 ~= 0 then return end
+
+    if testState.phase == 0 then
+        testState.i = testState.i + 1
+        local id = TEST_IDS[testState.i]
+        if not id then testState.done = true; log("[TEST] 全部完成"); return end
+        local ok = pcall(function() player:AddCollectible(id, 0, false) end)
+        if not ok then log("[TEST] AddCollectible 失败 id=" .. id) end
+        testState.phase = 1
+    else
+        local id = TEST_IDS[testState.i]
+        local s = snapshot(player)
+        log(string.format("[TEST] id=%d ok form=%s pwr=%.2f D=%.2f FR=%.3f n=%d fam=%s bffs=%s mult=%.2f add=%.2f",
+            id, s.form, s.power, s.damage, 30 / ((s.maxFireDelay or 10) + 1), s.multiShot,
+            table.concat((s.kit and s.kit.family) or {}, "+"),
+            tostring(s.kit and s.kit.bffs), (s.kit and s.kit.mult) or 1,
+            (s.kit and s.kit.addDps) or 0))
+        pcall(function() player:RemoveCollectible(id) end)
+        testState.phase = 0
+    end
+end
+
 add(ModCallbacks.MC_POST_UPDATE, function()
     if itemwatch then itemwatch.tick(getPlayer(), 1800) end
+    selftestTick(getPlayer())
     local p = state.pending
     if not p then return end
 
@@ -1037,3 +1162,5 @@ add(ModCallbacks.MC_PRE_GAME_EXIT, function()
 end)
 
 emit(LOG_PREFIX .. "loaded v2 (REPENTOGON=" .. tostring(state.hasRP) .. ")")
+-- 启动自检：确认游戏加载的是"接了新战力公式"的那份代码（[PWR] 批量实测要靠它）
+emit(LOG_PREFIX .. "[PWR] wired=" .. tostring(powerForms ~= nil) .. " build=2")

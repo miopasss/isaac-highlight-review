@@ -62,7 +62,8 @@ power_forms.FORMS = {
 power_forms.FAMILY = {
     incubus      = { bonus = 0.75, bonusLilith = 1.00 },   -- 360：EID {75,150,100,200}
     twisted_pair = { bonus = 0.75, bonusLilith = 1.00 },   -- 698：2 只 × 0.375（莉莉丝 0.5×2）
-    succubus     = { mult = 1.50 },                        -- 417：待确认是否已在面板
+    -- Succubus(417) 故意不在这里：实测 ×1.5 已经算进 player.Damage（光环内），
+    -- 再乘一次会双算，而且站出光环就掉回去 → 会让战力随站位跳。
 }
 
 --- 宝宝倍数。空表 → 1
