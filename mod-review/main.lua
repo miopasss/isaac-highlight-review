@@ -9,7 +9,8 @@
 --   1. 不在回调里调 Room 的引擎方法（会抛 C++ 异常，pcall 接不住）
 --   2. 日志必须走 Isaac.DebugString（print 不进 log.txt）
 --   3. 动画/时长时钟用 Isaac.GetFrameCount()（Isaac.GetTime 不可靠）
---   4. 道具读不到就用 HasCollectible 扫 1..2000（GetCollectible 这个版本不存在）
+--   4. 道具读不到就用 HasCollectible 扫 1..2000（GetCollectible 这个版本不存在；
+--      本机 player:GetCollectiblesList 也没有 → 只探测/报一次，之后静默走退化路径）
 -- ============================================================================
 local mod = RegisterMod("Highlight Review", 1)
 
@@ -125,13 +126,36 @@ end
 
 -- ---------------------------------------------------------------- 道具读取
 
-local itemsProbed, itemsProbed2, itemAccessBroken = false, false, false
-local SCAN_MAX_ID = 2000
+-- GetCollectiblesList 的可用性只判定一次（作者 2026-10-23 要求）：
+--   · player 上没有这个方法 → 记死"本版本无"，之后既不再 pcall、也不再刷日志
+--   · 有方法、这次却没返回表 → 只当临时故障，下次再试，日志仍然只报一条
+-- 退化路径（HasCollectible 扫 1..SCAN_MAX_ID）的结果必须与旧实现逐字一致。
+local listApiMissing = false   -- 本版本无 GetCollectiblesList（记死后不再探测）
+local listFailLogged = false   -- 探测失败只报一条
+local itemsProbed2   = false   -- 列表法可用只报一条
+local SCAN_MAX_ID    = 2000    -- 同版本最大道具 id = 1763（READABLE-DATA.md），留余量
 
+--- 全量扫描：升序 id 列表，每件一次（HasCollectible 只回答"有没有"）
 local function scanCollectibles(player)
     local list = {}
+    if not player then return list end
+
+    -- 方法只取一次：循环里每 id 新建闭包是这条路径最大的开销
+    local okLook, fn = pcall(function() return player.HasCollectible end)
+    if not okLook or type(fn) ~= "function" then return list end   -- 与旧实现一致：读不到就当没有
+
+    -- 快路径：整段只包一层 pcall，2000 次直接调用、不建闭包
+    local okAll = pcall(function()
+        for id = 1, SCAN_MAX_ID do
+            if fn(player, id) then list[#list + 1] = id end
+        end
+    end)
+    if okAll then return list end
+
+    -- 中途抛错（极罕见）：退回逐 id pcall，语义与旧实现完全相同
+    list = {}
     for id = 1, SCAN_MAX_ID do
-        local ok, has = pcall(function() return player:HasCollectible(id) end)
+        local ok, has = pcall(fn, player, id)
         if ok and has then list[#list + 1] = id end
     end
     return list
@@ -141,16 +165,14 @@ local function readCollectibles(player)
     local list = {}
     if not player then return list end
 
-    -- 首选 GetCollectiblesList()：返回 { id = 数量 }。
-    -- 注意：没有 player:GetCollectible(i) 这个方法（Repentance 无此 API），
-    -- 以前用它逐件读，必然失败 → 每次都退回 2000 次全量扫描，日志里那条
-    -- "attempt to call a nil value (method 'GetCollectible')" 就是它。
-    if not itemAccessBroken then
-        local okL, m = pcall(function() return player:GetCollectiblesList() end)
-        if okL and type(m) == "table" then
+    -- 首选 GetCollectiblesList()：返回 { id = 持有数量 }。
+    -- 注意：没有 player:GetCollectible(i) 这个方法（Repentance 无此 API）。
+    if not listApiMissing then
+        local okCall, m = pcall(function() return player:GetCollectiblesList() end)
+        if okCall and type(m) == "table" then
+            -- 全量表包含未持有的条目（数量 0）→ 只按数量 > 0 展开；重复 id 按数量重复
             for id, cnt in pairs(m) do
-                local c = tonumber(cnt) or 1
-                if c < 1 then c = 1 end
+                local c = tonumber(cnt) or 0
                 for _ = 1, c do list[#list + 1] = id end
             end
             table.sort(list)
@@ -160,10 +182,17 @@ local function readCollectibles(player)
             end
             return list
         end
-        if not itemsProbed then
-            itemsProbed = true
-            log("GetCollectiblesList 不可用 → " .. safeToString(m) .. "，改用全量扫描")
-            itemAccessBroken = true
+        -- 失败：区分"本版本没有这个方法"（记死）与"临时故障"（下次再试）
+        local okLook, fn = pcall(function() return player.GetCollectiblesList end)
+        if not (okLook and type(fn) == "function") then listApiMissing = true end
+        if not listFailLogged then
+            listFailLogged = true
+            if listApiMissing then
+                log("GetCollectiblesList 不可用（" .. safeToString(m) ..
+                    "）→ 退化为全量扫描（本版本无 GetCollectiblesList）")
+            else
+                log("GetCollectiblesList 调用失败（" .. safeToString(m) .. "）→ 本次改用全量扫描，之后静默")
+            end
         end
     end
 
