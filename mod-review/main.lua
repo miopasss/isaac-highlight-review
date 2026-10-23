@@ -868,6 +868,8 @@ local lastBlob = nil
 
 saveData = function()
     if not state.store then return end
+    -- 本会话没进过局（只在菜单里切了存档槽）→ 不写盘，避免把 A 档数据写进 B 档
+    if not state.runActive then return end
     local removed = fmt.trimToCount(state.store, config.maxRuns)
     if removed > 0 then
         log(string.format("超出局数上限 %d，淘汰了最旧的 %d 局", config.maxRuns, removed))
@@ -1001,6 +1003,7 @@ if configui.isReady() then log("ImGui 配置菜单已挂上") else log("ImGui �
 
 add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
     state.store = nil
+    state.runActive = true
     state.loaded = false
     loadData()
     if isMainPlayer(player) then beginRun(player) end

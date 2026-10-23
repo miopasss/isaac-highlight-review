@@ -130,6 +130,9 @@ end
 
 saveData = function()
     if not state.store then return false end
+    -- 本会话没进过局（只是在菜单里切了存档槽）→ 绝不写盘
+    -- 2026-10-24 实测：1 号档启动 → 菜单切 3 号档 → 直接退出，会把 1 号档的数据写进 save3
+    if not state.runActive then return false end
     if rating and not rating.loaded then
         err("评级还没读档，拒绝写盘（防止覆盖旧数据）")
     end
@@ -170,6 +173,7 @@ add(ModCallbacks.MC_POST_PLAYER_INIT, function()
     -- 每次进局都重读**当前存档槽**：mod:LoadData() 是按槽返回的，
     -- 只在进程里读一次的话，"1 号档 → 3 号档"会把 1 号档的配置写进 3 号档。
     -- 回顾 mod 用的就是这个写法（main.lua 的 MC_POST_PLAYER_INIT）。
+    state.runActive = true   -- 真的进过局：只有这时才允许写盘（防止菜单里切槽后退出把 A 档写进 B 档）
     state.store = nil
     state.loaded = false
     if rating then rating.loaded = false end
@@ -200,6 +204,7 @@ end)
 
 add(ModCallbacks.MC_PRE_GAME_EXIT, function()
     saveData()
+    state.runActive = false
 end)
 
 -- ── 界面 ────────────────────────────────────────────────────────────────────
