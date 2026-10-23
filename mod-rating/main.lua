@@ -130,6 +130,9 @@ end
 
 saveData = function()
     if not state.store then return false end
+    if rating and not rating.loaded then
+        err("评级还没读档，拒绝写盘（防止覆盖旧数据）")
+    end
     if settings then settings.save(state.store) end
     rating.save(state.store)
     local blob = storemod.build(state.store)
@@ -164,6 +167,12 @@ end
 -- ── 回调 ────────────────────────────────────────────────────────────────────
 
 add(ModCallbacks.MC_POST_PLAYER_INIT, function()
+    -- 每次进局都重读**当前存档槽**：mod:LoadData() 是按槽返回的，
+    -- 只在进程里读一次的话，"1 号档 → 3 号档"会把 1 号档的配置写进 3 号档。
+    -- 回顾 mod 用的就是这个写法（main.lua 的 MC_POST_PLAYER_INIT）。
+    state.store = nil
+    state.loaded = false
+    if rating then rating.loaded = false end
     loadData()
 end)
 
@@ -201,4 +210,4 @@ end
 
 
 
-log("loaded v0.1.0 (REPENTOGON=" .. tostring(REPENTOGON ~= nil) .. ")")
+log("loaded v0.1.3 (REPENTOGON=" .. tostring(REPENTOGON ~= nil) .. ")")

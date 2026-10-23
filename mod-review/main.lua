@@ -727,6 +727,25 @@ local function settleRoom(player)
         gained = keep
     end
 
+    -- 品质 < 0 = 我们的道具表里没有这个 id（多半是 mod 把整份道具表塞给玩家）。
+    -- 这类条目会灌满 Q0（作者 2026-10-22 反馈「Q0 又 400+」），采集层直接丢掉。
+    do
+        local keep2, dropped = {}, 0
+        for k = 1, #gained do
+            local okQ, q = pcall(qualityOf, gained[k])
+            if okQ and type(q) == "number" and q >= 0 then
+                keep2[#keep2 + 1] = gained[k]
+            else
+                dropped = dropped + 1
+            end
+        end
+        if dropped > 0 then
+            log(string.format("[FILTER] 丢弃 %d 个无品质道具（mod 整表写入的脏 id），保留 %d 个",
+                dropped, #keep2))
+            gained = keep2
+        end
+    end
+
     -- 与 gained 平行的品质列表（用于识别 4 级起飞 / 0 级封盘）
     local gainedQ = {}
     for k = 1, #gained do gainedQ[k] = qualityOf(gained[k]) end

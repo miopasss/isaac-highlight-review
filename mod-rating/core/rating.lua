@@ -128,7 +128,15 @@ function R.load(store)
     for i = 1, #store.lines do
         local line = store.lines[i]
         if line:sub(1, #R.PREFIX) == R.PREFIX then
-            R.entries = J.decode(line:sub(#R.PREFIX + 1)) or {}
+            local decoded = J.decode(line:sub(#R.PREFIX + 1))
+            if decoded ~= nil then
+                R.entries = decoded
+                -- 注意：这里必须置 loaded=true。
+                -- 只 return 不置位 → R.save() 会以为"还没读过档"而拒绝写盘，
+                -- 之后每次改权重都只改了内存，退出游戏就回滚（2026-10-24 实测）。
+                R.loaded = true
+            end
+            -- 解码失败：不置 loaded，让 save 继续拒绝写盘，保住这行坏数据
             return
         end
     end

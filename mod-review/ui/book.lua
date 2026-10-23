@@ -813,11 +813,12 @@ y = statRow(s, y, f.stats[i], bk, PADX + 12, PADW - 40)
     for k = 1, #f.items do
         local q = (f.itemsQ and f.itemsQ[k]) or 0
         q = math.floor(tonumber(q) or 0)
-        if q < 0 then q = 0 end
-        if q > 5 then q = 5 end
-        groups[q] = groups[q] or {}
-        groups[q][#groups[q] + 1] = f.items[k]
-        total = total + 1
+        if q >= 0 then                       -- 品质<0 = mod 道具整表写入的脏 id，不参与分层
+            if q > 5 then q = 5 end
+            groups[q] = groups[q] or {}
+            groups[q][#groups[q] + 1] = f.items[k]
+            total = total + 1
+        end
     end
 
     txt(string.format("ITEMS  %d", total), (PADX + 12) * s, y * s, s * 0.54, INK_DIM)

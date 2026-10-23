@@ -67,6 +67,19 @@ R.load(store)
 check("读盘后 118 恢复", R.getRating(118) == 3.5, R.getRating(118))
 check("读盘后 1052 恢复", R.getRating(1052) == 4.0, R.getRating(1052))
 
+-- ⑤c 已有 Q= 行时重新读档（模拟"重启游戏"）：必须还能写盘
+-- 回归：R.load 找到 Q 行后直接 return，没置 loaded=true → save 永远被拒
+local R2 = loadmod("mod-rating/core/rating.lua")
+R2.init(J, {})
+local store2 = { lines = { 'Q={"v":1,"e":{"118":{"q":3.5,"w":0.5}}}' } }
+R2.load(store2)
+check("已有 Q 行：load 后 loaded=true", R2.loaded == true, tostring(R2.loaded))
+R2.set(118, 4.0, 0.5)
+check("已有 Q 行：save 不被拒绝", R2.save(store2) == true, "save 返回 false")
+local q2 = nil
+for _, l in ipairs(store2.lines) do if l:sub(1, 2) == "Q=" then q2 = l end end
+check("已有 Q 行：新值写回", q2 ~= nil and q2:find('"q":4') ~= nil, q2)
+
 -- ⑥ 清除
 R.clear(118)
 check("清除后回退（118 无配置）", R.getRating(118) == nil, R.getRating(118))

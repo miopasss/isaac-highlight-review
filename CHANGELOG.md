@@ -2462,3 +2462,73 @@ powershell -File tools\console.ps1 "debug 3|giveitem c417|stage 2" -Shot
 踩过的三个坑都写进注释了：`~` 会打进输入框（先退格 40 清场）、自动补全要吃一次 ENTER、
 ESC 关控制台时可能连带打开暂停菜单（收尾按一次 ENTER 恢复）。
 用它实测到：**Succubus 的 ×1.5 已经在 `player.Damage` 里，且只在光环内生效**（站位一变就跳）→ 建议从宝宝倍数表里删掉这一行。
+## 修「道具权重又不见了」：读档后拒绝写盘 + 换存档槽串档（2026-10-24）
+
+### 现象
+
+作者反馈：改过的权重过一阵又回旧值；3 号档里导入的 `1166`（q4 / w0.1）没了，
+`data\highlight-rating\save3.dat` 跟 `save1.dat` 一模一样。
+
+### 根因 1：存档里已有 `Q=` 行时，`R.loaded` 永远是 false
+
+`core/rating.lua` 的 `R.load` 找到 `Q=` 行就 `return`，**没有置 `R.loaded = true`**；
+`R.save()` 见 `loaded == false` 直接拒绝写盘。于是只要存档里已有 Q 行，
+之后每次改权重都只改了内存，退出游戏就回滚。
+
+之前那次"注入 Q 行 → 起游戏 → 载入 3 条 → 关游戏 → Q 行仍在"的验证能通过，
+是因为它**压根没写盘** —— 这个 bug 正好被那条验证掩盖了。
+
+修：找到 Q 行并解码后置 `R.loaded = true`；`saveData` 里遇到 `not rating.loaded` 打一条 ERROR。
+
+测试补在 `tests\rating_test.lua` ⑤c：用第二次 `loadfile` 出来的实例模拟"重启游戏"，
+已有 Q 行时 `load → set → save` 必须写回。
+
+### 根因 2：只在进程里读一次档，换存档槽不重读
+
+`main.lua` 的 `MC_POST_PLAYER_INIT` 只调 `loadData()`，而 `state.loaded` 保证整个进程只读一次。
+先进 1 号档再切 3 号档 → 内存里还是 1 号档的 entries，退出时 `mod:SaveData` 把 1 号档的
+Q 行写进 3 号档。
+
+证据：
+
+| 文件 | 内容 |
+|---|---|
+| `data\highlight-review\save3.dat` | 2726 行 / 14 局（真在玩的档） |
+| `data\highlight-review\save1.dat` | 213 行 / 1 局（为了进 1 号档点了一下） |
+| `data\highlight-rating\save3.dat` | 与 `save1.dat` 完全相同（4 条：1/105/118/1052） |
+| `_backup\save3-cleared-20261021-115301.dat` | `1166:{q:4,w:0.1}` 还在 |
+
+修：照回顾 mod 的写法，每次 `MC_POST_PLAYER_INIT` 重置 `state.store / state.loaded / rating.loaded` 再读。
+
+### 版本
+
+`metadata.xml` 0.1.2 → **0.1.3**；main.lua 的 loaded 日志同步改 0.1.3（之前一直写 0.1.0）。
+
+### 待办
+
+- [ ] 部署后实测：1 号档设一个权重 → 退菜单 → 进 3 号档 → 两个文件的 Q 行必须不同；重启后改动仍在
+- [ ] 把 `1166` 从 `_backup\save3-cleared-20261021-115301.dat` 合并回 3 号档
+- [ ] 工坊上传 0.1.3（这个 bug 已随 0.1.2 发给所有订阅者，必须热修）
+### Q0 又爆 400+：脏 id 的显示与采集双层过滤
+
+作者截图报「Q0 又 400+」，行里全是 `1819 1866 1933 1792 ...` ——
+这些都是 id ≥ 1792 的 mod 道具，`iq = -1`（我们的道具表里没有它们）。
+
+两个问题叠在一起：
+
+1. **显示层**：分层时 `q < 0` 被 `if q < 0 then q = 0 end` 归进了 **Q0**，
+   于是 800 多个脏 id 全挤在 Q0 那一行
+2. **采集层**：房间里只要拿到一个 mod 道具，整份 mod 道具表都会被写进 `it`（已知的整表写入问题）
+
+### 改法
+
+- `book.drawFloor`：分层前 `q < 0` 直接跳过，`ITEMS N` 也只统计有效道具
+- `main.settleRoom`：采集时就丢掉 `品质 < 0` 的条目，并打日志
+
+```
+[FILTER] 丢弃 N 个无品质道具（mod 整表写入的脏 id），保留 M 个
+```
+
+这样 Q0/Q4 列表、`ITEMS` 计数、跃迁平摊分母都不会再被这批脏 id 污染。
+
+**注意**：历史存档里已有的脏记录不会自动消失，要看干净数据必须打新局。
