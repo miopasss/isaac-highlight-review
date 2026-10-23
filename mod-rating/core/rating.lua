@@ -18,6 +18,9 @@ local J = ...   -- 由 init 注入（避免依赖 require 路径）
 local R = {}
 
 R.PREFIX = "Q="
+
+--- 一代备份行：保存前把上一版 Q= 存成 Q0=。误清空时 load 会用它兜底。
+R.BAK = "Q0="
 R.VERSION = 1
 
 R.entries  = {}   -- [id] = { q = number, w = number, on = boolean }
@@ -125,21 +128,35 @@ end
 function R.load(store)
     R.entries = {}
     if not store or not store.lines then return end
-    for i = 1, #store.lines do
-        local line = store.lines[i]
-        if line:sub(1, #R.PREFIX) == R.PREFIX then
-            local decoded = J.decode(line:sub(#R.PREFIX + 1))
-            if decoded ~= nil then
-                R.entries = decoded
-                -- 注意：这里必须置 loaded=true。
-                -- 只 return 不置位 → R.save() 会以为"还没读过档"而拒绝写盘，
-                -- 之后每次改权重都只改了内存，退出游戏就回滚（2026-10-24 实测）。
-                R.loaded = true
+
+    local function tryPrefix(prefix)
+        for i = 1, #store.lines do
+            local line = store.lines[i]
+            if line:sub(1, #prefix) == prefix then
+                local decoded = J.decode(line:sub(#prefix + 1))
+                if decoded ~= nil then return decoded, true end
+                return nil, false          -- 解码失败：坏数据，别标记 loaded
             end
-            -- 解码失败：不置 loaded，让 save 继续拒绝写盘，保住这行坏数据
-            return
         end
+        return nil, nil
     end
+
+    local cur, curOk = tryPrefix(R.PREFIX)
+    if curOk and cur and next(cur) ~= nil then
+        R.entries = cur
+        R.loaded = true
+        return
+    end
+
+    -- 当前 Q= 丢了或空了 → 用一代备份 Q0= 兜底（2026-10-24：作者评级被清空两次）
+    local bak, bakOk = tryPrefix(R.BAK)
+    if bakOk and bak and next(bak) ~= nil then
+        R.entries = bak
+        R.loaded = true
+        return
+    end
+
+    if curOk == false or bakOk == false then return end   -- 有坏数据：不置 loaded，拒绝写盘
     R.loaded = true
 end
 
@@ -163,6 +180,10 @@ function R.save(store)
         after = R.PREFIX .. J.encode(R.entries)
     end
 
+    -- 一代备份：把这一版 Q= 变成 Q0=，再写新的 Q=
+    if before and before ~= after then
+        kept[#kept + 1] = R.BAK .. before:sub(#R.PREFIX + 1)
+    end
     store.lines = kept
     if after then store.lines[#store.lines + 1] = after end
     return before ~= after
