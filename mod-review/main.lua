@@ -1029,6 +1029,29 @@ end)
 if configui.isReady() then log("ImGui 配置菜单已挂上") else log("ImGui 不可用（或挂载失败），跳过配置菜单") end
 
 add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
+    -- 一次性：按 ModName 聚合 1700~2300 的道具归属，用来查"谁占着 1764~2000 这段"
+    do
+        local agg, okCfg = {}, false
+        local cfg0 = Isaac.GetItemConfig()
+        if cfg0 then okCfg = true end
+        if okCfg then
+            for id = 1700, 2300 do
+                local ok, c = pcall(function() return cfg0:GetCollectible(id) end)
+                if ok and c then
+                    local mn = c.ModName
+                    if mn == nil or mn == "" then mn = "(vanilla/未知)" end
+                    local a = agg[mn]
+                    if not a then a = { min = id, max = id, n = 0 }; agg[mn] = a end
+                    if id < a.min then a.min = id end
+                    if id > a.max then a.max = id end
+                    a.n = a.n + 1
+                end
+            end
+            for mn, a in pairs(agg) do
+                log(string.format("[OWN] %s  id %d~%d  (%d 个)", mn, a.min, a.max, a.n))
+            end
+        end
+    end
     state.store = nil
     state.runActive = true
     state.loaded = false
