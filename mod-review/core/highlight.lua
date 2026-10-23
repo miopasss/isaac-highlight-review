@@ -131,6 +131,25 @@ highlight.STATS = {
 
 local function num(v) return tonumber(v) or 0 end
 
+--- 「什么时候真的获得了某个能力」（飞行 / 防爆）。
+--- 关键：必须**带得进下一间**才算。踩白火、按住圣经这类临时飞行只在本房间有效，
+--- 表现为「出房 true、下一间进房又 false」——这类一律当临时效果丢掉。
+--- 规则：候选 = 出房 true 且进房 false 的第一间；确认 = 下一间进房仍为 true。
+---       最后一间没有"下一间"，不确认（宁可漏记，不误记）。
+--- @param keyIn string  进房的字段名（"fli" / "exi"）
+--- @param keyOut string 出房的字段名（"fl" / "ex"）
+--- @return table|nil { f = 层, i = 房号 }
+function highlight.gainPoint(rooms, keyIn, keyOut)
+    if type(rooms) ~= "table" then return nil end
+    for i = 1, #rooms - 1 do
+        local r, nxt = rooms[i], rooms[i + 1]
+        if r[keyOut] and not r[keyIn] and nxt[keyIn] then
+            return { f = num(r.f), i = num(r.i) }
+        end
+    end
+    return nil
+end
+
 --- 把一局分析成册子结构
 function highlight.analyze(run, cfg)
     cfg = cfg or {}
@@ -310,20 +329,11 @@ function highlight.analyze(run, cfg)
     end
 
     -- 2.6) 飞行 / 防爆：本局有没有、哪一间拿到的（作者 2026-10-22）
-    -- 判定：出房 true 且进房 false → 这一间拿到的；第 1 间就 true → 开局自带
-    local function firstGain(keyIn, keyOut)
-        for i = 1, #rooms do
-            local r = rooms[i]
-            if r[keyOut] and not r[keyIn] then
-                return { f = num(r.f), i = num(r.i) }
-            end
-        end
-        return nil
-    end
+    -- 必须"带得进下一间"才算，防的是踩白火/按住圣经这类临时飞行（见 highlight.gainPoint）
     local firstR = rooms[1]
     local lastR2 = rooms[#rooms]
-    book.flight       = firstGain("fli", "fl")
-    book.explode      = firstGain("exi", "ex")
+    book.flight       = highlight.gainPoint(rooms, "fli", "fl")
+    book.explode      = highlight.gainPoint(rooms, "exi", "ex")
     book.flightStart  = (firstR and firstR.fli) or false
     book.explodeStart = (firstR and firstR.exi) or false
     book.flightNow    = (lastR2 and lastR2.fl) or false

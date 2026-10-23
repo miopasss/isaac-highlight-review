@@ -116,5 +116,38 @@ check("层2 六维伤害 出 = 10.0", math.abs(bk.floors[2].stats[1].outV - 10.0
 check("射程按 /40 缩放（6.4 而不是 256）", math.abs(bk.floors[1].stats[4].outV - 6.4) < 1e-6, bk.floors[1].stats[4].outV)
 
 print("")
+print("== 飞行/防爆：必须'带得进下一间'才算拿到 ==")
+-- 第 1 间踩白火飞了一下 → 下一间进门没飞 → 不算
+-- 第 3 间拿到真飞行 → 第 4 间进门还在飞 → 确认为第 3 间
+local rs = {
+    { f = 1, i = 1, fli = false, fl = true  },
+    { f = 1, i = 2, fli = false, fl = false },
+    { f = 1, i = 3, fli = false, fl = true  },
+    { f = 1, i = 4, fli = true,  fl = true  },
+}
+local gp = hl.gainPoint(rs, "fli", "fl")
+check("临时飞行被丢掉，确认第 3 间", gp and gp.i == 3, gp and gp.i)
+check("确认的层号正确", gp and gp.f == 1, gp and gp.f)
+
+-- 最后一间没有"下一间"可确认 → 宁可漏记
+check("最后一间不确认", hl.gainPoint({ { f = 2, i = 1, fli = false, fl = true } }, "fli", "fl") == nil)
+
+-- 开局自带（第 1 间进门就会飞）不算"获得"
+local rs3 = {
+    { f = 1, i = 1, fli = true, fl = true },
+    { f = 1, i = 2, fli = true, fl = true },
+}
+check("开局自带 → 无获得点", hl.gainPoint(rs3, "fli", "fl") == nil)
+
+-- 防爆走同一套逻辑
+local rs4 = {
+    { f = 3, i = 1, exi = false, ex = false },
+    { f = 3, i = 2, exi = false, ex = true  },
+    { f = 3, i = 3, exi = true,  ex = true  },
+}
+local ge = hl.gainPoint(rs4, "exi", "ex")
+check("防爆确认第 2 间", ge and ge.i == 2, ge and ge.i)
+
+print("")
 print(string.format("结果：%d 通过 / %d 失败", pass, fail))
 return pass .. "/" .. (pass + fail)
