@@ -706,6 +706,13 @@ local function settleRoom(player)
         local st = state.startItems or {}
         for k = 1, #st do gained[k] = st[k] end
     end
+    -- 扫描降级路径：HasCollectible 会误报（见 docs/PERFORMANCE.md §1.1）
+    -- 一旦走扫描，本房不记「获得」——宁可漏，不可脏
+    if itemAccessBroken then
+        if itemwatch then itemwatch.drain() end
+        gained = {}
+    end
+
     -- 实时监视补采：修掉"同房获得又失去""跨房瞬间获得"两个盲区
     if itemwatch then
         local extra = itemwatch.drain()
@@ -716,6 +723,12 @@ local function settleRoom(player)
             if not dup then gained[#gained + 1] = id end
         end
     end
+    -- 兜底：一房新增超过 12 件基本可以判定是扫描伪影（真实房间最多 3~4 件）
+    if #gained > 12 then
+        log(string.format("[FILTER] 本房新增 %d 件，超过上限 → 判定为伪影，全部丢弃", #gained))
+        gained = {}
+    end
+
 
     -- 黑名单过滤：某些道具会被别的 mod 反复挂到身上，属于误记（见 config.itemBlacklist）
     -- 过滤放在这里 → 四个字段（it / iq / ik）都拿不到它，四级/零级列表自然也不会有
@@ -1069,7 +1082,8 @@ local function selftestTick(player)
 end
 
 add(ModCallbacks.MC_POST_UPDATE, function()
-    if itemwatch then itemwatch.tick(getPlayer(), 1800) end
+    -- itemwatch 每帧比对已移除（作者 2026-10-24）：改回"只按房间边界比对"。
+    -- 同房拿了又丢会漏记（作者接受）；跨房瞬间获得由下一房对比补上。
     selftestTick(getPlayer())
     local p = state.pending
     if not p then return end
