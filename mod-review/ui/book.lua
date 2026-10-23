@@ -924,7 +924,6 @@ function book.renderHud()
     loadFonts()
     if not hudFont then return end
 
-    local _, _, s = scr()
     local plus = rawget(_G, "REPENTANCE_PLUS") or rawget(_G, "REPENTOGON_PLUS")
     local baseY = plus and 170 or 168
     -- 星象房那条占 168；我们排在它下面一行（作者 2026-10-22 指定箭头位置）
@@ -932,8 +931,9 @@ function book.renderHud()
     local hx = 16 + (cfg.hudPowerOffsetX or 0)
     local hy = baseY + (cfg.hudPowerOffsetY or 0)
 
-    -- 半透明底衬：不加的话在木地板上几乎看不清
-    rect((hx - 3) * s, (hy - 2) * s, 62 * s, 10 * s, 0.05, 0.03, 0.02, 0.55)
+    -- 底衬已删（作者 2026-10-23）：字体本来就是描边字，不需要背景；
+    -- 而且 rect（屏幕像素）和 DrawString（HUD 空间）两个坐标系差一截，
+    -- 底衬和文字对不上，会留下一条空黑条。
     hudFont:DrawString("[]", hx, hy + 1, KColor(0.9, 0.35, 0.28, 0.95), 0, false)
     hudFont:DrawString(string.format("%.2f", hud.power), hx + 14, hy + 1,
         KColor(1, 1, 1, 1), 0, false)
