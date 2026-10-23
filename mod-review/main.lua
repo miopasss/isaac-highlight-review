@@ -647,6 +647,20 @@ local function beginRoom(player)
     ensureFloor(run)
 
     local ident = readRoomIdentity()
+    -- 探针：持有列表一次性暴涨时打出上下文，用来定位是哪个 mod 在批量塞道具
+    -- （2026-10-24：静态搜索找不到覆盖 HasCollectible 的 mod，只能实测）
+    do
+        local n = #items
+        local prev = state.lastItemCount or 0
+        if n - prev >= 20 then
+            local sample = {}
+            for k = 1, math.min(n, 10) do sample[k] = tostring(items[k]) end
+            log(string.format("[PROBE] 持有数 %d → %d（+%d）  样本: %s",
+                prev, n, n - prev, table.concat(sample, ",")))
+        end
+        state.lastItemCount = n
+    end
+
     local snap  = snapshot(player)
     state.roomInFloor = state.roomInFloor + 1
 
