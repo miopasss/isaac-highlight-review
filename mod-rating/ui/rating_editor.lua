@@ -234,6 +234,12 @@ local function refreshLists()
         if oa ~= ob then return oa > ob end
         return a < b
     end)
+    -- 诊断：把实际持有的 id 全打出来（作者反馈「圣光」没出现在列表里）
+    if deps and deps.log and #ids > 0 then
+        local parts = {}
+        for k = 1, #ids do parts[k] = tostring(ids[k]) end
+        deps.log(string.format("[WEIGHT] 持有 %d 件: %s", #ids, table.concat(parts, ",")))
+    end
     ownedList = {}
     for i = 1, #ids do ownedList[i] = { id = ids[i], label = label(ids[i]) } end
     pcall(function()
@@ -453,6 +459,17 @@ function E.close()
 end
 
 --- 每帧调用：窗口从"不可见"变"可见"时刷一次列表
+--- 每出一间房调一次：给新出现的道具编号（作者 2026-10-24 定的方案）
+--- 只动内存，不碰 UI、不写盘。
+function E.touch()
+    touchOrder(heldIds())
+end
+
+--- 每局开始清空顺序（"已获得道具"只关心本局）
+function E.resetOrder()
+    seenOrder, seenSeq = {}, 0
+end
+
 function E.watch()
     if not READY then return end
     local vis = false

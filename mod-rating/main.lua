@@ -174,10 +174,16 @@ add(ModCallbacks.MC_POST_PLAYER_INIT, function()
     -- 只在进程里读一次的话，"1 号档 → 3 号档"会把 1 号档的配置写进 3 号档。
     -- 回顾 mod 用的就是这个写法（main.lua 的 MC_POST_PLAYER_INIT）。
     state.runActive = true   -- 真的进过局：只有这时才允许写盘（防止菜单里切槽后退出把 A 档写进 B 档）
+    if editor and editor.resetOrder then editor.resetOrder() end   -- 每局重置"已获得"的顺序
     state.store = nil
     state.loaded = false
     if rating then rating.loaded = false end
     loadData()
+end)
+
+-- 每出一间房比对一次持有列表：给新拿到的道具编号（顺序只在本局内有效）
+add(ModCallbacks.MC_POST_NEW_ROOM, function()
+    if editor and editor.touch then editor.touch() end
 end)
 
 add(ModCallbacks.MC_POST_GAME_STARTED, function()
