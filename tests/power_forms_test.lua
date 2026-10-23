@@ -86,6 +86,19 @@ check("安眠药 不影响 DPS",  pf.output({ damage = 3.5, maxFireDelay = 10, l
 check("圣光+安乐死 luck0",  pf.output({ damage = 3.5, maxFireDelay = 10, luck = 0,
     luckItems = { "holy_light", "euthanasia" } }), 9.5455 * 1.2 * (1 + 0.03333 * 2))
 
+print("== 幸运随 run 变化（不是常数）==")
+-- 同一件道具，luck 变了战力就该变（这是合法跳变，不是噪声）
+local p0 = pf.output({ damage = 3.5, maxFireDelay = 10, luck = 0, luckItems = { "holy_light" } })
+local p9 = pf.output({ damage = 3.5, maxFireDelay = 10, luck = 9, luckItems = { "holy_light" } })
+check("圣光 luck0→9 涨 1.667 倍", p9 / p0, 19.091 / 11.455)
+-- 负幸运：概率降，但不会变负
+check("圣光 luck-5 = 6.67%",   pf.luckP("holy_light", -5) * 100, 6.667)
+check("妈妈的眼睛 luck-2 = 30%", pf.luckP("moms_eye", -2) * 100, 30)
+check("妈妈的眼睛 luck-10 钳 0", pf.luckP("moms_eye", -10) * 100, 0)
+-- 没有吃幸运的道具时，luck 怎么变都不该动
+check("无幸运道具 luck99 = 不变",
+    pf.output({ damage = 3.5, maxFireDelay = 10, luck = 99 }), 9.5455)
+
 print("== 边界 ==")
 check("空表 → 0",        pf.output({}), 0)
 check("未知形态回落 tears", pf.output({ damage = 3.5, maxFireDelay = 10, form = "???" }), 9.5455)
