@@ -7,6 +7,26 @@ local config = {}
 -- 存档留多少局（超出按 seq 淘汰最旧）。见 FORMAT.md §6
 config.maxRuns = 50
 
+-- ── 册子页面开关（作者 2026-10-22）────────────────────────────────────────
+-- 关掉「战力提升 Top3」那几页；四级/零级列表也从终极Boss页里去掉。
+-- 改成 true 就恢复。
+config.pagesPower = false     -- 战力提升 Top3 独立页
+config.showQ4     = false     -- 终极Boss页里的四级道具列表
+config.showQ0     = false     -- 终极Boss页里的零级道具列表
+
+-- ── 战力跃迁（新页）────────────────────────────────────────────────────
+-- 只算「拿到道具」造成的战力跳变；脏 id（品质<0）和负增量不算。
+config.jumpMin   = 0.30       -- 单次增量门槛（战力绝对值）
+config.jumpTopN  = 50         -- 先按增量取前 N 个，再按时间排
+config.jumpShown = 24         -- 一页最多展示几个（2 排 × 12）
+
+-- ── 局内 HUD：六维下面那一行战力 ──────────────────────────────────────
+config.hudPower       = true
+config.hudPowerOffsetY = 33   -- 480x270 空间里的偏移：正数往下。33 ≈ 再下移 50 屏幕像素
+config.hudPowerOffsetX = 6    -- 正数往右。6 ≈ 右移 20 屏幕像素
+config.hudPowerFadeMs  = 3000 -- 拿到道具后「+x.xx」保留多久
+config.maxRuns = 50
+
 -- 字节预算硬线：超过就从最旧的局开始整局淘汰。
 -- 参照：你机器上最大的 mod 存档是 reverie 的 291 KB；这里留到 1.2 MB 的余量。
 config.maxBlobBytes = 1200000
@@ -22,6 +42,14 @@ config.dumpOnce = true
 -- ⚠️ 实测发现：Data.Spawns 包含的是**所有**刷怪点（怪物、掉落、家具…），
 -- 不只是道具座。默认关闭，等做了"按 EntityType/Subtype 过滤"再开。
 config.capturePeds = false
+
+-- 道具采集黑名单：这些 id 永远不会被记成"本房获得"（也就不会进四级/零级列表）。
+-- 313 = 神圣屏障（Holy Mantle）：别的 mod 会往身上反复挂这个效果，
+-- 实测一局被误记 4 次，玩家根本没拿过。作者 2026-10-21 要求排除。
+-- 加新条目就照格式加一行 [id] = true。
+config.itemBlacklist = {
+    [313] = true,
+}
 
 -- 高光判定阈值（v0.1 **不使用**，只记录；等跑出真实分布再定，见 DESIGN.md §6）
 config.thresholds = {

@@ -36,16 +36,19 @@ local jsonmini = tryRequire("core.jsonmini", "core/jsonmini")
 local rating   = tryRequire("core.rating", "core/rating")
 local ratedata = tryRequire("core.rating_data", "core/rating_data")
 local poolmod  = tryRequire("core.pool", "core/pool")
-local settings = tryRequire("core.settings", "core/settings")
+local settings = tryRequire("core.iwe_settings", "core/iwe_settings")
 local storemod = tryRequire("core.store", "core/store")
 local rates    = rating
 
 local editor, configui
 pcall(function() editor = include("ui.rating_editor") end)
 pcall(function() configui = include("ui.config") end)
+local lang
+pcall(function() lang = include("ui.lang") end)
 
 local function log(msg) emit(LOG_PREFIX .. tostring(msg)) end
 local function err(msg) emit(LOG_PREFIX .. "ERROR: " .. tostring(msg)) end
+
 
 if not (rating and jsonmini and storemod) then
     err("模块载入失败（rating=" .. tostring(rating ~= nil) ..
@@ -68,6 +71,33 @@ end
 
 -- ── 存档 ────────────────────────────────────────────────────────────────────
 
+local saveData   -- 前置声明：initUI 里的闭包要用，Lua 的 local 只往后可见
+
+--- 建界面必须在**读完档 + 定好语言之后**做：
+---   1) ImGui 的控件标签只能在创建时给定，语言晚了就只能是中文
+---   2) 绝不能用 ImGui.RemoveWindow 重建 —— 实测会让游戏直接崩（minidump）
+local function initUI()
+    if editor and editor.init and not editor.isReady() then
+        local ok = editor.init({
+            rating = rating,
+            lang = lang,
+            settings = settings,
+            getPlayer = getPlayer,
+            log = log,
+            onChanged = function() saveData() end,
+        })
+        if ok then log("编辑器已就绪（F6 打开）") else err("编辑器初始化失败") end
+    end
+    if configui and configui.init and not configui.isReady() then
+        local ok = configui.init({
+            settings = settings,
+            log = log,
+            onChanged = function() saveData() end,
+        })
+        if ok then log("设置菜单已挂上") end
+    end
+end
+
 local function loadData()
     if state.loaded then return end
     state.loaded = true
@@ -84,11 +114,21 @@ local function loadData()
 
     state.store = storemod.split(blob)
     if settings then settings.load(state.store) end
+
+    -- 语言必须在**读过存档之后**才能确定（settings 在 init 时全是默认值）
+    if lang then
+        log(string.format("[I18N] settings=%s rawLang=%s", tostring(settings ~= nil),
+            tostring(settings and settings.get("lang") or "n/a")))
+        lang.init(settings)
+        log("[I18N] lang=" .. tostring(lang.code and lang.code() or "?"))
+        -- 语言可能和启动时不同：重建两个窗口的文字
+        initUI()
+    end
     rating.load(state.store)
     log(string.format("载入 %d 条评级配置 / %d 行", rating.count(), #state.store.lines))
 end
 
-local function saveData()
+saveData = function()
     if not state.store then return false end
     if settings then settings.save(state.store) end
     rating.save(state.store)
@@ -106,7 +146,7 @@ end
 rating.init(jsonmini, ratedata or {})
 if settings then
     settings.init()
-    settings.only = { "f6" }
+    settings.only = { "f6", "lang" }
 end
 rating.publish()
 
@@ -159,19 +199,6 @@ local function onChanged()
     saveData()
 end
 
-if editor and editor.init then
-    local ok = editor.init({
-        rating = rating,
-        getPlayer = getPlayer,
-        log = log,
-        onChanged = onChanged,
-    })
-    if ok then log("道具权重编辑器已就绪（F6 打开）") else err("编辑器初始化失败") end
-end
 
-if configui and configui.init then
-    local ok = configui.init({ settings = settings, log = log, onChanged = onChanged })
-    if ok then log("设置菜单已挂上") end
-end
 
 log("loaded v0.1.0 (REPENTOGON=" .. tostring(REPENTOGON ~= nil) .. ")")

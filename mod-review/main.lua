@@ -9,7 +9,8 @@
 --   1. 不在回调里调 Room 的引擎方法（会抛 C++ 异常，pcall 接不住）
 --   2. 日志必须走 Isaac.DebugString（print 不进 log.txt）
 --   3. 动画/时长时钟用 Isaac.GetFrameCount()（Isaac.GetTime 不可靠）
---   4. 道具读不到就用 HasCollectible 扫 1..2000（GetCollectible 这个版本不存在）
+--   4. 道具读不到就用 HasCollectible 扫 1..2000（GetCollectible 这个版本不存在；
+--      本机 player:GetCollectiblesList 也没有 → 只探测/报一次，之后静默走退化路径）
 -- ============================================================================
 local mod = RegisterMod("Highlight Review", 1)
 
@@ -41,7 +42,7 @@ local dump   = tryRequire("core.dump", "core/dump")
 
 -- ── 与外部评级 mod 的兼容（Item Weight Editor 会发布 _G.HLR）──
 local itemwatch = tryRequire("core.itemwatch", "core/itemwatch")
-local settings  = tryRequire("core.settings", "core/settings")
+local settings  = tryRequire("core.hlr_settings", "core/hlr_settings")
 
 --- 读外部评级：读不到就返回 nil，调用方回退官方品质。加载顺序无关。
 local function externalQuality(id)
@@ -112,15 +113,49 @@ end
 
 local function nowSec() return math.floor(nowMs() / 1000) end
 
+--- 墙钟时间文本（"2026/10/22 14:36"）。
+--- 实测：os.time() 被沙盒换成返回 0，但 os.date()（不传时间戳）拿到的是**真实系统时间**
+--- （明日方舟 mod 也这么用：os.date("%Y%m%d") 判每日）。年份合理才认，否则返回 nil。
+local function wallText()
+    local ok, t = pcall(function() return os.date("%Y/%m/%d %H:%M") end)
+    if not ok or type(t) ~= "string" then return nil end
+    local y = tonumber(t:sub(1, 4))
+    if not y or y < 2001 then return nil end
+    return t
+end
+
 -- ---------------------------------------------------------------- 道具读取
 
-local itemsProbed, itemsProbed2, itemAccessBroken = false, false, false
-local SCAN_MAX_ID = 2000
+-- GetCollectiblesList 的可用性只判定一次（作者 2026-10-23 要求）：
+--   · player 上没有这个方法 → 记死"本版本无"，之后既不再 pcall、也不再刷日志
+--   · 有方法、这次却没返回表 → 只当临时故障，下次再试，日志仍然只报一条
+-- 退化路径（HasCollectible 扫 1..SCAN_MAX_ID）的结果必须与旧实现逐字一致。
+local listApiMissing = false   -- 本版本无 GetCollectiblesList（记死后不再探测）
+local listFailLogged = false   -- 探测失败只报一条
+local itemsProbed2   = false   -- 列表法可用只报一条
+local SCAN_MAX_ID    = 2000    -- 同版本最大道具 id = 1763（READABLE-DATA.md），留余量
 
+--- 全量扫描：升序 id 列表，每件一次（HasCollectible 只回答"有没有"）
 local function scanCollectibles(player)
     local list = {}
+    if not player then return list end
+
+    -- 方法只取一次：循环里每 id 新建闭包是这条路径最大的开销
+    local okLook, fn = pcall(function() return player.HasCollectible end)
+    if not okLook or type(fn) ~= "function" then return list end   -- 与旧实现一致：读不到就当没有
+
+    -- 快路径：整段只包一层 pcall，2000 次直接调用、不建闭包
+    local okAll = pcall(function()
+        for id = 1, SCAN_MAX_ID do
+            if fn(player, id) then list[#list + 1] = id end
+        end
+    end)
+    if okAll then return list end
+
+    -- 中途抛错（极罕见）：退回逐 id pcall，语义与旧实现完全相同
+    list = {}
     for id = 1, SCAN_MAX_ID do
-        local ok, has = pcall(function() return player:HasCollectible(id) end)
+        local ok, has = pcall(fn, player, id)
         if ok and has then list[#list + 1] = id end
     end
     return list
@@ -129,33 +164,39 @@ end
 local function readCollectibles(player)
     local list = {}
     if not player then return list end
-    if itemAccessBroken then return scanCollectibles(player) end
 
-    local okN, n = pcall(function() return player:GetCollectibleCount() end)
-    if not okN or type(n) ~= "number" then
-        if not itemsProbed then
-            itemsProbed = true
-            log("GetCollectibleCount 不可用 → " .. safeToString(n) .. "，改用全量扫描")
-            itemAccessBroken = true
+    -- 首选 GetCollectiblesList()：返回 { id = 持有数量 }。
+    -- 注意：没有 player:GetCollectible(i) 这个方法（Repentance 无此 API）。
+    if not listApiMissing then
+        local okCall, m = pcall(function() return player:GetCollectiblesList() end)
+        if okCall and type(m) == "table" then
+            -- 全量表包含未持有的条目（数量 0）→ 只按数量 > 0 展开；重复 id 按数量重复
+            for id, cnt in pairs(m) do
+                local c = tonumber(cnt) or 0
+                for _ = 1, c do list[#list + 1] = id end
+            end
+            table.sort(list)
+            if not itemsProbed2 and #list > 0 then
+                itemsProbed2 = true
+                log("道具读取正常（列表法）：共 " .. #list .. " 件，首件 id=" .. tostring(list[1]))
+            end
+            return list
         end
-        return scanCollectibles(player)
+        -- 失败：区分"本版本没有这个方法"（记死）与"临时故障"（下次再试）
+        local okLook, fn = pcall(function() return player.GetCollectiblesList end)
+        if not (okLook and type(fn) == "function") then listApiMissing = true end
+        if not listFailLogged then
+            listFailLogged = true
+            if listApiMissing then
+                log("GetCollectiblesList 不可用（" .. safeToString(m) ..
+                    "）→ 退化为全量扫描（本版本无 GetCollectiblesList）")
+            else
+                log("GetCollectiblesList 调用失败（" .. safeToString(m) .. "）→ 本次改用全量扫描，之后静默")
+            end
+        end
     end
 
-    for i = 0, n - 1 do
-        local ok, id = pcall(function() return player:GetCollectible(i) end)
-        if ok and type(id) == "number" then
-            list[#list + 1] = id
-        elseif not itemAccessBroken then
-            itemAccessBroken = true
-            log("逐件读取失败（" .. safeToString(id) .. "），本会话改用全量扫描")
-            return scanCollectibles(player)
-        end
-    end
-    if not itemsProbed2 and #list > 0 then
-        itemsProbed2 = true
-        log("道具读取正常：共 " .. #list .. " 件，首件 id=" .. tostring(list[1]))
-    end
-    return list
+    return scanCollectibles(player)
 end
 
 --- 道具品质（0~4）。带缓存，同一个 id 只查一次。
@@ -254,15 +295,29 @@ local function readMultiShot(player)
     return 1
 end
 
+-- 防爆：Repentance 只有这两件给"免疫爆炸"（223 纵火狂 / 375 宿主之帽）。
+-- REPENTOGON 没有现成的 bool，只能按白名单判定；以后发现别的就加进来。
+local EXPLODE_IMMUNE = { 223, 375 }
+local function hasExplosionImmunity(player)
+    for i = 1, #EXPLODE_IMMUNE do
+        local ok, has = pcall(function() return player:HasCollectible(EXPLODE_IMMUNE[i]) end)
+        if ok and has then return true end
+    end
+    return false
+end
+
 local function snapshot(player)
     local s = { form = "tears", damage = 0, maxFireDelay = 10, multiShot = 1,
-                red = 0, soul = 0, bone = 0, survival = 0, power = 0 }
+                red = 0, soul = 0, bone = 0, survival = 0, power = 0,
+                canFly = false, explode = false }
     if not player then return s end
 
     pcall(function()
         s.damage       = player.Damage or 0
         s.maxFireDelay = player.MaxFireDelay or 10
+        s.canFly       = player.CanFly and true or false
     end)
+    s.explode   = hasExplosionImmunity(player)
     s.form      = detectForm(player)
     s.multiShot = readMultiShot(player)
 
@@ -424,9 +479,11 @@ local function beginRun(player)
     state.current = {
         seq = fmt.nextSeq(state.store),
         id = id, seed = seed, char = char,
-        base = 0, final = 0, max = 1, res = 2, t0 = nowSec(), hl = 0,
+        base = 0, final = 0, max = 1, res = 2, t0 = nowSec(), ws = wallText(), hl = 0,
         floors = {}, rooms = {},
     }
+    -- 开局自带道具也算"获得"（角色初始道具、伊甸的随机道具、start with 类 mod 给的东西）
+    state.startItems = readCollectibles(player)
     log(string.format("开局 %s（seed=%d char=%d，历史 %d 局）", id, seed, char, #state.store.index))
 end
 
@@ -516,6 +573,7 @@ local function beginRoom(player)
         pockets = readPockets(player),
         foes    = countFoes(),
         hblIn   = snap.black, hgoIn = snap.gold, hetIn = snap.eternal, hrtIn = snap.rotten,
+        canFlyIn = snap.canFly or false, explodeIn = snap.explode or false,
         firstIn = firstVisitNow(),
         bossIn  = bossIdNow(),
         ubIn    = ultimateBossNow(),
@@ -551,9 +609,14 @@ local function settleRoom(player)
         seen[id] = (seen[id] or 0) + 1
         if seen[id] > (p.itemsIn[id] or 0) then gained[#gained + 1] = id end
     end
-    -- 第一间房不记"获得"类字段：那多半是角色自带/初始化顺序造成的假阳性
+    -- 第一间房：把开局自带道具记成"获得"（作者 2026-10-22 要求：初始道具也算获得）
+    -- 以前这里直接清空，因为初始化顺序会造出假阳性；现在改成用 beginRun 时拍下的快照
     local firstRoom = (#run.rooms == 0)
-    if firstRoom then gained = {} end
+    if firstRoom then
+        gained = {}
+        local st = state.startItems or {}
+        for k = 1, #st do gained[k] = st[k] end
+    end
     -- 实时监视补采：修掉"同房获得又失去""跨房瞬间获得"两个盲区
     if itemwatch then
         local extra = itemwatch.drain()
@@ -565,6 +628,16 @@ local function settleRoom(player)
         end
     end
 
+    -- 黑名单过滤：某些道具会被别的 mod 反复挂到身上，属于误记（见 config.itemBlacklist）
+    -- 过滤放在这里 → 四个字段（it / iq / ik）都拿不到它，四级/零级列表自然也不会有
+    if config.itemBlacklist and #gained > 0 then
+        local keep = {}
+        for k = 1, #gained do
+            if not config.itemBlacklist[gained[k]] then keep[#keep + 1] = gained[k] end
+        end
+        gained = keep
+    end
+
     -- 与 gained 平行的品质列表（用于识别 4 级起飞 / 0 级封盘）
     local gainedQ = {}
     for k = 1, #gained do gainedQ[k] = qualityOf(gained[k]) end
@@ -574,6 +647,40 @@ local function settleRoom(player)
         local kept = false
         if player then pcall(function() kept = player:HasCollectible(gained[k]) end) end
         gainedK[k] = kept and 1 or 0
+    end
+
+    -- 与 it 平行：这件道具带来的战力增量（作者 2026-10-22 要的「跃迁」依据）
+    -- 房间进/出战力的差是准确值，但没有单件归因，所以：
+    --   · 本房只有 1 件有效道具 → 增量 = 出战 - 进战（精确）
+    --   · 多件 → 均摊，并打日志标记（罕见）
+    --   · iq < 0（mod 道具整表写入的脏 id）→ 记 0，不参与跃迁排序
+    local gainedE = {}
+    local validN, dirtyN = 0, 0
+    for k = 1, #gained do
+        if (gainedQ[k] or -1) < 0 then dirtyN = dirtyN + 1 else validN = validN + 1 end
+    end
+    local dPower = (snap.power or 0) - (tonumber(p.p) or 0)   -- 进房 p.p → 出房 snap.power
+    for k = 1, #gained do
+        if (gainedQ[k] or -1) < 0 then
+            gainedE[k] = 0
+        elseif validN > 0 then
+            gainedE[k] = dPower / validN
+        else
+            gainedE[k] = 0
+        end
+    end
+    -- 局内 HUD 数据（作者 2026-10-22）：当前战力 + 本次增量，3 秒后增量消失
+    if bookui and bookui.hud then
+        bookui.hud.power = snap.power
+        bookui.hud.delta = dPower
+        local fc = 0
+        pcall(function() fc = Isaac.GetFrameCount() end)
+        bookui.hud.untilFrame = fc + math.floor((config.hudPowerFadeMs or 3000) / 1000 * 30)
+    end
+
+    if validN > 1 then
+        log(string.format("[ATTR] 同房 %d 件有效道具（脏 %d），战力差 %.2f 均摊",
+            validN, dirtyN, dPower))
     end
 
     local pok = readPockets(player)
@@ -600,6 +707,7 @@ local function settleRoom(player)
         it = gained,
         iq = gainedQ,
         ik = gainedK,
+        ie = gainedE,
         dv = p.dmgIn or 0, mu = p.muIn or 1, fm = p.fmIn or "tears",
         foes = p.foes or 0,
         mxhp = p.mxhpIn or 0, mxhpo = snap.maxhp or 0,
@@ -607,6 +715,8 @@ local function settleRoom(player)
         bmb = p.pockets and p.pockets.b or 0, bmbo = pok.b,
         key = p.pockets and p.pockets.k or 0, keyo = pok.k,
         boss = bossId, ub = p.ubIn or 0, first = firstVisit,
+        fli = p.canFlyIn or false, fl = snap.canFly or false,
+        exi = p.explodeIn or false, ex = snap.explode or false,
         tri = firstRoom and (p.trOut or {}) or (p.trIn or {}),
         tro = p.trOut or {},
         pd = "",
@@ -723,9 +833,16 @@ end
 bookui.init({
     hotkeyF5 = function() return (settings and settings.get("f5")) or Keyboard.KEY_F5 end,
     getStore = function() return state.store end,
+    -- 合并：硬编码默认值 + config.lua（config.lua 优先）
+    config = (function()
+        local c = { powerTopN = 3, q4MaxPages = 3, absDelta = 0.5, relPct = 15 }
+        if type(config) == "table" then
+            for k, v in pairs(config) do c[k] = v end
+        end
+        return c
+    end)(),
     fmt      = fmt,
     hl       = highlight,
-    config   = { powerTopN = 3, q4MaxPages = 3, absDelta = 0.5, relPct = 15 },
     log      = log,
 })
 
@@ -750,6 +867,18 @@ end
 add(ModCallbacks.MC_POST_RENDER, function()
     uiGuard("update", bookui.update)
     uiGuard("render", bookui.render)
+    -- HUD 战力定期刷新（每 20 帧）：开局/换层的快照可能太早，数值会不准
+    do
+        local fcOk, fc = pcall(function() return Isaac.GetFrameCount() end)
+        if fcOk and fc and (fc % 20) == 0 and bookui and bookui.hud then
+            local okp, p0 = pcall(function() return Isaac.GetPlayer(0) end)
+            if okp and p0 then
+                local okS, s0 = pcall(snapshot, p0)
+                if okS and s0 and s0.power then bookui.hud.power = s0.power end
+            end
+        end
+    end
+    if bookui and bookui.renderHud then uiGuard("renderHud", bookui.renderHud) end
 end)
 
 configui.init({ settings = settings, log = log, onChanged = function() pcall(saveData) end })

@@ -135,11 +135,11 @@ Save-WindowShot $w "_logs\verify\manual.png"
 
 | 噪音 | 来源 |
 |---|---|
-| `[ASSERT] - PushRenderTarget: stack overflow!`（每秒上百行） | **reverie（东方组合）**，`scripts/items/th14/d_flip.lua` 那套，开场刷到关游戏 |
-| `[Lua Debug] Pair: [...]` | 同上（reverie） |
+| `[ASSERT] - PushRenderTarget: stack overflow!`（每秒约 120 行） | **引擎的 FBO 栈爆了**（上限 16 层），不是某个 mod 报的错。实测：进局后每帧叠到 18 层 → 每帧 2 行。是**一堆自定义 shader 叠出来的**（heaven's call 6 个、reverie 3 个、stageapi 2、arknights 2、benighted 1、cuerlib 1）；只关 reverie 或只关 heaven's call 都能让它归零。细节见 `_debug/render-target-flood.md` |
+| `[Lua Debug] Pair: [...]` | reverie `scripts/items/th14/d_flip.lua:305`，文件作用域里的普通 `DebugString`（**跟上面那条断言无关**，只是碰巧挨在一起） |
 | 屏幕下半部分的米色横条 + 红字 | External Item Descriptions 的道具说明浮层 |
 | `[ASSERT] - invalid tag: ...` / `unlockachievement` | 其它第三方 mod 的旧写法 |
-| `逐件读取失败（GetCollectible）→ 全量扫描` | 我们自己的**降级**路径，属正常 |
+| ~~`逐件读取失败（GetCollectible）→ 全量扫描`~~ | **已修**：`player:GetCollectible(i)` 这个方法不存在，改用 `GetCollectiblesList()` |
 
 `verify.ps1` 已经把断言降级成"提示"，不参与退出码；判断我们有没有事，只看 FATAL / Lua 报错 / `[UI]` 行。
 
@@ -222,8 +222,8 @@ Save-WindowShot $w "_logs\verify\manual.png"
   ✓ 游戏已正常退出（存档已写盘）
 ```
 
-对应判读：截图 1600×900 说明窗口完整；`[UI]` 有响应说明 F5 生效；断言洪水是 reverie 的，
-不管；结论里没有 FATAL/报错 → 这一轮算通过。
+对应判读：截图 1600×900 说明窗口完整；`[UI]` 有响应说明 F5 生效；断言洪水是第三方 shader mod
+叠出来的（见 §6 噪音表），不管；结论里没有 FATAL/报错 → 这一轮算通过。
 
 ---
 
@@ -329,8 +329,9 @@ v0.3 让回顾挂了 `MC_POST_GET_COLLECTIBLE`，于是它从「只读观察者�
    忘了跑 → 两个 mod 里还是旧代码。
 4. `mod-review/core/settings.lua` 和 `mod-rating/core/settings.lua` 是**生成物**，也在 git 里。
    要改就改 `shared/settings.lua`，别直接改这两份。
-5. 各 mod 只写自己用到的设置键：回顾 `S.only = {"f5"}`、评级 `S.only = {"f6"}`，
-   避免两个 mod 互相覆盖对方的 `C=` 行。
+5. 各 mod 只写自己用到的设置键：回顾 `S.only = {"f5"}`、评级 `S.only = {"f6","lang"}`，避免两个 mod 互相覆盖对方的 `C=` 行。
+6. **`settings.lua` 支持字符串值**（`lang`）：数字写成 `"f6":295`，字符串写成 `"lang":"en"`。
+7. **双语只做在评级 mod**（作者 2026-10-21 要求）：文案全走 `mod-rating/ui/lang.lua` 的 `L.t(key)`。切语言会 `ImGui.RemoveWindow` + 重建窗口——ImGui 的控件标签只能在创建时给定。
 
 ### 命令变化
 
@@ -368,3 +369,4 @@ powershell -File tools\pack.ps1                 # → dist\highlight-{rating,rev
 | Lua 的 `local function` **只从定义位置往后可见** | `num()` 定义在使用它的函数**之后** → 那些函数里的 `num` 编译成全局查找 → nil → `pcall` 吞掉错误 → 悄悄返回 0。**Boss 识别因此整整失效了两轮。** |
 | `MC_POST_GAME_END` 的第一个参数是 **mod**，不是 `isGameOver` | `function(isGameOver)` 拿到的是表 → 永远是真值 → **所有通关都被标成死亡** |
 | 按 `^do$` 匹配删除代码块 | 命中了更早的另一个 `do`，**一次删掉 65 行**。删代码块必须按**行号**，且删除前把行内容打印出来核对 |
+| **`deploy.ps1` 只复制不删除** | 删掉/移走文件后游戏目录里仍留着旧模块 → 出现"新 main + 旧模块"的混合体，症状诡异且**不报错**。已给 deploy 加自动清理（目标里多出来的文件删掉） |

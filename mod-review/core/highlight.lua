@@ -22,7 +22,7 @@ local DEFAULT_CFG = {
 
 highlight.ROOM_NAMES = {
     [1] = "普通房", [2] = "商店", [4] = "宝箱房", [5] = "Boss房", [6] = "小Boss",
-    [7] = "密室", [8] = "超密室", [9] = "街机房", [10] = "诅咒房",
+    [7] = "普通隐藏房", [8] = "超级隐藏房", [9] = "街机房", [10] = "诅咒房",
     [11] = "挑战房", [12] = "图书馆", [13] = "祭坛房", [14] = "恶魔房",
     [15] = "天使房", [16] = "地牢房", [17] = "BossRush", [18] = "以撒房",
     [20] = "星象房", [21] = "骰子房", [22] = "传送房", [23] = "洁净室",
@@ -131,6 +131,37 @@ highlight.STATS = {
 
 local function num(v) return tonumber(v) or 0 end
 
+--- 「什么时候真的获得了某个能力」（飞行 / 防爆）。
+---
+--- 判据：**从某一间开始，之后每一间（含换层）都一直有** —— 取"一直为 true 的最长后缀"的起点。
+---
+--- 为什么不能只看"下一间"：踩白火这类临时飞行，只要不清理房间就一直不落地，
+--- 能靠运营撑完**整层**；但它撑不过换层后的第一次清房。
+---   → 只看"下一间还在飞"会把整层的临时飞行误判成"获得"
+---   → 只看"后缀一直为 true"就能识别：真正的永久能力才不会再掉
+---
+--- 边界：
+---   · 第 1 间进门就会飞 → 开局自带，没有"获得点"（返回 nil，由调用方标"开局"）
+---   · 中途丢了又拿回来 → 归因到重新拿回来的那一间（后缀起点）
+---   · 全层没飞过 → nil
+--- @param keyIn string  进房的字段名（"fli" / "exi"）
+--- @param keyOut string 出房的字段名（"fl" / "ex"）
+--- @return table|nil { f = 层, i = 房号 }
+function highlight.gainPoint(rooms, keyIn, keyOut)
+    local n = (type(rooms) == "table") and #rooms or 0
+    if n == 0 then return nil end
+
+    -- 从后往前扫，找到"一直为 true 的最长后缀"的起点 k
+    local k = nil
+    for i = n, 1, -1 do
+        if rooms[i][keyOut] then k = i else break end
+    end
+    if not k then return nil end                  -- 整局没有过
+    if k == 1 and rooms[1][keyIn] then return nil end  -- 开局自带
+
+    return { f = num(rooms[k].f), i = num(rooms[k].i) }
+end
+
 --- 把一局分析成册子结构
 function highlight.analyze(run, cfg)
     cfg = cfg or {}
@@ -142,6 +173,7 @@ function highlight.analyze(run, cfg)
         maxFloor = run.max or 0, base = run.base or 0, final = run.final or 0,
         floors = {}, rooms = {}, pages = {},
         statMax = {}, statMin = {}, curve = {},
+        ws = run.ws,
     }
 
     -- 1) 展平房间 + 六维进出
@@ -191,7 +223,7 @@ function highlight.analyze(run, cfg)
         local f = run.floors[i]
         map[num(f.i)] = {
             i = num(f.i), stage = f.stage, curse = num(f.curse),
-            rooms = 0, firstRooms = 0, items = {}, ms = 0, dmg = 0,
+            rooms = 0, firstRooms = 0, items = {}, itemsQ = {}, ms = 0, dmg = 0,
             powerIn = nil, powerOut = 0, gain = 0,
         }
     end
@@ -200,7 +232,7 @@ function highlight.analyze(run, cfg)
         local f = map[r.floor]
         if not f then
             f = { i = r.floor, curse = 0, rooms = 0, firstRooms = 0,
-                  items = {}, ms = 0, dmg = 0, gain = 0 }
+                  items = {}, itemsQ = {}, ms = 0, dmg = 0, gain = 0 }
             map[r.floor] = f
         end
         f.rooms = f.rooms + 1
@@ -209,7 +241,10 @@ function highlight.analyze(run, cfg)
         if r.first then f.firstRooms = f.firstRooms + 1 end
         if f.powerIn == nil then f.powerIn = r.p end
         f.powerOut = r.po
-        for k = 1, #r.it do f.items[#f.items + 1] = r.it[k] end
+        for k = 1, #r.it do
+            f.items[#f.items + 1]  = r.it[k]
+            f.itemsQ[#f.itemsQ + 1] = num(r.iq and r.iq[k])
+        end
     end
     local order = {}
     for i in pairs(map) do order[#order + 1] = i end
@@ -239,6 +274,55 @@ function highlight.analyze(run, cfg)
         end
         book.floors[#book.floors + 1] = f
         book.curve[#book.curve + 1] = { floor = f.i, power = f.powerOut }
+    -- 2.4) 战力跃迁事件（作者 2026-10-22）
+    -- 只算「拿到道具」造成的跳变；脏 id（iq<0）与负增量不算
+    -- 规则：先按单次增量降序取前 N 个（N=config.jumpTopN，默认 50），
+    --       再按时间顺序排，展示时最多 24 个，其余只报个数
+    local jumpMin = (cfg and cfg.jumpMin) or 0.30
+    local jumpN   = (cfg and cfg.jumpTopN) or 50
+    local evs = {}
+    for ri = 1, #run.rooms do
+        local r = run.rooms[ri]
+        local it, iq, ie = r.it or {}, r.iq or {}, r.ie or {}
+        for k = 1, #it do
+            local d = tonumber(ie[k]) or 0
+            local q = tonumber(iq[k]) or -1
+            if q >= 0 and d >= jumpMin then
+                local pIn  = tonumber(r.p) or 0
+                local pOut = tonumber(r.po) or 0
+                local pct  = (pIn > 0.01) and (d / pIn) or 0
+                evs[#evs + 1] = {
+                    id = it[k], delta = d, pct = pct, pIn = pIn, pOut = pOut,
+                    floor = num(r.f), room = num(r.i),
+                    ord = ri * 1000 + k,
+                }
+            end
+        end
+    end
+    -- 按楼层分组：每层取增量最大的前 8 个，层与层之间按层号升序
+    -- 展示上限仍是 24 行（2 列 × 12），超出只报个数
+    local perFloor = {}
+    for i = 1, #evs do
+        local f = evs[i].floor or 0
+        perFloor[f] = perFloor[f] or {}
+        local g = perFloor[f]
+        g[#g + 1] = evs[i]
+    end
+    local floorKeys = {}
+    for f in pairs(perFloor) do floorKeys[#floorKeys + 1] = f end
+    table.sort(floorKeys)
+
+    local picked = {}
+    for _, f in ipairs(floorKeys) do
+        local g = perFloor[f]
+        table.sort(g, function(a, b) return a.delta > b.delta end)
+        for i = 1, math.min(#g, 8) do picked[#picked + 1] = g[i] end
+    end
+
+    book.jumps      = picked
+    book.jumpTotal  = #evs
+    book.jumpShown  = math.min(#picked, 24)
+    book.jumpRest   = #evs - book.jumpShown
     end
 
     -- 2.5) 终极 Boss（只收"已清房"的；最多 4 个）
@@ -256,16 +340,29 @@ function highlight.analyze(run, cfg)
         if nm then book.bossSummary[#book.bossSummary + 1] = nm end
     end
 
+    -- 2.6) 飞行 / 防爆：本局有没有、哪一间拿到的（作者 2026-10-22）
+    -- 必须"带得进下一间"才算，防的是踩白火/按住圣经这类临时飞行（见 highlight.gainPoint）
+    local firstR = rooms[1]
+    local lastR2 = rooms[#rooms]
+    book.flight       = highlight.gainPoint(rooms, "fli", "fl")
+    book.explode      = highlight.gainPoint(rooms, "exi", "ex")
+    book.flightStart  = (firstR and firstR.fli) or false
+    book.explodeStart = (firstR and firstR.exi) or false
+    book.flightNow    = (lastR2 and lastR2.fl) or false
+    book.explodeNow   = (lastR2 and lastR2.ex) or false
+
     -- 3) 亮点 ①：战力提升 Top3（按房间进出差值）
     local pool = {}
     for i = 1, #rooms do
         if rooms[i].delta > 0 then pool[#pool + 1] = rooms[i] end
     end
     table.sort(pool, function(a, b) return a.delta > b.delta end)
+    if (cfg.pagesPower ~= false) then   -- config.pagesPower = false → 不生成 Top3 页
     for i = 1, math.min(cfg.powerTopN, #pool) do
         book.pages[#book.pages + 1] = {
             kind = "power", rank = i, room = pool[i], title = "战力提升",
         }
+    end
     end
 
     -- 3.5) 页序：整页「终极Boss与终极道具」放最前（总是存在，内容可为空），再接战力 Top3
@@ -285,10 +382,20 @@ function highlight.analyze(run, cfg)
         kind = "finale",
         title = "终极Boss与终极道具",
         bosses = book.finalBosses,   -- 已清房的终极 Boss（最多显示 4 个）
-        q4 = q4Items,
-        q0 = q0Items,
+        q4 = (cfg.showQ4 ~= false) and q4Items or {},
+        q0 = (cfg.showQ0 ~= false) and q0Items or {},
     }
     table.insert(book.pages, 1, finale)
+
+    -- 3.8) 战力跃迁页（作者 2026-10-22）：替代原来的 Top3/四级/零级三页
+    book.pages[#book.pages + 1] = {
+        kind = "jumps",
+        title = "战力跃迁",
+        events = book.jumps or {},
+        shown = book.jumpShown or 0,
+        rest = book.jumpRest or 0,
+        total = book.jumpTotal or 0,
+    }
 
 
     book.pageCount = 1 + #book.pages + #book.floors

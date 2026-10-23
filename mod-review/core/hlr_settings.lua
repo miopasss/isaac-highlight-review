@@ -1,9 +1,9 @@
 -- ============================================================================
--- settings.lua —— 模组设置（热键等）
+-- settings.lua —— 模组设置（热键 / 语言）
 --
 -- 存盘形态：saveN.dat 里一行
---   C={"f5":294,"f6":295}
--- 局外同样可以用 PowerShell 解析。
+--   C={"f5":294,"f6":295,"lang":"en"}
+-- 数字不带引号、字符串带引号，局外同样可以用 PowerShell 解析。
 --
 -- 与评级表（Q= 行）分开存，互不影响。
 -- ============================================================================
@@ -12,11 +12,12 @@ local S = {}
 S.PREFIX = "C="
 
 S.defaults = {
-    f5 = 294,   -- Keyboard.KEY_F5
-    f6 = 295,   -- Keyboard.KEY_F6
+    f5   = 294,     -- Keyboard.KEY_F5
+    f6   = 295,     -- Keyboard.KEY_F6
+    lang = "zh",    -- "zh" 中文 / "en" 纯英文
 }
 
---- 每个 mod 只写自己用到的键（例：{"f6"}）。nil 表示全写。
+--- 每个 mod 只写自己用到的键（例：{"f6","lang"}）。nil 表示全写。
 S.only = nil
 S.values = {}
 
@@ -27,12 +28,14 @@ end
 
 function S.get(k)
     local v = S.values[k]
-    if type(v) == "number" then return v end
+    local t = type(v)
+    if t == "number" or t == "string" then return v end
     return S.defaults[k]
 end
 
 function S.set(k, v)
-    if type(v) ~= "number" then return end
+    local t = type(v)
+    if t ~= "number" and t ~= "string" then return end
     S.values[k] = v
 end
 
@@ -44,12 +47,25 @@ function S.load(store)
         local line = store.lines[i]
         if line:sub(1, #S.PREFIX) == S.PREFIX then
             local body = line:sub(#S.PREFIX + 1)
-            for k, v in body:gmatch('"(%a+)"%s*:%s*(%-?%d+)') do
-                if S.defaults[k] then S.values[k] = tonumber(v) end
+            -- 字符串值："key":"value"
+            for k, v in body:gmatch('"([%w_]+)"%s*:%s*"([^"]*)"') do
+                if S.defaults[k] then S.values[k] = v end
+            end
+            -- 数字值："key":123
+            for k, v in body:gmatch('"([%w_]+)"%s*:%s*(%-?%d+%.?%d*)') do
+                if S.defaults[k] and type(S.defaults[k]) == "number" then
+                    S.values[k] = tonumber(v)
+                end
             end
             return
         end
     end
+end
+
+local function encodeValue(k)
+    local v = S.get(k)
+    if type(v) == "number" then return string.format('"%s":%d', k, v) end
+    return string.format('"%s":"%s"', k, tostring(v))
 end
 
 --- 写回 store.lines（先删旧的 C= 行）。返回是否变化
@@ -77,7 +93,7 @@ function S.save(store)
     end
     table.sort(keys)
     for _, k in ipairs(keys) do
-        parts[#parts + 1] = string.format('"%s":%d', k, S.get(k))
+        parts[#parts + 1] = encodeValue(k)
     end
     local after = S.PREFIX .. "{" .. table.concat(parts, ",") .. "}"
 

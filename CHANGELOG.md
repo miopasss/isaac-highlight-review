@@ -1663,3 +1663,802 @@ luacheck 22 文件 0 失败；fmt_test PASS、identity_test 20/20、rating_test 
 
 上一轮合并时 `git add -A` 把 `tools\pack.ps1` 的产物（`dist\*.zip`，合计 1.3 MB）
 一起提交了。打包产物不该进版本库，已从索引移除并加进 `.gitignore`。
+## 小版本：权重 mod 支持纯英文界面
+
+作者要求：**只给权重 mod 做双语**，语言切换放在它的 settings 里，先不测试。
+
+### 新增
+
+- `mod-rating/ui/lang.lua` —— 中英文案表（约 30 条），`L.t(key)` 取词
+- 设置窗口加 **语言 / Language** 两个按钮（`中文` / `English`）
+- 语言存 `C=` 行的 `lang` 键：`C={"f6":295,"lang":"en"}`
+- 英文模式下**道具名也用英文**（中文模式用本地化名）
+
+### 切换机制
+
+ImGui 的控件标签只能在创建时给定，所以切语言会**重建窗口**：
+`ImGui.RemoveWindow(WIN)` → 重新 `buildUI()`。`RemoveWindow` 不在时退回"只更新能更新的文字"。
+
+### `shared/core/settings.lua` 升级
+
+原来只支持数字值，现在支持字符串：
+
+| 输入 | 解析 |
+|---|---|
+| `"f6":295` | 数字 |
+| `"lang":"en"` | 字符串 |
+
+写回时数字不带引号、字符串带引号。`S.only` 过滤照旧——
+回顾只写 `{"f5"}`，评级写 `{"f6","lang"}`，两边不会互相覆盖。
+
+### 验证（离线）
+
+- 设置往返：`C={"f6":295,"lang":"en"}` → 读出 `lang=en` → 改回 `zh` → 写回 `C={"f6":295,"lang":"zh"}` ✅
+- `only={"f5"}` 时只写 `C={"f5":294}` ✅
+- luacheck 23 文件 0 失败；rating_test 22/22、fmt_test PASS、identity_test 20/20
+
+**游戏内暂未测试**（作者要求等通知）。
+## 修：deploy 只复制不删除，导致拆分后的旧文件一直留在游戏目录
+
+作者发现 ImGui 顶栏的 `Highlight Review` 菜单下面**还挂着「道具评级」**。
+
+根因：`deploy.ps1` 只把源文件复制过去，**从不删除目标里多出来的文件**。
+拆分时把 `core/{rating,rating_data,pool,jsonmini}.lua` 和 `ui/rating_editor.lua` 从 repo 删掉了，
+但游戏目录 `mods\highlight-review\` 里那 7 个旧文件一直在。
+
+- 仓库 `mod-review`：24 个文件
+- 游戏目录实际：**30 个文件**（多 7 个旧文件 + 2 个旧资源 `hl_panel.*`）
+
+旧 `ui/rating_editor.lua` 里写着 `MENU = "highlight_review_menu"` + `AddElement(..., "道具评级")`，
+所以菜单项还在。它**并不报错**，因为新的 `main.lua` 已经不再 `include` 它了。
+
+### 修法
+
+`deploy.ps1` 复制完之后**对比源和目标**，把目标里多余的、扩展名在同步范围内的文件删掉，
+打印「清理了 N 个残留文件」。
+
+实测清理：
+
+```
+已同步 23 个文件 -> mods\highlight-review
+  清理了 7 个残留文件（源里已没有）
+```
+
+清理后 `mods\highlight-review` 只剩 23 个文件，与 repo 一致；
+全库再搜「道具评级」只剩注释，没有任何 `AddElement`。
+
+### 教训
+
+**拆分/删文件之后必须 `deploy -Clean` 或者依赖现在这个自动清理**，
+否则游戏里跑的是"新 main + 旧模块"的混合体，症状诡异且不报错。
+## 修闪退：`ImGui.RemoveWindow` 会崩游戏
+
+### 现场
+
+作者报闪退。日志里有完整栈：
+
+```
+Lua stack trace:
+[C](-1): RemoveWindow
+.../highlight-rating/ui/rating_editor.lua(396)
+.../highlight-rating/ui/rating_editor.lua(395): rebuild
+.../highlight-rating/main.lua(95): loadData
+Caught exception, writing minidump...
+```
+
+**`ImGui.RemoveWindow` 在这个版本会直接崩游戏**，而且我在 `loadData`（`MC_POST_PLAYER_INIT`）里调它，
+那时候根本不在 ImGui 的帧上下文里。
+
+### 修法
+
+1. **彻底不调 `RemoveWindow`**。`editor.rebuild()` 改成空实现并注释说明原因。
+2. **建窗口推迟到读完档之后**：文件加载时不再 `editor.init` / `configui.init`，
+   改到 `loadData()` 里 `lang.init()` 之后调 `initUI()`。这样语言**一次就位**，不需要重建。
+3. 语言切换改为「存盘 + 提示重启」：`lang.needRestart()` 返回
+   `Saved. Restart the game to apply.` / `已保存，重启游戏后生效`。
+
+### 又踩了 Lua 作用域
+
+`initUI()` 里的 `onChanged = function() saveData() end` —— `saveData` 定义在 `initUI` **之后**，
+闭包会把它编译成全局查找 → nil。改成前置声明 `local saveData` + `saveData = function()`。
+
+**这是这个项目第三次被「local 只往后可见」坑到**（前两次是 `num()`）。
+
+### 离线校验
+
+- 代码里用到 **33 个文案 key**，英文表**零缺失**（只有 `menu_name` 中英相同，是故意的）
+- `needRestart()` 中英都能正确返回
+
+### 游戏内
+
+闪退已消失（进程存活、日志无 `Caught exception`）。
+**英文界面的视觉确认被卡住**：游戏反复重播结局动画，进不去正常界面。等作者正常进一局再看。
+### 修 settings 解析：数字键匹配不到 `f6`
+
+`S.load` 的键名模式原来是 `"(%a+)"` —— **`%a` 只匹配字母**，所以 `"f6":295` 里的 `f6`
+（含数字）**永远解析不出来**。之前没暴露是因为 `f6` 有默认值 295。
+
+改成 `"([%w_]+)"`，两处（字符串值 + 数字值）都改。
+
+离线验证：
+
+```
+in=C={"f6":300,"lang":"en"}   读到 lang=en f6=300   → 写回 C={"f6":300,"lang":"en"}
+```
+
+（改之前 `f6` 读到的是默认 295，300 被丢弃。）
+
+### 另外确认：后来又崩的两次**不是我们的 mod**
+
+查了栈：
+
+```
+[C](-1): RemoveTrinket
+...soul_3290493485/ibs_scripts/commons/classes/marks.lua(126)
+```
+
+是第三方 mod `soul_3290493485` 在换层时调 `RemoveTrinket` 崩的。
+另一次是 reverie（东方）的 `PushRenderTarget: stack overflow!` 断言洪水之后进程消失。
+
+**我们的 `RemoveWindow` 那条栈已经不再出现。**
+## 修双语的三个真 bug（都是实测挖出来的）
+
+### ① `RemoveWindow` 崩游戏 → 见上一条
+
+### ② `local` 作用域：`saveData` 在 `initUI` 之后定义
+
+改成前置声明 `local saveData` + `saveData = function()`。
+
+### ③ **两个 mod 共用 `core/settings.lua` → `require` 缓存串台**
+
+这是双语一直不生效的真正原因。
+
+REPENTOGON 的 `require` **按模块名全局缓存**。两个 mod 都有 `core/settings.lua`，
+谁先加载谁赢。实测：评级 mod 拿到的是**回顾 mod 那份**（main 分支的旧版本，**没有 `lang` 键**），
+于是 `settings.get("lang")` 返回 nil，语言永远是默认的 zh。
+
+诊断日志：
+
+```
+[BOOT2] getType=function f6=295 lang=nil defaultsType=table
+[I18N]  settings=true rawLang=n/a
+[I18N]  lang=zh
+```
+
+`f6=295` 有值（那份旧文件有 f6），`lang=nil`（旧文件没有）—— 一眼看出拿错了文件。
+
+**修法**：共享代码按 mod 改文件名。
+
+```powershell
+$sharedMap = @{
+    "highlight-rating" = @{ "core\settings.lua" = "core\iwe_settings.lua" }
+    "highlight-review" = @{ "core\settings.lua" = "core\hlr_settings.lua" }
+}
+```
+
+两个 main 的 `tryRequire` 也跟着改，仓库里的两份 `core/settings.lua` 删掉。
+
+### ④ `settings` 解析漏掉含数字的键
+
+键名模式 `"(%a+)"` 里 `%a` 只匹配字母，`"f6":295` 永远解析不出来（之前没暴露是因为有默认值）。
+改成 `"([%w_]+)"`。
+
+### 验证
+
+```
+[I18N] settings=true rawLang=en
+[I18N] lang=en
+```
+
+界面截图确认变成英文：`Item Weight Editor` / `Edit` / `Modified` / `Search` / `Owned` /
+`Pick an item below` / `Rating` / `Weight` / `Save` / `Disable` / `Delete (vanilla)`。
+
+窗口从 620 加宽到 **780**，英文文案另做了缩短（`Search (digits = id, letters = name)` →
+`Search (id or name)`），避免被右边切掉。
+## 修：Item Weight 菜单里有两个同名的「设置」
+
+`ui/config.lua`（设置窗口）和 `ui/rating_editor.lua`（编辑器窗口）都往
+`item_weight_menu` 里挂了一项，而且文案都用 `T("menu_settings")` → 显示成两个「设置」。
+
+拆成两个文案：
+
+| 菜单项 | 中文 | 英文 |
+|---|---|---|
+| 设置窗口 | `设置` | `Settings` |
+| 编辑器窗口 | `道具权重编辑器` | `Weight Editor` |
+
+顺手把 `Search (digits = id, letters = name)` → `Search (id or name)` 等 13 条英文文案缩短，
+避免被窗口右边切掉；窗口宽度 620 → **780**。
+## 找回丢失的道具评级（`tools\import-rating.ps1`）
+
+作者发现「之前编辑的几个道具权重没了」。
+
+### 原因：拆分时我把数据留在了旧位置
+
+v0.3 时代评级存在**回顾 mod** 的 `data\highlight-review\saveN.dat` 里（`Q=` 行）。
+拆分成两个 mod 后，评级数据搬到 `data\highlight-rating\`。
+**mod 只能读自己目录的 `mod:LoadData()`**，读不到别人的 —— 所以旧数据不会自动跟过去。
+
+拆分时我判断「只有 1 条，不值得迁移」，**这是错的**，实际有 4 条。
+
+### 不是"两个并行机制"
+
+只有一套机制在跑（评级 mod 自己的文件）。
+回顾 mod 存档里那些 `Q=` 行是**死数据**：回顾已经没有评级代码了，既不读也不写。
+当初决定"不删"（保住回退能力），现在正好靠它们把数据捞回来。
+
+### 找回的内容
+
+| 档 | 从哪来 | 恢复的条目 |
+|---|---|---|
+| save1 | `data\highlight-review\save1.dat` 的 `Q=` 行 | `1`(评级4) / `118`(3.75, 权重0) / `1052`(2.25, 停用) |
+| save3 | `_backup\save3-cleared-20261021-115301.dat` | `1166`(评级4, 权重0.1) |
+
+合并规则：同一 id 以导入的为准，其余保留。写入前备份到 `_backup\import-rating-<时间戳>\`。
+
+脚本带保护：**检测到游戏在跑就拒绝执行**（否则游戏退出时会把内存里的旧数据写回去覆盖导入）。
+
+### 教训
+
+拆分涉及数据搬家时，"只有 N 条、不值得迁移" 是危险判断 ——
+玩家手设的东西，哪怕一行，也比写一个导入脚本贵得多。
+## 创意工坊封面图（`tools\make-cover.ps1`）
+
+准备单发 Item Weight Editor，需要预览图。用 PowerShell + System.Drawing 直接画，
+不依赖设计软件，改文案只要改脚本里的字。
+
+产物：
+
+| 文件 | 尺寸 | 用途 |
+|---|---|---|
+| `docs\img\workshop-cover.png` | 512×512 | 创意工坊预览图 |
+| `docs\img\workshop-wide.png` | 1280×720 | 页面内大图 |
+
+风格照 mod 自己的 ImGui 面板：深色底 + 蓝色标题栏 + 四行道具（含权重 0 / Rating 4 / 权重 0.5 / Disabled），
+底部一行说明 `0 = never   0.5 = half   1 = unchanged`。
+
+重新生成：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\make-cover.ps1
+```
+## 新增：创意工坊发布文案（2026-10-21 06:2x）
+
+`docs/workshop-item-weight.md` —— 道具权重调节器的完整发布文案，复制即用。
+
+结构：
+1. 标题（含两个备选）
+2. 简介（Steam 列表页只显示两行，单独拆出来）
+3. 详细说明（中文正文，带分隔线的纯文本排版，Steam 不认 Markdown）
+4. 发布页其它字段（分类 / 标签 / DLC / 预览图 / 可见性）
+5. 发布前自检清单 7 项
+6. 首版变更说明
+
+正文里刻意写进去的三件事：
+- **"只能降低"** + 为什么（池子一次只给一个，提高 A 必然压低别人）
+- **"和别的 mod 一起用"** 的冲突排查三步法（作者要求，免得以后报 bug 说不清）
+- **常见问题** 4 条，首条就是"设了 0 为什么还见过它"
+
+正文用 `━━` 分隔线而不是 Markdown 标题——Steam 的描述框不渲染 Markdown，
+`#` 会原样显示出来。
+## metadata 改纯 ASCII（游戏模组列表不支持中文）
+
+作者截图发现模组列表里显示成：
+
+```
+14.Item Weight Editor (é·æéçè¯)
+```
+
+游戏模组列表**不按 UTF-8 渲染**，`<name>` 里的中文全变乱码。
+
+### 修法
+
+`metadata.xml` 全部改成 **ASCII**：
+
+- `<name>` → `Item Weight Editor`（去掉括号中文）
+- `<description>` → 单段英文，去掉所有中文和 `·` `—` 这类非 ASCII 符号
+
+校验：文件里非 ASCII 字节数 = **0**。
+
+### 中文放哪
+
+工坊页面的**长描述**（在网页上编辑）支持 UTF-8，中文放那里。
+`metadata.xml` 只负责游戏内显示的那一块，必须保守。
+
+### 同类问题
+
+`highlight-review/metadata.xml` 的 `<name>` 里也有中文（`Highlight Review (高光回顾)`），
+同样会在列表里乱码。发它之前一并改成 ASCII。
+## metadata 改成工坊正式格式（照 EID 那份）
+
+### 结构
+
+```xml
+<name>Item Weight Editor</name>
+<directory>highlight-rating</directory>
+<description>[b]REQUIRES REPENTOGON[/b] ... BBCode ...</description>
+<version>0.1.0</version>
+<visibility>Private</visibility>
+<tag id="Lua"/>
+<tag id="Tweaks"/>
+<tag id="Items"/>
+```
+
+**标签和说明都存在 metadata.xml 里**（不是上传器里的独立字段），照 EID 那份的写法。
+上传器读的就是这几个字段。
+
+### 说明内容（1741 字符，上限 8000）
+
+- 第一行就是 **REQUIRES REPENTOGON + 仓库链接**（它不是工坊 mod，订阅者得自己去装）
+- 中英双语各一段，用 `[list]` 列功能
+- 已知限制：权重只能降、按存档槽存
+- 说明它可独立运行，装了 Highlight Review 会共享评级
+
+### 顺带
+
+- `<name>` 里不再有中文（游戏模组列表不支持 UTF-8，会显示成 `é·æéçè¯`）
+- 标签在工坊页面上**之后改不了**，所以一次选定：Lua / Tweaks / Items
+
+### 上传
+
+`<游戏目录>\tools\ModUploader\ModUploader.exe`，选 `mods\highlight-rating\metadata.xml`。
+
+⚠️ 上传成功后部署目录的 metadata.xml 会多一行 `<id>`，**必须抄回仓库**，
+否则下次 `deploy.ps1` 覆盖掉它，再传会变成新条目（重复 mod）。
+## 封面改用真实界面截图（`tools\make-cover-from-shot.ps1`）
+
+作者给了一张编辑器窗口截图，要求用它做封面。
+
+**关键处理**：截图顶部窗口标题写的是 `Highlight Review · 道具评级` —— 那是**拆分前的旧名字**，
+和这个 mod（Item Weight Editor）对不上，所以合成时**裁掉顶部 34px 标题栏**，
+只保留面板内容。
+
+版面：
+
+```
+深色渐变底 + 顶部蓝条
+  Item Weight Editor        （32px 粗体）
+  道具权重编辑器              （17px）
+  ┌──────────────────┐
+  │  真实截图（裁标题栏）  │      ← 等比缩放，最大占 66% 高
+  └──────────────────┘
+  0 = never   0.5 = half   1 = unchanged
+  The Binding of Isaac: Repentance - requires REPENTOGON
+```
+
+参数化：标题块高度 `96 * Scale`、底部留 `18% * H`，这样 512×512 和 1280×720 都不会压字。
+
+产物（都在 1 MB 以内，工坊要求）：
+
+| 文件 | 尺寸 | 大小 |
+|---|---|---|
+| `docs\img\workshop-cover.png` | 512×512 | 106 KB |
+| `docs\img\workshop-wide.png` | 1280×720 | 153 KB |
+
+源图存为 `docs\img\src-editor-panel.png`，以后换图重跑脚本即可。
+## 已发布到创意工坊
+
+```
+Initializing Steam API... Success
+Processing 'highlight-rating/metadata.xml'... Success
+Ready to upload mod 'Item Weight Editor'
+Successfully uploaded mod 'Item Weight Editor' to Steam Workshop
+```
+
+- **工坊 ID：`3824170209`**
+- 页面：https://steamcommunity.com/sharedfiles/filedetails/?id=3824170209
+- 上传器自动把 version 改成 `0.1.1`、visibility 设为 `Public`、标签存为 `Lua, Items, Active Items, Tweaks`
+
+### 关键：`<id>` 已抄回仓库
+
+上传器会往 `mods\highlight-rating\metadata.xml` 里写 `<id>3824170209</id>`。
+**这个文件必须抄回仓库**，否则下次 `deploy.ps1` 会用仓库版本覆盖它 →
+再上传就不是更新，而是**创建重复条目**。
+
+已执行：把部署版整份复制回 `mod-rating/metadata.xml`。
+
+### 以后更新流程
+
+1. 改代码
+2. `mod-rating/metadata.xml` 的 `<version>` +1（0.1.2、0.1.3…）
+3. `tools\deploy.ps1 -Mod rating`
+4. 上传器选同一个 `metadata.xml` → Upload（会更新已有条目，不是新建）
+5. 上传后把 metadata.xml 再抄回仓库（`<version>` 可能被上传器改）
+
+**不要改文件夹名，也不要改 `<directory>`** —— 订阅者的安装路径依赖它。
+## 工坊描述重写（作者：上一版结构太重）
+
+第一版描述用了大量 `[list]` / `[hr]` / 粗体小标题，读起来像说明书。
+
+作者要求：用一开始给的那段，**中文在前、英文在后**，不要花哨结构。
+
+### 新描述
+
+- 纯文本 + `·` 项目符号，只有中英之间的 `—————` 分隔线
+- 中文段：权重含义（0 / 0.5 / 1）→ 评级覆盖 → 用法 → 注意 → 需要 REPENTOGON
+- 英文段：同样的结构
+- 867 字符（上限 8000）
+
+同时存成 `mod-rating/workshop-description.txt`，方便以后直接复制到工坊页面。
+
+### 标题双语的处理
+
+`<name>` **必须保持纯 ASCII**（`Item Weight Editor`）：
+游戏模组列表不按 UTF-8 渲染，写中文会变成 `é·æéçè¯`。
+
+工坊页面的标题是**独立字段**，可以在网页上改成
+`Item Weight Editor 道具权重编辑器`，不影响游戏内显示。
+
+### 注意
+
+页面上手动改的描述，**下次用上传器 re-upload 会被 metadata 里的 description 覆盖**。
+所以两边要保持同步——仓库这份已经是新版本了。
+## 工坊描述第三版（作者改写 + 英文翻译）
+
+作者自己重写了中文稿，要求补英文翻译。内容新增：
+
+- **开场**：刚需 REPENTOGON、只支持忏悔、已测试大部分道具 mod
+- **【你大概遇到过这些】**：三个真实痛点（东方 mod 的交易所门票/D无限、mod 组合的超模道具、随机性不给机会），
+  并点明"不是 mod 做得不好，是它们太强，强到把别的都压平了"
+- **【已知兼容】**：天界呼唤 / 东方系列 / 塔菲的宇宙 / 明日方舟 / 忏悔plus / 愚昧
+- **仓库链接**：https://github.com/miopasss/isaac-highlight-review
+
+英文段照译，保留中文段的结构（【】小标题改成 [ ]，`·` 保留）。
+其中「塔菲的宇宙」「愚昧」没有确定的英文名，英文段里**保留中文**不硬翻，避免写错 mod 名。
+
+总长 2863 字符（上限 8000），两边同步写入 `metadata.xml` 与 `workshop-description.txt`。
+
+### 未做的
+
+`<name>` 保持 `Item Weight Editor` 纯 ASCII（游戏模组列表不支持中文）。
+工坊页面的标题是在网页上单独改的，要双语标题在页面改，不写进 metadata。
+## 四级道具列表排除神圣屏障（313）
+
+作者要求：四级道具那一栏不要出现「神圣屏障」。
+
+根因（之前查过）：别的 mod 会往玩家身上反复挂 313，`itemwatch` 按"持有数量增加"判定获得，
+于是被误记成"拿到过"——实测一局记了 4 次，玩家根本没拿过。
+
+### 做法
+
+`config.itemBlacklist`：
+
+```lua
+config.itemBlacklist = {
+    [313] = true,   -- 神圣屏障（Holy Mantle）
+}
+```
+
+`settleRoom` 里在合成 `gained` 之后、算 `iq` / `ik` **之前**过滤。
+这样 `it` / `iq` / `ik` 三个平行数组都拿不到它，四级/零级列表自然也不会出现。
+
+### 注意
+
+- 过滤在**采集层**，所以这个道具也不会出现在楼层明细里（因为它本来就是误记）
+- 如果以后想让它在明细里可见但不算四级，要改成只在 `highlight.lua` 的 q4 列表里过滤
+- 历史存档里已有的记录不会自动消失（要看干净数据得打新局）
+
+### 另一个未合并的分支
+
+`fix/item-blacklist-v0.3.3` 上有同样的改动（早先做的）。这个分支已经把改动合进来了，
+那个分支可以视为重复，合并时忽略即可。
+## 修 4 个问题
+
+### ① 房型名
+
+`[7] 密室` → `普通隐藏房`，`[8] 超密室` → `超级隐藏房`（作者 2026-10-22 要求）。
+
+### ② 属性下降画不出来
+
+`segBar2` 原来第一句就把 `fracTotal` 抬到 `fracBase`：
+
+```lua
+if fracTotal < fracBase then fracTotal = fracBase end
+```
+
+**下降被抹平了** —— 条形图永远只往上长，六维掉属性时看不出来。
+
+改成取两端的较小/较大值，中间那段按方向着色（上升绿 `BAR_GAIN`，下降红 `BAR_DOWN`）。
+
+### ③ 开局自带道具不算「获得」
+
+`settleRoom` 里第一间房直接 `gained = {}`，把初始道具全丢了。
+
+改成 `beginRun` 时拍快照 `state.startItems`，第一间房把它当成获得。
+
+### ④ 总览楼层写不下
+
+原来单列、`math.min(#bk.floors, 10)`，超过 10 层直接截断且没有提示。
+
+改成**双栏**：每栏最多 12 行，共 24 层，超出显示 `+N floors`。
+窄栏里去掉时长（时长在楼层详情页有），bar 段数 40 → 24。
+## 新功能（作者 2026-10-22 提的一批）
+
+### ① 册子显示开局系统时间 + 时间倒序
+
+- `schema` 的 run 作用域加 `w0`（epoch 秒），`beginRun` 里用 `os.time()` 取。
+  取不到（沙盒禁了 `os.time`）就写 nil，册子不显示时间，其它照常。
+- 总览页标题行下面多一行 `2026/10/22 14:36`。
+- 局的排序本来就是 `seq` 倒序（最新在前），不需要改。
+
+### ② 终极 Boss 评级
+
+按**击杀用时**（Boss 房 `ms`），30 秒一档：
+
+| 用时 | 评级 |
+|---|---|
+| ≤30s | S+ |
+| ≤60s | S |
+| ≤90s | A |
+| ≤120s | B |
+| ≤150s | C |
+| ≤180s | D |
+| 更久 | E |
+| 没打终极 Boss | D |
+
+放在总览标题行：`<runId>  WIN  A  12F  45 rooms`（WIN 右边、楼层数前面）。
+代码在 `book.lua` 的 `bossGrade(bk)`。
+
+### ③ 六维显示「数值 + 百分比」
+
+`statRow` 原来只显示出房值。现在属性有变化时显示 `旧>新`（例 `12.89>14.30`），
+右边仍然是 `+10.9%`。两个都在。
+
+### ④ 楼层详情按品质分行
+
+原来一行 10 个、最多 20 个。现在 **Q5~Q0 每个等级一行，每行 8 个**，超出显示 `+N`，
+同行内按时间顺序（`f.items` 本来就是按房间时间积累的）。
+
+为此 `highlight.lua` 给每层加了 `itemsQ`（与 `items` 平行的品质列表）。
+
+### ⑤ F6「已获得道具」按获得时间倒序
+
+没有真实时间戳，用「本会话内第一次在持有列表里看到它」的递增序号近似。
+读档前就有的道具没有序号，排最后并按 id 升序，避免每次打开顺序乱跳。
+### 系统时间这条：沙盒里拿不到
+
+实测结果：
+
+```
+日志 [CLOCK] os.time=0  os.date=1970/01/01 08:00
+```
+
+- Isaac 的 Lua 沙盒把 `os.time()` 换成了返回 **0**
+- `zhlREPENTOGON.dll` 里没有 `GetRealTime` / `UnixTime` / `GetDateTime` 之类的接口
+  （只剩 `Isaac.GetTime()` = 游戏启动后毫秒数，不是墙钟）
+
+所以入口做了保护：**只认 `> 1e9` 的时间戳**，取不到就 `w0 = nil`，
+册子不显示时间那一行（之前会把 1970 显示出来，是很难看的 bug）。
+
+`w0` 字段的管道保留着（schema / 编解码 / `whenText`），
+以后 REPENTOGON 若给出真实时间接口，只需要改 `wallSec()` 一行。
+
+如果要真时间，只能走外部注入（PowerShell 起游戏时写一个时间戳文件让 mod 读），
+但那样订阅者拿到的是打包时的旧值，**不能发布**，所以没做。
+### 修：`nowSec` 被误删（3 号档每间房报错）
+
+```
+main.lua:434: attempt to call a nil value (global 'nowSec')
+```
+
+上一轮替换 `wallSec` 那段时，把紧邻的 `local function nowSec()` 一起删了 →
+`nowSec` 变成全局查找 → nil → `beginRun` 里的 `t0 = nowSec()` 报错。
+`MC_POST_PLAYER_INIT` / `MC_POST_NEW_ROOM` 都被 pcall 包着，所以**只报错不崩**。
+
+### 时间改用 `os.date()`（有真实系统时间）
+
+作者指出明日方舟 mod 能拿到外部时间。查了 `arknights_terra_a_journey_3631023221`：
+
+- `sunny_side_cream.lua:49` → `os.date("%Y%m%d")`（判每日）
+- `calendar_of_the_overlord_of_ages.lua:33` → `os.date("*t")`
+- `sui_hours.lua:115` → `os.date("%H")`
+
+结论：**`os.time()` 被换成返回 0，但 `os.date()` 不传时间戳时拿的是真实系统时间**。
+所以不再存 epoch，直接存格式化文本：
+
+- schema：`ws = "s"`（`"2026/10/22 14:36"`）
+- `main.wallText()`：`os.date("%Y/%m/%d %H:%M")`，年份 < 2001 视为无效
+- `book.whenText()`：只接受字符串，`1970` 开头的一律不显示
+
+### Boss 评级改档次
+
+作者要求：**30 / 60 / 120 / 200 / 300** 秒分档，**多个终极 Boss 取平均**。
+
+| 平均用时 | 评级 |
+|---|---|
+| ≤30s | S+ |
+| ≤60s | S |
+| ≤120s | A |
+| ≤200s | B |
+| ≤300s | C |
+| >300s | E |
+| 没打终极 Boss | D |
+## 局内 HUD 战力行 + 战力跃迁页
+
+### 数据
+
+- `schema` 房间作用域新增 `ie`（与 `it` 平行：每件道具带来的战力增量）
+- `fmt` 的列表编码支持小数：整数值仍按 `%d`（旧存档字节不变），带小数按 `%.4f`；解码不再强制四舍五入
+- 采集：房间进/出战力的差是准确值，单件归因按「本房有效道具数」平摊；`iq<0` 的脏 id 记 0 不参与排序
+
+### 派生（`highlight.analyze`）
+
+```
+jumps = 所有 (道具, 增量 >= config.jumpMin) 的事件
+按增量降序取前 N（config.jumpTopN=50）→ 再按时间顺序排
+展示前 24 个（config.jumpShown），其余只报个数
+```
+
+### 页面
+
+- 新增「战力跃迁」页（`kind = "jumps"`）：图标 + 百分比 + `F<层>`，2 排 × 12
+- 楼层详情加 `JUMPS` 小块：最多 8 条，超出 `+N`
+- 「战力提升 Top3」页、「四级/零级」列表改为配置开关：
+  `config.pagesPower / showQ4 / showQ0`，默认 `false`
+
+### 局内 HUD
+
+`MC_POST_RENDER` 里画一行：`▮ PWR 9.55 +1.41`，位置基准 168（Rep+ 170）+ `config.hudPowerOffsetY`
+（默认 18，因为 168 会压住原生面板最后两行）。增量 3 秒后消失，每 20 帧刷新数值。
+
+### 踩的坑
+
+1. `bookui.init` 的 deps 表里 `config` 写了**两遍**，我加的 `config = config` 被后面的硬编码表覆盖 → 所有开关失效。
+   改成「硬编码默认值 + config.lua 合并（后者优先）」。
+2. 楼层记录有**两处**初始化，只补了一处 `itemsQ` → `identity_test` 直接报
+   `attempt to get length of a nil value (field 'itemsQ')`。
+3. 我插入跃迁页时把 `table.insert(book.pages, 1, finale)` 复制成了两行 → 册子出现两个终局页。
+4. `identity_test` 是按「Top3 页存在」写的，开关默认关掉后必须让测试自己传 `pagesPower = true`。
+### HUD 字体改成描边字（作者 2026-10-22）
+
+原生位图字太小，看不清。照 `planetarium chance_2489006943` 的做法：
+
+```lua
+self.font = Font(); self.font:Load("font/luaminioutlined.fnt")
+```
+
+我们也加载同一个 `font/luaminioutlined.fnt`，HUD 那行改成 `hudFont:DrawString(...)`：
+白色数值 + 3 秒内的增量（绿涨红跌）。
+
+**踩的坑**：`Font:DrawString` 的坐标是 **480×270 的 HUD 空间**，而我原来的图标用 `rect(x*s, ...)`
+（屏幕像素），两者差了一个缩放 → 文字和图标错位。统一改成同一个坐标系。
+### 跃迁展示改按楼层（作者 2026-10-22）
+
+- **楼层详情里的 JUMPS 块删掉**（太占位置，楼层页要放六维和道具网格）
+- 战力跃迁页改成**按楼层分组**：
+  - 每层内按增量**降序**取前 **8** 个
+  - 层与层之间按层号升序
+  - 一页仍最多 24 行（2 列 × 12），其余只报个数
+- 每行显示 `图标 + 旧>新 + 百分比 + F层#房号`（数值和百分比都要）
+
+### HUD 位置：排到星象房那条下面
+
+`hasPlanetarium()` 用 `Isaac.GetModByName` 探测 `planetarium chance`，在的话
+基准 y 从 168/170 再加 11（星象房占一行，我们排它下面）。
+
+另外加了一层半透明底衬 `rect(...alpha 0.55)`——木地板背景下裸字看不清。
+### 修：`GetCollectible` 那条「正常噪音」其实是 bug
+
+```
+main.lua:156: attempt to call a nil value (method 'GetCollectible')
+```
+
+**`player:GetCollectible(i)` 这个 API 在 Repentance 里不存在**，
+所以逐件读取 100% 失败 → 每次进房都退回 **2000 次 `HasCollectible` 全量扫描**，
+还每局在日志里刷一条错误。之前把它当成"降级路径，属正常"，判断错了。
+
+改成首选 `player:GetCollectiblesList()`（返回 `{ id = 数量 }`，`itemwatch` 里本来就在用），
+按数量展开成列表；只有它也不可用时才退全量扫描。
+
+附带好处：每次进房少 2000 次 API 调用。
+
+### 战力口径 v2：特殊形态 / 宝宝 / 幸运（feature/power-forms-v0.3）
+
+口径文档 `docs/special-attack-power.md`；计算层 `mod-review/core/power_forms.lua`（纯函数，**没接 main**）。
+
+- 母式：`POWER = 射速 × 攻击力 × 倍数`（6 因子展开只是为了能算特殊形态）
+- 27 件定值：20 形态 + 4 宝宝倍率 + 7 幸运概率。id 全部用游戏内 EID 的
+  `names/en_us.lua`、`item_data.lua`、`LuckFormulas` 核对过，不靠记忆
+- 宝宝**不做加法**，只当倍数：Incubus / 双生宝 各 +0.75（两件同时拿是 2.5×，不是 3.06×）；
+  Succubus / 宝宝套 ×1.5。其余宝宝不统计
+- 幸运道具直接抄 EID 的公式（`inv` + `linear` 两种形态），
+  并有 6 个锚点单测（安眠药 luck9=100%、圣光 luck9=50%、安乐死 luck13=25%…）
+- **顺手查出旧口径三处错**：硫磺火把「每跳伤害」当 DPS（base 0.64，比空手还低）、
+  Ludo 按固定 15 跳（实际随 tears、上限 30/秒，`D×15` 高估 5.5 倍）、宝宝一件都没算
+- 单测 `tests/power_forms_test.lua`：41 项全过
+- **没动 `power.output()`**，现有存档数据零影响；接 main 要等三项实测（妈刀周期、硫磺火每跳、Succubus 是否已在面板）
+
+### 莉莉丝特判 + 飞行/防爆采集（feature/power-forms-v0.3）
+
+**莉莉丝**：Incubus / 双生宝 的加成从 0.75 变 **1.00**（EID `repBFFSSynergies` 的
+`{75,150,100,200}` 后一对就是莉莉丝例外）。所以莉莉丝 Incubus = 2.00×，再叠 BFFS! = 3.00×。
+Succubus 不受影响（它本来就不在例外表里）。
+
+**飞行 / 防爆**：schema 房间作用域新增 4 个布尔 `fli fl exi ex`
+（进房/出房 是否会飞、是否防爆）。判定整局结论时**不用另存时间戳**：
+
+```
+哪一间拿到的 = 第一个「出房 true && 进房 false」的房间
+第 1 间就已经 true = 开局自带
+```
+
+- 飞行读数：`player.CanFly`（覆盖道具/饰品/变身，不需要枚举）
+- 防爆读数：白名单 `HasCollectible`（223 纵火狂 / 375 宿主之帽）——
+  REPENTOGON 没有现成的 bool，以后发现别的给防爆的道具就往 `EXPLODE_IMMUNE` 里加
+- 总览页加一行：`飞行 F3#12   防爆 开局`；没有就显示 `无`
+- 旧存档缺这 4 个字段 → 解码补 `false`，显示"无"，不报错
+
+顺带核对：**局列表本来就是时间倒序**（`sortedRuns()` 按 `seq` 降序，`fmt.nextSeq()` 单调 +1），
+新的在第 1 条，不用改。
+
+### 飞行/防爆加"确认窗口"：临时飞行不算
+
+作者指出：**踩白火、按住圣经**这种临时飞行只在本房间有效，如果只看"出房 true 且进房 false"，
+会被误判成"本局获得了飞行"。
+
+改成**必须带得进下一间**才算：
+
+```
+候选 = 第 i 间「出房 true 且进房 false」
+确认 = 第 i+1 间「进房仍为 true」   → 才算第 i 间拿到
+```
+
+- 临时飞行：出房 true，下一间进门 false → **丢掉**，继续往后找候选
+- 真道具：出房 true，下一间进门还飞 → 确认，归因到拿到的那一间（不会差一间）
+- 开局自带：第 1 间进门就会飞 → 直接记"开局"，不参与上面那条
+- **最后一间拿到的不确认**（没有"下一间"可证）：宁可漏记，不误记
+
+实现放在 `highlight.gainPoint(rooms, keyIn, keyOut)`（纯函数，方便单测），
+防爆走同一套。identity_test 新增 5 项：临时飞行被丢 / 真道具确认 / 最后一间不确认 /
+开局自带 / 防爆同逻辑 —— 29/29 通过。
+
+### 上一版的判据是错的：改成"从此往后一直有"
+
+作者纠正：**踩白火的临时飞行"不清房就不落地"**，只要不清理房间、来回运营，
+可以撑完**一整层**；它真正的破绽在**下一层的第一间（清完就掉）**。
+
+所以"看下一间还在不在飞"会把整层的临时飞行误判成获得。改成**最长全 true 后缀**：
+
+```
+从第 k 间开始，之后每一间（含换层）都 fl=true  →  k 就是获得点
+```
+
+- 整层临时飞行：下一层第一间变成 false → 后缀断在那一层 → 前面那段**不算**
+- 真永久飞行：一路到底都为 true → 后缀起点就是拿到的那一间（不会差一格）
+- 中途丢了又拿回来：归因到**重新拿回来**的那一间（后缀起点）
+- 第 1 间进门就会飞 → 开局自带，不记获得点
+
+采集完全没改（还是每间房记 `fli/fl/exi/ex`），只改了**派生判定**。
+identity_test 的 5 项也按新语义重写，含"整层临时飞行 → 不算获得"这个关键用例 —— 30/30 通过。
+
+### HUD 底衬删掉（作者 2026-10-23 看图指出）
+
+局内战力行下面那条半透明黑带是历史遗留的底衬：`rect()` 用屏幕像素、`DrawString` 用 480×270 空间，
+两个坐标系差一截，实测文字落在底衬**上方约 13 个单位**，于是底衬变成一条空黑条。
+字体本来就是 `luaminioutlined` 描边字，底衬多余 → 直接删。部署后黑条仍在的那类是**六维 HUD 那个第三方 mod 的空行底条**，不是我们的。
+
+### `GetCollectiblesList` 探测改三态（子代理改，主代理验）
+
+本机该 API **时有时无**（`zhlREPENTOGON.dll` 里确有这个名字；同一会话里既有 `共 1763 件` 成功，也有 `nil` 失败）。
+所以不能一次 nil 就判死：
+
+- 三态：未知 / 可用 / 缺失；只有"player 上没这个方法"才记死，临时故障下次再试
+- 探测与失败日志**全程各一次**（旧代码其实也已经只报一条，真正白吃的是每房 2 次 2000 回扫描）
+- 退化扫描把闭包从 2000 个降到 1 个；中途抛错才退回逐 id `pcall`（结果与旧实现逐字一致）
+- 顺手修列表法真 bug：`if c < 1 then c = 1` 会把"数量 0"当成持有 → 现按数量 > 0 展开
+
+验证：luacheck 24 文件 0 失败 / fmt PASS / identity 30-0 / power_forms 全过。
+`core/itemwatch.lua` 同根因**未修**（每帧失败 pcall + 每 12 帧扫 1800），是下一个该处理的。
+
+### 工具：控制台自动化（`tools/console.ps1`）
+
+可以直接给游戏发控制台指令了（`EnableDebugConsole=1` 已开）：
+
+```powershell
+powershell -File tools\console.ps1 "giveitem c118"
+powershell -File tools\console.ps1 "debug 3|giveitem c417|stage 2" -Shot
+```
+
+踩过的三个坑都写进注释了：`~` 会打进输入框（先退格 40 清场）、自动补全要吃一次 ENTER、
+ESC 关控制台时可能连带打开暂停菜单（收尾按一次 ENTER 恢复）。
+用它实测到：**Succubus 的 ×1.5 已经在 `player.Damage` 里，且只在光环内生效**（站位一变就跳）→ 建议从宝宝倍数表里删掉这一行。

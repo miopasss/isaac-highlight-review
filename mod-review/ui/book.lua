@@ -29,9 +29,10 @@ local INK_DN  = { 0.50, 0.08, 0.05 }   -- 下跌红
 local BAR_ON  = { 0.36, 0.52, 0.26 }
 local BAR_OFF = { 0.62, 0.58, 0.50 }
 local BAR_BASE = { 0.55, 0.36, 0.18 }   -- 原有属性（棕）
-local BAR_GAIN = { 0.26, 0.60, 0.28 }   -- 本房增加（绿）
+local BAR_GAIN = { 0.26, 0.60, 0.28 }
+local BAR_DOWN = { 0.72, 0.24, 0.24 }   -- 属性下降的格子（红）
 
-local bodyFont, titleFont, fontTried = nil, nil, false
+local bodyFont, titleFont, hudFont, fontTried = nil, nil, nil, false
 local cjkFont, cjkTried = nil, false
 
 -- 借用 EID 的中文字体（EID 没装就回退英文）
@@ -121,6 +122,8 @@ local function loadFonts()
     if fontTried then return end
     fontTried = true
     pcall(function() local f = Font(); f:Load("font/teammeatfont12.fnt"); bodyFont = f end)
+    -- HUD 那行用星象房同款描边字（原生字太小看不清，作者 2026-10-22）
+    pcall(function() local f = Font(); f:Load("font/luaminioutlined.fnt"); hudFont = f end)
     pcall(function() local f = Font(); f:Load("font/teammeatfontextended16bold.fnt"); titleFont = f end)
 end
 
@@ -263,12 +266,16 @@ local function segBar2(x, y, w, h, fracBase, fracTotal, n)
     local gap = 0.9
     local bw = (w - gap * (n - 1)) / n
     if bw <= 0 then return end
-    if fracTotal < fracBase then fracTotal = fracBase end
+    -- 上升/下降都要能画：取出两端的较小/较大值，中间那段按方向着色
+    local inc = (fracTotal >= fracBase)
+    local lo  = inc and fracBase or fracTotal
+    local hi  = inc and fracTotal or fracBase
     for i = 1, n do
         local mid = ((i - 1) / n + i / n) / 2
         local col, a
-        if mid <= fracBase then col, a = BAR_BASE, 0.85
-        elseif mid <= fracTotal then col, a = BAR_GAIN, 0.95
+        if mid <= lo then col, a = BAR_BASE, 0.85
+        elseif mid <= hi then
+            if inc then col, a = BAR_GAIN, 0.95 else col, a = BAR_DOWN, 1.0 end
         else col, a = BAR_OFF, 0.25 end
         rect(x + (i - 1) * (bw + gap), y, bw, h, col[1], col[2], col[3], a)
     end
@@ -426,7 +433,13 @@ local function statRow(s, y, st, bk, x0, colWidth)
     txt(label, x0 * s, y * s, sc, INK)
     local wLab = textW(label, sc) / s
 
-    local valStr = string.format("%.2f", st.outV)
+    -- 数值 + 百分比都要（作者 2026-10-22）：有变化时显示 旧>新，让"增加后的数值"也看得见
+    local valStr
+    if st.inV and math.abs((st.outV or 0) - (st.inV or 0)) > 0.005 then
+        valStr = string.format("%.2f>%.2f", st.inV, st.outV)
+    else
+        valStr = string.format("%.2f", st.outV)
+    end
     local xVal = x0 + wLab + 5
     txt(valStr, xVal * s, y * s, sc, INK)
     local wVal = textW(valStr, sc) / s
@@ -452,13 +465,50 @@ end
 
 -- ---------------------------------------------------------------- 各页
 
+--- 终极 Boss 评级（作者 2026-10-22）：按击杀用时，30 秒一档
+--- S+ <=30s, S <=60s, A <=90s, B <=120s, C <=150s, D <=180s, E 更慢
+--- 没打终极 Boss 直接记 D
+local function bossGrade(bk)
+    local sum, n = 0, 0
+    for i = 1, #bk.rooms do
+        local r = bk.rooms[i]
+        if (r.ub or 0) > 0 then
+            sum = sum + (r.ms or 0)
+            n = n + 1
+        end
+    end
+    if n == 0 then return "D" end          -- 没打终极 Boss：直接 D
+    local sec = (sum / n) / 1000           -- 多个终极 Boss 取平均
+    if sec <= 30 then return "S+" end
+    if sec <= 60 then return "S" end
+    if sec <= 120 then return "A" end
+    if sec <= 200 then return "B" end
+    if sec <= 300 then return "C" end
+    return "E"
+end
+
+--- 墙钟时间文本：2026/10/22 14:36。取不到（os.date 不可用或旧记录没 w0）就返回 nil
+local function whenText(ws)
+    if type(ws) ~= "string" then return nil end
+    ws = ws:gsub("^%s+", ""):gsub("%s+$", "")
+    if ws == "" then return nil end
+    if ws:find("^1970") then return nil end
+    return ws
+end
+
 local function drawOverview(s, bk, entry)
     title(s, (getCJK() and "总览") or "Overview", string.format("1/%d", bk.pageCount))
     local y = PADY + 27
-    txt(string.format("%s   %s   %dF   %d rooms",
-        tostring(entry.id), RES_NAME[bk.result] or "?", bk.maxFloor, #bk.rooms),
+    -- 评级放在 WIN 右边、楼层数前面（作者 2026-10-22）
+    txt(string.format("%s   %s   %s   %dF   %d rooms",
+        tostring(entry.id), RES_NAME[bk.result] or "?", bossGrade(bk), bk.maxFloor, #bk.rooms),
         (PADX + 12) * s, y * s, s * 0.64, INK_DIM)
-    y = y + 12
+    y = y + 11
+    local whenStr = whenText(bk.ws)
+    if whenStr then
+        txt(whenStr, (PADX + 14) * s, y * s, s * 0.52, INK_DIM)
+        y = y + 10
+    end
 
     -- 本局四级道具（最多 8 个一行）
     local fin = bk.pages and bk.pages[1]
@@ -489,6 +539,20 @@ local function drawOverview(s, bk, entry)
         y = y + 12
     end
 
+    -- 飞行 / 防爆：有没有、哪一间拿到的（作者 2026-10-22）
+    local function capText(now, at, start)
+        local L = getCJK()
+        if not now then return (L and "无") or "-" end
+        if start then return (L and "开局") or "start" end
+        if at then return string.format("F%d#%d", at.f or 0, at.i or 0) end
+        return (L and "有") or "yes"
+    end
+    txt(string.format("%s %s   %s %s",
+        ((getCJK() and "飞行") or "FLY"),   capText(bk.flightNow,  bk.flight,  bk.flightStart),
+        ((getCJK() and "防爆") or "BLAST"), capText(bk.explodeNow, bk.explode, bk.explodeStart)),
+        (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
+    y = y + 10
+
     local growth = (bk.base > 0) and ((bk.final - bk.base) / bk.base * 100) or 0
     txt(string.format("POWER  %.2f > %.2f    %+.2f   (%+.1f%%)",
         bk.base, bk.final, bk.final - bk.base, growth),
@@ -500,38 +564,50 @@ local function drawOverview(s, bk, entry)
 
     local x0 = PADX + 12
     local colW = PADW - 40
-    y = y + 15
-    for i = 1, math.min(#bk.floors, 10) do
+    y = y + 14
+    -- 楼层可能很多（作者反馈总览写不下）：改双栏，最多 24 层，超出显示 +N
+    local nF = #bk.floors
+    local MAXF = 24
+    local shown = math.min(nF, MAXF)
+    local perCol = math.min(12, math.ceil(shown / 2))
+    local colGap = 16
+    local colW2 = (colW - colGap) / 2
+    for i = 1, shown do
         local f = bk.floors[i]
-        local sc = s * 0.6
-        local lab = string.format("Floor %d", f.i)
-        txt(lab, x0 * s, y * s, sc, INK)
+        local col = (i <= perCol) and 0 or 1
+        local row = (i <= perCol) and (i - 1) or (i - perCol - 1)
+        local xx = x0 + col * (colW2 + colGap)
+        local yy = y + row * 12.5
+        local sc = s * 0.54
+
+        local lab = string.format("%dF", f.i)
+        txt(lab, xx * s, yy * s, sc, INK)
         local wLab = textW(lab, sc) / s
 
         local valStr = string.format("%.2f", f.powerOut)
-        local xVal = x0 + wLab + 8
-        txt(valStr, xVal * s, y * s, sc, INK)
+        local xVal = xx + wLab + 5
+        txt(valStr, xVal * s, yy * s, sc, INK)
         local wVal = textW(valStr, sc) / s
 
         local gainStr
         if f.powerIn and math.abs(f.powerIn) > 0.005 then
-            gainStr = string.format("%+.1f%%", f.gain / f.powerIn * 100)
+            gainStr = string.format("%+.0f%%", f.gain / f.powerIn * 100)
         else
             gainStr = "0%"
         end
         local wGain = textW(gainStr, sc) / s
-        local durStr = deps.hl.durationEn(f.ms)
-        local wDur = textW(durStr, s * 0.52) / s
-        local durX = PADX + PADW - 14 - wDur
-        local gainX = durX - 8 - wGain
-        local xBar = xVal + wVal + 8
-        local barW = math.max(30, gainX - 8 - xBar)
-        segBar2(xBar * s, (y + 2.2) * s, barW * s, 6 * s,
-            f.powerIn / maxP, f.powerOut / maxP, 40)
+        local gainX = xx + colW2 - wGain - 1
+        local xBar = xVal + wVal + 5
+        local barW = math.max(16, gainX - 4 - xBar)
+        segBar2(xBar * s, (yy + 2) * s, barW * s, 5 * s,
+            f.powerIn / maxP, f.powerOut / maxP, 24)
 
-        txt(gainStr, gainX * s, y * s, sc, f.gain >= 0 and INK_UP or INK_DN)
-        txt(durStr, durX * s, y * s, s * 0.52, INK_DIM)
-        y = y + 14.5
+        txt(gainStr, gainX * s, yy * s, sc, f.gain >= 0 and INK_UP or INK_DN)
+    end
+    y = y + perCol * 12.5
+    if nF > shown then
+        txt(string.format("+%d floors", nF - shown), (PADX + 12) * s, y * s, s * 0.5, INK_DIM)
+        y = y + 10
     end
     footer(s, isGamePaused() and "TIME PAUSED    U/D RUN    ENTER OPEN    L/R PAGE    F5 CLOSE"
         or "U/D RUN    ENTER OPEN    L/R PAGE    F5 CLOSE   (ESC pauses time)")
@@ -655,6 +731,53 @@ y = statRow(s, y, r.stats[i], bk, PADX + 12, PADW - 40)
         or "L/R PAGE    ESC BACK    F5 CLOSE   (ESC pauses time)")
 end
 
+--- 「战力跃迁」页（作者 2026-10-22）
+--- 只列「拿到道具」造成的战力跳变：图标 + 提升百分比，按时间顺序，2 排 × 12
+local function drawJumps(s, bk, idx)
+    local p = bk.pages[idx]
+    if not p then footer(s, "empty"); return end
+    local evs = p.events or {}
+
+    title(s, (getCJK() and "战力跃迁") or "POWER JUMPS",
+        string.format("%d/%d", 1 + idx, bk.pageCount))
+
+    local y = PADY + 26
+    txt(string.format("%s  %d/%d", (getCJK() and "只算拿到道具造成的跳变" or "item-driven only"),
+        p.shown or 0, p.total or 0), (PADX + 12) * s, y * s, s * 0.52, INK_DIM)
+    y = y + 14
+
+    -- 双列 × 12 行：图标 + 旧>新 + 百分比（作者 2026-10-22 要求数值也要）
+    local PERCOL = 12
+    local x0 = PADX + 12
+    local colW = (PADW - 30) / 2
+    local shown = math.min(#evs, p.shown or 24)
+    for k = 1, shown do
+        local ev = evs[k]
+        local col = math.floor((k - 1) / PERCOL)
+        local row = (k - 1) % PERCOL
+        local cx = x0 + col * (colW + 6)
+        local cy = y + row * 13
+
+        local sp = itemIcon(ev.id)
+        if sp then
+            sp.Scale = Vector(s * 0.46, s * 0.46)
+            sp:Render(Vector(cx * s, cy * s))
+        end
+        local line = string.format("%.2f>%.2f  %+.1f%%",
+            ev.pIn or 0, ev.pOut or 0, (ev.pct or 0) * 100)
+        txt(line, (cx + 15) * s, (cy + 1) * s, s * 0.46,
+            (ev.delta or 0) >= 0 and INK_UP or INK_DN)
+        txt(string.format("F%d#%d", ev.floor or 0, ev.room or 0),
+            (cx + colW - 22) * s, (cy + 1) * s, s * 0.40, INK_DIM)
+    end
+
+    if (p.rest or 0) > 0 then
+        txt(string.format("+%d", p.rest), (PADX + PADW - 42) * s, (PADY + PADH - 22) * s, s * 0.54, INK_DIM)
+    end
+    footer(s, isGamePaused() and "TIME PAUSED    L/R PAGE    ESC BACK    F5 CLOSE"
+        or "L/R PAGE    ESC BACK    F5 CLOSE   (ESC pauses time)")
+end
+
 local function drawFloor(s, bk, idx)
     local f = bk.floors[idx]
     if not f then footer(s, "empty"); return end
@@ -683,28 +806,44 @@ y = statRow(s, y, f.stats[i], bk, PADX + 12, PADW - 40)
         end
     end
 
-    -- 道具图标网格
+    -- 道具按品质分行（作者 2026-10-22）：Q0~Q5 每个等级一行，每行 8 个，多的用 +N
     y = y + 4
-    txt(string.format("ITEMS  %d", #f.items), (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
-    local wLab = textW(string.format("ITEMS  %d", #f.items), s * 0.54) / s
-    local xIcon = PADX + 12 + wLab + 8
-    y = y + 11
-    local perRow, shown = 10, math.min(#f.items, 20)
-    for k = 1, shown do
-        local row = math.floor((k - 1) / perRow)
-        local col = (k - 1) % perRow
-        local sp = itemIcon(f.items[k])
-        if sp then
-            sp.Scale = Vector(s * 0.62, s * 0.62)
-            sp:Render(Vector((xIcon + col * 26) * s, (y + row * 24) * s))
-        else
-            txt(tostring(f.items[k]), (xIcon + col * 26) * s, (y + row * 24) * s, s * 0.5, INK_DIM)
-        end
+    local PERROW = 8
+    local groups, total = {}, 0
+    for k = 1, #f.items do
+        local q = (f.itemsQ and f.itemsQ[k]) or 0
+        q = math.floor(tonumber(q) or 0)
+        if q < 0 then q = 0 end
+        if q > 5 then q = 5 end
+        groups[q] = groups[q] or {}
+        groups[q][#groups[q] + 1] = f.items[k]
+        total = total + 1
     end
-    if #f.items > 20 then
-        txt(string.format("+%d", #f.items - 20),
-            (xIcon + (shown % perRow) * 26) * s,
-            (y + math.floor(shown / perRow) * 24) * s, s * 0.54, INK_DIM)
+
+    txt(string.format("ITEMS  %d", total), (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
+    y = y + 12
+
+    for q = 5, 0, -1 do
+        local g = groups[q]
+        if g and #g > 0 then
+            txt(string.format("Q%d", q), (PADX + 12) * s, (y + 3) * s, s * 0.5, INK_DIM)
+            local xIcon = PADX + 12 + 22
+            local n = math.min(#g, PERROW)
+            for k = 1, n do
+                local sp = itemIcon(g[k])
+                if sp then
+                    sp.Scale = Vector(s * 0.62, s * 0.62)
+                    sp:Render(Vector((xIcon + (k - 1) * 24) * s, y * s))
+                else
+                    txt(tostring(g[k]), (xIcon + (k - 1) * 24) * s, (y + 3) * s, s * 0.46, INK_DIM)
+                end
+            end
+            if #g > n then
+                txt(string.format("+%d", #g - n),
+                    (xIcon + n * 24) * s, (y + 3) * s, s * 0.5, INK_DIM)
+            end
+            y = y + 15
+        end
     end
     footer(s, isGamePaused() and "TIME PAUSED    L/R PAGE    ESC BACK    F5 CLOSE"
         or "L/R PAGE    ESC BACK    F5 CLOSE   (ESC pauses time)")
@@ -749,11 +888,61 @@ local function render()
         local pg = bk.pages[page - 1]
         if pg and pg.kind == "finale" then
             drawFinale(s, bk, page - 1)
+            elseif pg and pg.kind == "jumps" then
+                drawJumps(s, bk, page - 1)
         else
             drawHighlight(s, bk, page - 1)
         end
     else
         drawFloor(s, bk, page - 1 - #bk.pages)
+    end
+end
+
+-- ── 局内 HUD：六维下面一行战力（作者 2026-10-22）────────────────────────
+-- 数据由 main 每帧写入（power 当前战力、delta 最近一次增量、untilFrame 过期帧）
+book.hud = { power = 0, delta = 0, untilFrame = 0 }
+
+--- 星象房概率 mod 在不在（在的话我们那行排到它下面）
+local planetariumPresent = nil
+local function hasPlanetarium()
+    if planetariumPresent ~= nil then return planetariumPresent end
+    planetariumPresent = false
+    if Isaac and Isaac.GetModByName then
+        for _, nm in ipairs({ "planetarium chance", "Planetarium Chance", "planetariumchance" }) do
+            local ok, m = pcall(function() return Isaac.GetModByName(nm) end)
+            if ok and m then planetariumPresent = true; break end
+        end
+    end
+    return planetariumPresent
+end
+
+function book.renderHud()
+    local cfg = (deps and deps.config) or {}
+    if cfg.hudPower == false then return end
+    local hud = book.hud
+    if not hud or not hud.power or hud.power <= 0 then return end
+    loadFonts()
+    if not hudFont then return end
+
+    local plus = rawget(_G, "REPENTANCE_PLUS") or rawget(_G, "REPENTOGON_PLUS")
+    local baseY = plus and 170 or 168
+    -- 星象房那条占 168；我们排在它下面一行（作者 2026-10-22 指定箭头位置）
+    if hasPlanetarium() then baseY = baseY + 11 end
+    local hx = 16 + (cfg.hudPowerOffsetX or 0)
+    local hy = baseY + (cfg.hudPowerOffsetY or 0)
+
+    -- 底衬已删（作者 2026-10-23）：字体本来就是描边字，不需要背景；
+    -- 而且 rect（屏幕像素）和 DrawString（HUD 空间）两个坐标系差一截，
+    -- 底衬和文字对不上，会留下一条空黑条。
+    hudFont:DrawString("[]", hx, hy + 1, KColor(0.9, 0.35, 0.28, 0.95), 0, false)
+    hudFont:DrawString(string.format("%.2f", hud.power), hx + 14, hy + 1,
+        KColor(1, 1, 1, 1), 0, false)
+    local fc = 0
+    pcall(function() fc = Isaac.GetFrameCount() end)
+    if hud.delta and math.abs(hud.delta) > 0.005 and fc < (hud.untilFrame or 0) then
+        local d = hud.delta
+        hudFont:DrawString(string.format("%+.2f", d), hx + 42, hy + 1,
+            d >= 0 and KColor(0.35, 1, 0.35, 1) or KColor(1, 0.35, 0.35, 1), 0, false)
     end
 end
 
