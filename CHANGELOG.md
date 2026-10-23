@@ -2351,3 +2351,19 @@ main.lua:156: attempt to call a nil value (method 'GetCollectible')
 按数量展开成列表；只有它也不可用时才退全量扫描。
 
 附带好处：每次进房少 2000 次 API 调用。
+
+### 战力口径 v2：特殊形态 / 宝宝 / 幸运（feature/power-forms-v0.3）
+
+口径文档 `docs/special-attack-power.md`；计算层 `mod-review/core/power_forms.lua`（纯函数，**没接 main**）。
+
+- 母式：`POWER = 射速 × 攻击力 × 倍数`（6 因子展开只是为了能算特殊形态）
+- 27 件定值：20 形态 + 4 宝宝倍率 + 7 幸运概率。id 全部用游戏内 EID 的
+  `names/en_us.lua`、`item_data.lua`、`LuckFormulas` 核对过，不靠记忆
+- 宝宝**不做加法**，只当倍数：Incubus / 双生宝 各 +0.75（两件同时拿是 2.5×，不是 3.06×）；
+  Succubus / 宝宝套 ×1.5。其余宝宝不统计
+- 幸运道具直接抄 EID 的公式（`inv` + `linear` 两种形态），
+  并有 6 个锚点单测（安眠药 luck9=100%、圣光 luck9=50%、安乐死 luck13=25%…）
+- **顺手查出旧口径三处错**：硫磺火把「每跳伤害」当 DPS（base 0.64，比空手还低）、
+  Ludo 按固定 15 跳（实际随 tears、上限 30/秒，`D×15` 高估 5.5 倍）、宝宝一件都没算
+- 单测 `tests/power_forms_test.lua`：41 项全过
+- **没动 `power.output()`**，现有存档数据零影响；接 main 要等三项实测（妈刀周期、硫磺火每跳、Succubus 是否已在面板）
