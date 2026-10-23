@@ -2710,3 +2710,46 @@ Q={"v":1,"e":{"1":{"q":4,"w":1},"105":{"q":0,"w":0.5},"1166":{"q":4,"w":0.1},
 | 没打终极 Boss | D |
 
 代码：`ui/book.lua` 的 `bossGrade(bk)`。
+## 为什么会去扫 2000 次（作者质疑）
+
+作者问「为啥要做两千次内存扫描」。查下来是**我们自己的逻辑缺陷**，不是必须的。
+
+### 原因
+
+`readCollectibles(player)` 只试**一个对象**就下结论：
+
+```lua
+local okCall, m = pcall(function() return player:GetCollectiblesList() end)
+if not okCall then
+    listApiMissing = true      -- 一次性判定，永久降级
+    return scanCollectibles(player)   -- 从此每房扫 2000 次
+end
+```
+
+而 `MC_POST_PLAYER_INIT` 传进来的 `player` 曾经在某个时点取不到这个方法 →
+`listApiMissing` 被设成 true → **整个进程**之后每间房都走全量扫描。
+
+崩溃日志里那句 `not enough memory`（MC_POST_NEW_ROOM）就是扫描过程中的内存压力。
+
+### 修法
+
+先试传入的对象，再试 `getPlayer()`，**两个都失败**才退化扫描：
+
+```lua
+local candidates = { player, getPlayer() }
+for ci = 1, #candidates do
+    local ok, m = pcall(function() return candidates[ci]:GetCollectiblesList() end)
+    if ok and type(m) == "table" then ... return list end
+end
+return scanCollectibles(player)   -- 兜底
+```
+
+### 实测结果
+
+```
+道具读取正常（列表法）：共 1 件，首件 id=105（来源 回调参数）
+报错：没有
+F1-01 型01 形1  9.55 -> 9.55 ... 道具0
+```
+
+**一次扫描都没发生**，也没有再报 `not enough memory`。

@@ -173,34 +173,35 @@ local function readCollectibles(player)
     local list = {}
     if not player then return list end
 
-    -- 首选 GetCollectiblesList()：返回 { id = 持有数量 }。
-    -- 注意：没有 player:GetCollectible(i) 这个方法（Repentance 无此 API）。
-    if not listApiMissing then
-        local okCall, m = pcall(function() return player:GetCollectiblesList() end)
+    -- 首选 GetCollectiblesList()（{ id = 数量 }）。
+    -- 2026-10-24 实测：**不同来源的 player 对象能力不同** ——
+    --   MC_POST_PLAYER_INIT 传进来的对象没有这个方法，getPlayer() 有。
+    -- 所以先试传入的，再试 getPlayer()，都失败才退化扫描。
+    local candidates = { player }
+    local p0 = getPlayer()
+    if p0 and p0 ~= player then candidates[2] = p0 end
+
+    for ci = 1, #candidates do
+        local p = candidates[ci]
+        local okCall, m = pcall(function() return p:GetCollectiblesList() end)
         if okCall and type(m) == "table" then
-            -- 全量表包含未持有的条目（数量 0）→ 只按数量 > 0 展开；重复 id 按数量重复
             for id, cnt in pairs(m) do
                 local c = tonumber(cnt) or 0
-                for _ = 1, c do list[#list + 1] = id end
+                if c > 0 then
+                    for _ = 1, c do list[#list + 1] = id end
+                end
             end
             table.sort(list)
             if not itemsProbed2 and #list > 0 then
                 itemsProbed2 = true
-                log("道具读取正常（列表法）：共 " .. #list .. " 件，首件 id=" .. tostring(list[1]))
+                log(string.format("道具读取正常（列表法）：共 %d 件，首件 id=%s（来源 %s）",
+                    #list, tostring(list[1]), ci == 1 and "回调参数" or "getPlayer"))
             end
             return list
         end
-        -- 失败：区分"本版本没有这个方法"（记死）与"临时故障"（下次再试）
-        local okLook, fn = pcall(function() return player.GetCollectiblesList end)
-        if not (okLook and type(fn) == "function") then listApiMissing = true end
-        if not listFailLogged then
+        if ci == #candidates and not listFailLogged then
             listFailLogged = true
-            if listApiMissing then
-                log("GetCollectiblesList 不可用（" .. safeToString(m) ..
-                    "）→ 退化为全量扫描（本版本无 GetCollectiblesList）")
-            else
-                log("GetCollectiblesList 调用失败（" .. safeToString(m) .. "）→ 本次改用全量扫描，之后静默")
-            end
+            log("GetCollectiblesList 两个对象都不可用（" .. safeToString(m) .. "）→ 退化为全量扫描")
         end
     end
 
