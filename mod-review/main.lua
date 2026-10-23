@@ -300,7 +300,7 @@ end
 local FAMILY_BY_ID = { [360] = "incubus", [698] = "twisted_pair" }   -- Succubus(417) 不单独乘：面板已含且只在光环内生效
 local LUCK_BY_ID = {
     [150] = "tough_love", [374] = "holy_light", [496] = "euthanasia",
-    [503] = "little_horn", [637] = "knockout", [55] = "moms_eye", [87] = "loki_horns",
+    [503] = "little_horn", [637] = "knockout", [55] = "moms_eye", [87] = "loki_horns", [616] = "birdseye", [495] = "ghostpepper",
 }
 local B_FORM = { brimstone = true, momsknife = true, drfetus = true,
                  epicfetus = true, techx = true, ludovico = true }
@@ -556,6 +556,7 @@ end
 
 local function beginRun(player)
     local id, seed, char = computeRunId(player)
+    if not state.store then return end   -- 空存档保护（2026-10-24 删档后崩过）
     state.lastStageKey = nil
     state.floorDepth   = 0
     state.roomInFloor  = 0
@@ -935,7 +936,13 @@ loadData = function()
         state.store = { lines = {}, index = {} }
         return
     end
-    local store, warns = fmt.splitBlob(blob)
+    -- 解析失败也要有个空 store，否则后面 findUnfinished 会拿到 nil 崩掉
+    local okSplit, store, warns = pcall(fmt.splitBlob, blob)
+    if not okSplit or not store then
+        err("存档解析失败：" .. safeToString(store))
+        state.store = { lines = {}, index = {} }
+        return
+    end
     state.store = store
     state.store.bytes = nil
     local dups = fmt.dedupe(store)

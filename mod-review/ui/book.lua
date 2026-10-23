@@ -942,7 +942,10 @@ function book.renderHud()
     pcall(function() fc = Isaac.GetFrameCount() end)
     if hud.delta and math.abs(hud.delta) > 0.005 and fc < (hud.untilFrame or 0) then
         local d = hud.delta
-        hudFont:DrawString(string.format("%+.2f", d), hx + 42, hy + 1,
+        -- 增量后面接上百分比（作者 2026-10-24）：+1.41 (+15%)
+        local beforeV = (hud.power or 0) - d
+        local pctV = (beforeV > 0.01) and (d / beforeV * 100) or 0
+        hudFont:DrawString(string.format("%+.2f (%+.0f%%)", d, pctV), hx + 42, hy + 1,
             d >= 0 and KColor(0.35, 1, 0.35, 1) or KColor(1, 0.35, 0.35, 1), 0, false)
     end
 end

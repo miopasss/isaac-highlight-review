@@ -350,6 +350,7 @@ end
 
 --- 找"最近一局且未完成"（Save & Quit 续接用）
 function fmt.findUnfinished(store)
+    if not store or not store.index then return nil end   -- 空存档：没有未完成的局
     local best = nil
     for i = 1, #store.index do
         local e = store.index[i]

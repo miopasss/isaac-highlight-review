@@ -99,6 +99,10 @@ power_forms.LUCK = {
     knockout    = { id = 637, kind = "inv", bottom = 10, factor = 1,   cap = 1, flat = 0 },  -- ⚠️ 无伤害数值
     moms_eye    = { id = 55,  kind = "linear", base = 50, per = 10 },                        -- 只记概率
     loki_horns  = { id = 87,  kind = "linear", base = 25, per = 5 },                         -- 只记概率
+    -- 两个辣椒：概率发射火焰（接触伤害 ≈1.25×面板，挡子弹，打 5 次消失）
+    -- 期望：每发泪弹额外 1.25p 倍伤害 → mult = 1 + 1.25 = 2.25
+    birdseye    = { id = 616, kind = "inv", bottom = 12, factor = 1, cap = 2, mult = 2.25 },
+    ghostpepper = { id = 495, kind = "inv", bottom = 12, factor = 1, cap = 2, mult = 2.25 },
 }
 
 --- 单个道具的触发概率（0~1）。未知 key → 0
