@@ -2430,3 +2430,35 @@ Succubus 不受影响（它本来就不在例外表里）。
 
 采集完全没改（还是每间房记 `fli/fl/exi/ex`），只改了**派生判定**。
 identity_test 的 5 项也按新语义重写，含"整层临时飞行 → 不算获得"这个关键用例 —— 30/30 通过。
+
+### HUD 底衬删掉（作者 2026-10-23 看图指出）
+
+局内战力行下面那条半透明黑带是历史遗留的底衬：`rect()` 用屏幕像素、`DrawString` 用 480×270 空间，
+两个坐标系差一截，实测文字落在底衬**上方约 13 个单位**，于是底衬变成一条空黑条。
+字体本来就是 `luaminioutlined` 描边字，底衬多余 → 直接删。部署后黑条仍在的那类是**六维 HUD 那个第三方 mod 的空行底条**，不是我们的。
+
+### `GetCollectiblesList` 探测改三态（子代理改，主代理验）
+
+本机该 API **时有时无**（`zhlREPENTOGON.dll` 里确有这个名字；同一会话里既有 `共 1763 件` 成功，也有 `nil` 失败）。
+所以不能一次 nil 就判死：
+
+- 三态：未知 / 可用 / 缺失；只有"player 上没这个方法"才记死，临时故障下次再试
+- 探测与失败日志**全程各一次**（旧代码其实也已经只报一条，真正白吃的是每房 2 次 2000 回扫描）
+- 退化扫描把闭包从 2000 个降到 1 个；中途抛错才退回逐 id `pcall`（结果与旧实现逐字一致）
+- 顺手修列表法真 bug：`if c < 1 then c = 1` 会把"数量 0"当成持有 → 现按数量 > 0 展开
+
+验证：luacheck 24 文件 0 失败 / fmt PASS / identity 30-0 / power_forms 全过。
+`core/itemwatch.lua` 同根因**未修**（每帧失败 pcall + 每 12 帧扫 1800），是下一个该处理的。
+
+### 工具：控制台自动化（`tools/console.ps1`）
+
+可以直接给游戏发控制台指令了（`EnableDebugConsole=1` 已开）：
+
+```powershell
+powershell -File tools\console.ps1 "giveitem c118"
+powershell -File tools\console.ps1 "debug 3|giveitem c417|stage 2" -Shot
+```
+
+踩过的三个坑都写进注释了：`~` 会打进输入框（先退格 40 清场）、自动补全要吃一次 ENTER、
+ESC 关控制台时可能连带打开暂停菜单（收尾按一次 ENTER 恢复）。
+用它实测到：**Succubus 的 ×1.5 已经在 `player.Damage` 里，且只在光环内生效**（站位一变就跳）→ 建议从宝宝倍数表里删掉这一行。
