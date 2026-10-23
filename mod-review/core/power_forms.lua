@@ -65,13 +65,16 @@ power_forms.FAMILY = {
 }
 
 --- 宝宝倍数。空表 → 1
-function power_forms.familyMult(list)
+--- @param bffs boolean  有 BFFS!(247) 时，加成型宝宝的加成翻倍（EID repBFFSSynergies 实测 75→150）
+function power_forms.familyMult(list, bffs)
     local bonus, mult = 0, 1
     if type(list) == "table" then
         for i = 1, #list do
             local e = power_forms.FAMILY[list[i]]
             if e then
-                bonus = bonus + (e.bonus or 0)
+                local b = e.bonus or 0
+                if bffs and b > 0 then b = b * 2 end
+                bonus = bonus + b
                 mult = mult * (e.mult or 1)
             end
         end
@@ -169,7 +172,7 @@ function power_forms.output(s)
     local fr = shotsPerSecond(s.maxFireDelay)
 
     local luckMult, luckAdd = power_forms.luckEffects(s.luckItems, s.luck or 0, fr)
-    return base * mult * luckMult * power_forms.familyMult(s.family) + add + luckAdd
+    return base * mult * luckMult * power_forms.familyMult(s.family, s.bffs) + add + luckAdd
 end
 
 return power_forms

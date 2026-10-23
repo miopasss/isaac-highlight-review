@@ -99,6 +99,17 @@ check("妈妈的眼睛 luck-10 钳 0", pf.luckP("moms_eye", -10) * 100, 0)
 check("无幸运道具 luck99 = 不变",
     pf.output({ damage = 3.5, maxFireDelay = 10, luck = 99 }), 9.5455)
 
+print("== BFFS!（247）：家人伤害 ×2 ==")
+check("Incubus + BFFS = 2.50×", pf.output({ damage = 3.5, maxFireDelay = 10,
+    family = { "incubus" }, bffs = true }), 23.86)
+check("双生宝 + BFFS = 2.50×", pf.output({ damage = 3.5, maxFireDelay = 10,
+    family = { "twisted_pair" }, bffs = true }), 23.86)
+check("两件 + BFFS = 4.00×", pf.output({ damage = 3.5, maxFireDelay = 10,
+    family = { "incubus", "twisted_pair" }, bffs = true }), 38.18)
+check("Succubus 不吃 BFFS", pf.output({ damage = 3.5, maxFireDelay = 10,
+    family = { "succubus" }, bffs = true }), 14.32)
+check("无宝宝时 BFFS 无效", pf.output({ damage = 3.5, maxFireDelay = 10, bffs = true }), 9.5455)
+
 print("== 边界 ==")
 check("空表 → 0",        pf.output({}), 0)
 check("未知形态回落 tears", pf.output({ damage = 3.5, maxFireDelay = 10, form = "???" }), 9.5455)

@@ -397,6 +397,21 @@ POWER = D × FR × 形态系数 × (1 + Σ 宝宝加成) × Π 真倍率
 | Incubus + Succubus | 1.75 × 1.5 = 2.63× |
 | 四件全拿 | 2.5 × 1.5 × 1.5 = **5.63×** |
 
+**BFFS!（247）：加成型家人伤害 ×2**
+
+| 宝宝 | 无 BFFS! | 有 BFFS! |
+|---|---|---|
+| Incubus | 1.75× | **2.50×** |
+| Twisted Pair | 1.75× | **2.50×** |
+| 两件都有 | 2.50× | **4.00×** |
+| Succubus | 1.50× | 1.50×（**不吃**） |
+| 宝宝套 Conjoined | 1.50× | 1.50×（**不吃**） |
+
+> 依据：EID 的 `repBFFSSynergies` 表逐件给了 BFFS! 前后值 ——
+> `["5.100.360"] = {75, 150}`（Incubus）、`["5.100.698"] = {37.5, 75}`（Twisted Pair），
+> 都是 **×2**（不是 +50%）；而 417（Succubus）和 Conjoined **都不在这张表里**。
+> 代码上就是一句：`bonus 型 ×2，mult 型不动`。
+
 > ⚠️ **Succubus 唯一的疑点**：EID 原文是
 > "↑ {{Damage}} **x1.5** Damage multiplier **while standing in the aura**"。
 > 如果它走的是 damage cache 倍率（很可能），`player.Damage` **已经含了 1.5**，我们再乘就是双算（变 2.25×）。
@@ -564,6 +579,7 @@ local FORM_MULT = {
 }
 -- 合并：POWER = base × (1 + Σbonus) × Πmult
 -- Incubus + 双生宝 = 1 + 0.75 + 0.75 = 2.5（**不是** 3.06）
+-- 有 BFFS!(247) 时：bonus 型 ×2（Incubus 1.75→2.5、两件 2.5→4.0）；mult 型不动
 
 -- ── 幸运概率类（公式抄自 EID.LuckFormulas，Repentance 覆盖版为准）──
 -- inv: p = 100 / max(cap, bottom − ⌊luck×factor⌋)   linear: p = base + per×luck
@@ -591,6 +607,7 @@ local LUCK = {
 | `contactDuty` | 见 §4.7 表 | 持续接触型 |
 | `familyBonus` | 0 | `Σ(宝宝加成)`，如 Incubus + 双生宝 = 1.5 → 总倍率 2.5×（§4.9） |
 | `luck` / `luckItems` | 0 / `{}` | `player.Luck` + 在场吃幸运的道具 key；**每 20 帧随快照重算**，所以幸运变战力就变（§4.11） |
+| `bffs` | false | 有 BFFS!(247) 时家人的加成 ×2（§4.9）；只影响 bonus 型宝宝 |
 | `hitRate` | 1.0（配置，默认关） | K |
 | `targets` | 1（配置，默认关） | N |
 | `formFlag` | `"tears"` | B 类互斥的判定依据 |
