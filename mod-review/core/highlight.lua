@@ -132,22 +132,34 @@ highlight.STATS = {
 local function num(v) return tonumber(v) or 0 end
 
 --- 「什么时候真的获得了某个能力」（飞行 / 防爆）。
---- 关键：必须**带得进下一间**才算。踩白火、按住圣经这类临时飞行只在本房间有效，
---- 表现为「出房 true、下一间进房又 false」——这类一律当临时效果丢掉。
---- 规则：候选 = 出房 true 且进房 false 的第一间；确认 = 下一间进房仍为 true。
----       最后一间没有"下一间"，不确认（宁可漏记，不误记）。
+---
+--- 判据：**从某一间开始，之后每一间（含换层）都一直有** —— 取"一直为 true 的最长后缀"的起点。
+---
+--- 为什么不能只看"下一间"：踩白火这类临时飞行，只要不清理房间就一直不落地，
+--- 能靠运营撑完**整层**；但它撑不过换层后的第一次清房。
+---   → 只看"下一间还在飞"会把整层的临时飞行误判成"获得"
+---   → 只看"后缀一直为 true"就能识别：真正的永久能力才不会再掉
+---
+--- 边界：
+---   · 第 1 间进门就会飞 → 开局自带，没有"获得点"（返回 nil，由调用方标"开局"）
+---   · 中途丢了又拿回来 → 归因到重新拿回来的那一间（后缀起点）
+---   · 全层没飞过 → nil
 --- @param keyIn string  进房的字段名（"fli" / "exi"）
 --- @param keyOut string 出房的字段名（"fl" / "ex"）
 --- @return table|nil { f = 层, i = 房号 }
 function highlight.gainPoint(rooms, keyIn, keyOut)
-    if type(rooms) ~= "table" then return nil end
-    for i = 1, #rooms - 1 do
-        local r, nxt = rooms[i], rooms[i + 1]
-        if r[keyOut] and not r[keyIn] and nxt[keyIn] then
-            return { f = num(r.f), i = num(r.i) }
-        end
+    local n = (type(rooms) == "table") and #rooms or 0
+    if n == 0 then return nil end
+
+    -- 从后往前扫，找到"一直为 true 的最长后缀"的起点 k
+    local k = nil
+    for i = n, 1, -1 do
+        if rooms[i][keyOut] then k = i else break end
     end
-    return nil
+    if not k then return nil end                  -- 整局没有过
+    if k == 1 and rooms[1][keyIn] then return nil end  -- 开局自带
+
+    return { f = num(rooms[k].f), i = num(rooms[k].i) }
 end
 
 --- 把一局分析成册子结构

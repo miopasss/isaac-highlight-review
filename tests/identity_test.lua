@@ -116,37 +116,59 @@ check("层2 六维伤害 出 = 10.0", math.abs(bk.floors[2].stats[1].outV - 10.0
 check("射程按 /40 缩放（6.4 而不是 256）", math.abs(bk.floors[1].stats[4].outV - 6.4) < 1e-6, bk.floors[1].stats[4].outV)
 
 print("")
-print("== 飞行/防爆：必须'带得进下一间'才算拿到 ==")
--- 第 1 间踩白火飞了一下 → 下一间进门没飞 → 不算
--- 第 3 间拿到真飞行 → 第 4 间进门还在飞 → 确认为第 3 间
-local rs = {
-    { f = 1, i = 1, fli = false, fl = true  },
+print("== 飞行/防爆：要'从此往后一直有'才算拿到 ==")
+-- 场景：第 1 层踩白火，靠不清房运营到整层都飞；第 2 层第 1 间清完就落地
+local temp = {
+    { f = 1, i = 1, fli = false, fl = true  },   -- 踩白火
+    { f = 1, i = 2, fli = true,  fl = true  },   -- 还没落地（不清房）
+    { f = 1, i = 3, fli = true,  fl = true  },   -- 整层都飞
+    { f = 2, i = 1, fli = true,  fl = false },   -- 换层后第一间清完 → 落地
+    { f = 2, i = 2, fli = false, fl = false },
+}
+check("整层临时飞行 → 不算获得", hl.gainPoint(temp, "fli", "fl") == nil)
+
+-- 场景：第 1 层第 3 间真的拿到（后面一路飞到底）
+local real = {
+    { f = 1, i = 1, fli = false, fl = false },
     { f = 1, i = 2, fli = false, fl = false },
     { f = 1, i = 3, fli = false, fl = true  },
     { f = 1, i = 4, fli = true,  fl = true  },
+    { f = 2, i = 1, fli = true,  fl = true  },
 }
-local gp = hl.gainPoint(rs, "fli", "fl")
-check("临时飞行被丢掉，确认第 3 间", gp and gp.i == 3, gp and gp.i)
-check("确认的层号正确", gp and gp.f == 1, gp and gp.f)
+local gp = hl.gainPoint(real, "fli", "fl")
+check("真拿到 → 归因第 1 层第 3 间", gp and gp.f == 1 and gp.i == 3,
+    gp and (gp.f .. "#" .. gp.i))
 
--- 最后一间没有"下一间"可确认 → 宁可漏记
-check("最后一间不确认", hl.gainPoint({ { f = 2, i = 1, fli = false, fl = true } }, "fli", "fl") == nil)
-
--- 开局自带（第 1 间进门就会飞）不算"获得"
-local rs3 = {
+-- 开局自带：第 1 间进门就会飞，全程都飞 → 没有"获得点"
+local fromStart = {
     { f = 1, i = 1, fli = true, fl = true },
     { f = 1, i = 2, fli = true, fl = true },
 }
-check("开局自带 → 无获得点", hl.gainPoint(rs3, "fli", "fl") == nil)
+check("开局自带 → 无获得点", hl.gainPoint(fromStart, "fli", "fl") == nil)
+
+-- 整局都没有
+check("全程没飞 → nil", hl.gainPoint({
+    { f = 1, i = 1, fli = false, fl = false },
+}, "fli", "fl") == nil)
+
+-- 中途丢了又拿回来 → 归因到拿回来的那一间
+local regained = {
+    { f = 1, i = 1, fli = false, fl = true  },
+    { f = 1, i = 2, fli = true,  fl = false },   -- 这段掉了
+    { f = 1, i = 3, fli = false, fl = true  },   -- 又拿到（永久）
+    { f = 2, i = 1, fli = true,  fl = true  },
+}
+local gr = hl.gainPoint(regained, "fli", "fl")
+check("丢了又拿 → 归因第 1 层第 3 间", gr and gr.i == 3, gr and gr.i)
 
 -- 防爆走同一套逻辑
-local rs4 = {
+local ex = {
     { f = 3, i = 1, exi = false, ex = false },
     { f = 3, i = 2, exi = false, ex = true  },
     { f = 3, i = 3, exi = true,  ex = true  },
 }
-local ge = hl.gainPoint(rs4, "exi", "ex")
-check("防爆确认第 2 间", ge and ge.i == 2, ge and ge.i)
+local ge = hl.gainPoint(ex, "exi", "ex")
+check("防爆确认第 3 层第 2 间", ge and ge.f == 3 and ge.i == 2, ge and ge.i)
 
 print("")
 print(string.format("结果：%d 通过 / %d 失败", pass, fail))
