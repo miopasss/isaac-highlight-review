@@ -309,6 +309,26 @@ function highlight.analyze(run, cfg)
         if nm then book.bossSummary[#book.bossSummary + 1] = nm end
     end
 
+    -- 2.6) 飞行 / 防爆：本局有没有、哪一间拿到的（作者 2026-10-22）
+    -- 判定：出房 true 且进房 false → 这一间拿到的；第 1 间就 true → 开局自带
+    local function firstGain(keyIn, keyOut)
+        for i = 1, #rooms do
+            local r = rooms[i]
+            if r[keyOut] and not r[keyIn] then
+                return { f = num(r.f), i = num(r.i) }
+            end
+        end
+        return nil
+    end
+    local firstR = rooms[1]
+    local lastR2 = rooms[#rooms]
+    book.flight       = firstGain("fli", "fl")
+    book.explode      = firstGain("exi", "ex")
+    book.flightStart  = (firstR and firstR.fli) or false
+    book.explodeStart = (firstR and firstR.exi) or false
+    book.flightNow    = (lastR2 and lastR2.fl) or false
+    book.explodeNow   = (lastR2 and lastR2.ex) or false
+
     -- 3) 亮点 ①：战力提升 Top3（按房间进出差值）
     local pool = {}
     for i = 1, #rooms do

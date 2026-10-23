@@ -539,6 +539,20 @@ local function drawOverview(s, bk, entry)
         y = y + 12
     end
 
+    -- 飞行 / 防爆：有没有、哪一间拿到的（作者 2026-10-22）
+    local function capText(now, at, start)
+        local L = getCJK()
+        if not now then return (L and "无") or "-" end
+        if start then return (L and "开局") or "start" end
+        if at then return string.format("F%d#%d", at.f or 0, at.i or 0) end
+        return (L and "有") or "yes"
+    end
+    txt(string.format("%s %s   %s %s",
+        ((getCJK() and "飞行") or "FLY"),   capText(bk.flightNow,  bk.flight,  bk.flightStart),
+        ((getCJK() and "防爆") or "BLAST"), capText(bk.explodeNow, bk.explode, bk.explodeStart)),
+        (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
+    y = y + 10
+
     local growth = (bk.base > 0) and ((bk.final - bk.base) / bk.base * 100) or 0
     txt(string.format("POWER  %.2f > %.2f    %+.2f   (%+.1f%%)",
         bk.base, bk.final, bk.final - bk.base, growth),

@@ -111,6 +111,10 @@ schema.scopes = {
         boss  = "i",   -- 房间 subtype（GetBossID，boss 房才有）
         ub    = "i",   -- 终极 Boss 代码：1Hush 2BossRush 3超级撒旦 4老干妈 5祸兽 6百变怪（0=无）
         first = "b",   -- 是否首次访问该房间
+        fli   = "b",   -- 进房：是否会飞（player.CanFly）
+        fl    = "b",   -- 出房：是否会飞
+        exi   = "b",   -- 进房：是否防爆（Pyromaniac 223 / Host Hat 375）
+        ex    = "b",   -- 出房：是否防爆
         dv    = "f",   -- 诊断：快照时的面板伤害
         mu    = "i",   -- 诊断：快照时的弹幕数
         fm    = "s",   -- 诊断：快照时的攻击形态

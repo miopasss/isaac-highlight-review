@@ -110,6 +110,16 @@ check("Succubus 不吃 BFFS", pf.output({ damage = 3.5, maxFireDelay = 10,
     family = { "succubus" }, bffs = true }), 14.32)
 check("无宝宝时 BFFS 无效", pf.output({ damage = 3.5, maxFireDelay = 10, bffs = true }), 9.5455)
 
+print("== 莉莉丝特判（Incubus/双生宝 0.75 → 1.00）==")
+check("莉莉丝 Incubus = 2.00×", pf.output({ damage = 3.5, maxFireDelay = 10,
+    family = { "incubus" }, lilith = true }), 19.09)
+check("莉莉丝 双生宝 = 2.00×", pf.output({ damage = 3.5, maxFireDelay = 10,
+    family = { "twisted_pair" }, lilith = true }), 19.09)
+check("莉莉丝 + BFFS = 3.00×", pf.output({ damage = 3.5, maxFireDelay = 10,
+    family = { "incubus" }, lilith = true, bffs = true }), 28.64)
+check("莉莉丝 Succubus 不变", pf.output({ damage = 3.5, maxFireDelay = 10,
+    family = { "succubus" }, lilith = true }), 14.32)
+
 print("== 边界 ==")
 check("空表 → 0",        pf.output({}), 0)
 check("未知形态回落 tears", pf.output({ damage = 3.5, maxFireDelay = 10, form = "???" }), 9.5455)

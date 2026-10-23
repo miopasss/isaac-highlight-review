@@ -2367,3 +2367,26 @@ main.lua:156: attempt to call a nil value (method 'GetCollectible')
   Ludo 按固定 15 跳（实际随 tears、上限 30/秒，`D×15` 高估 5.5 倍）、宝宝一件都没算
 - 单测 `tests/power_forms_test.lua`：41 项全过
 - **没动 `power.output()`**，现有存档数据零影响；接 main 要等三项实测（妈刀周期、硫磺火每跳、Succubus 是否已在面板）
+
+### 莉莉丝特判 + 飞行/防爆采集（feature/power-forms-v0.3）
+
+**莉莉丝**：Incubus / 双生宝 的加成从 0.75 变 **1.00**（EID `repBFFSSynergies` 的
+`{75,150,100,200}` 后一对就是莉莉丝例外）。所以莉莉丝 Incubus = 2.00×，再叠 BFFS! = 3.00×。
+Succubus 不受影响（它本来就不在例外表里）。
+
+**飞行 / 防爆**：schema 房间作用域新增 4 个布尔 `fli fl exi ex`
+（进房/出房 是否会飞、是否防爆）。判定整局结论时**不用另存时间戳**：
+
+```
+哪一间拿到的 = 第一个「出房 true && 进房 false」的房间
+第 1 间就已经 true = 开局自带
+```
+
+- 飞行读数：`player.CanFly`（覆盖道具/饰品/变身，不需要枚举）
+- 防爆读数：白名单 `HasCollectible`（223 纵火狂 / 375 宿主之帽）——
+  REPENTOGON 没有现成的 bool，以后发现别的给防爆的道具就往 `EXPLODE_IMMUNE` 里加
+- 总览页加一行：`飞行 F3#12   防爆 开局`；没有就显示 `无`
+- 旧存档缺这 4 个字段 → 解码补 `false`，显示"无"，不报错
+
+顺带核对：**局列表本来就是时间倒序**（`sortedRuns()` 按 `seq` 降序，`fmt.nextSeq()` 单调 +1），
+新的在第 1 条，不用改。

@@ -266,15 +266,29 @@ local function readMultiShot(player)
     return 1
 end
 
+-- 防爆：Repentance 只有这两件给"免疫爆炸"（223 纵火狂 / 375 宿主之帽）。
+-- REPENTOGON 没有现成的 bool，只能按白名单判定；以后发现别的就加进来。
+local EXPLODE_IMMUNE = { 223, 375 }
+local function hasExplosionImmunity(player)
+    for i = 1, #EXPLODE_IMMUNE do
+        local ok, has = pcall(function() return player:HasCollectible(EXPLODE_IMMUNE[i]) end)
+        if ok and has then return true end
+    end
+    return false
+end
+
 local function snapshot(player)
     local s = { form = "tears", damage = 0, maxFireDelay = 10, multiShot = 1,
-                red = 0, soul = 0, bone = 0, survival = 0, power = 0 }
+                red = 0, soul = 0, bone = 0, survival = 0, power = 0,
+                canFly = false, explode = false }
     if not player then return s end
 
     pcall(function()
         s.damage       = player.Damage or 0
         s.maxFireDelay = player.MaxFireDelay or 10
+        s.canFly       = player.CanFly and true or false
     end)
+    s.explode   = hasExplosionImmunity(player)
     s.form      = detectForm(player)
     s.multiShot = readMultiShot(player)
 
@@ -530,6 +544,7 @@ local function beginRoom(player)
         pockets = readPockets(player),
         foes    = countFoes(),
         hblIn   = snap.black, hgoIn = snap.gold, hetIn = snap.eternal, hrtIn = snap.rotten,
+        canFlyIn = snap.canFly or false, explodeIn = snap.explode or false,
         firstIn = firstVisitNow(),
         bossIn  = bossIdNow(),
         ubIn    = ultimateBossNow(),
@@ -671,6 +686,8 @@ local function settleRoom(player)
         bmb = p.pockets and p.pockets.b or 0, bmbo = pok.b,
         key = p.pockets and p.pockets.k or 0, keyo = pok.k,
         boss = bossId, ub = p.ubIn or 0, first = firstVisit,
+        fli = p.canFlyIn or false, fl = snap.canFly or false,
+        exi = p.explodeIn or false, ex = snap.explode or false,
         tri = firstRoom and (p.trOut or {}) or (p.trIn or {}),
         tro = p.trOut or {},
         pd = "",

@@ -58,21 +58,24 @@ power_forms.FORMS = {
 
 -- ── 宝宝：只当倍数 ──────────────────────────────────────────────────────
 -- bonus = 加在主人身上（合并成 1 + Σbonus）；mult = 真倍率（相乘）
+-- bonusLilith = 莉莉丝/双生莉莉丝本人时的加成（Incubus 不减 25%）
 power_forms.FAMILY = {
-    incubus      = { bonus = 0.75 },   -- 360
-    twisted_pair = { bonus = 0.75 },   -- 698：2 只 × 0.375
-    succubus     = { mult = 1.50 },    -- 417：待确认是否已在面板
+    incubus      = { bonus = 0.75, bonusLilith = 1.00 },   -- 360：EID {75,150,100,200}
+    twisted_pair = { bonus = 0.75, bonusLilith = 1.00 },   -- 698：2 只 × 0.375（莉莉丝 0.5×2）
+    succubus     = { mult = 1.50 },                        -- 417：待确认是否已在面板
 }
 
 --- 宝宝倍数。空表 → 1
 --- @param bffs boolean  有 BFFS!(247) 时，加成型宝宝的加成翻倍（EID repBFFSSynergies 实测 75→150）
-function power_forms.familyMult(list, bffs)
+--- @param lilith boolean 莉莉丝/双生莉莉丝：Incubus 与双生宝的 0.75 变 1.0
+function power_forms.familyMult(list, bffs, lilith)
     local bonus, mult = 0, 1
     if type(list) == "table" then
         for i = 1, #list do
             local e = power_forms.FAMILY[list[i]]
             if e then
                 local b = e.bonus or 0
+                if lilith and e.bonusLilith then b = e.bonusLilith end
                 if bffs and b > 0 then b = b * 2 end
                 bonus = bonus + b
                 mult = mult * (e.mult or 1)
@@ -172,7 +175,7 @@ function power_forms.output(s)
     local fr = shotsPerSecond(s.maxFireDelay)
 
     local luckMult, luckAdd = power_forms.luckEffects(s.luckItems, s.luck or 0, fr)
-    return base * mult * luckMult * power_forms.familyMult(s.family, s.bffs) + add + luckAdd
+    return base * mult * luckMult * power_forms.familyMult(s.family, s.bffs, s.lilith) + add + luckAdd
 end
 
 return power_forms

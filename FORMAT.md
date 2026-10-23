@@ -70,10 +70,12 @@ M|r=1/f=1/i=3/t=4/s=1/d=15/hp=6/hs=2/hb=0/hpo=4/hso=1/hbo=1/p=12.89/po=13.99/ms=
 |---|---|
 | **R** 局 | `seq` `id` `seed` `char` `base` `final` `max` `res` `t0` `hl` |
 | **F** 层 | `r` `i` `stage` `type` `curse` `alt` `t` `ms` |
-| **M** 房间 | `r` `f` `i` `t` `s` `d` `st` `v` `list` `hp` `hs` `hb` `hpo` `hso` `hbo` `p` `po` `ms` `dmg` `clr` `it` `pd` |
+| **M** 房间 | `r` `f` `i` `t` `s` `d` `st` `v` `list` `hp` `hs` `hb` `hpo` `hso` `hbo` `p` `po` `ms` `dmg` `clr` `it` `pd` `fli` `fl` `exi` `ex` |
 
 - 生存值单位是**半心**；`hp/hs/hb` 是**进房**的红/魂/骨，`hpo/hso/hbo` 是**出房**
 - `it` 是列表（`+` 分隔），其余都是标量
+- `fli`/`fl` = 进房/出房**是否会飞**（`player.CanFly`）；`exi`/`ex` = 进房/出房**是否防爆**（223 纵火狂 / 375 宿主之帽）
+  → "哪一间拿到的"由 `出房 true && 进房 false` 反推，不额外存时间戳
 
 ---
 
