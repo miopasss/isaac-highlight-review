@@ -875,7 +875,19 @@ local function render()
     if not isOpen then return end
     local _, _, s = scr()
     local list = sortedRuns()
-    if #list == 0 then isOpen = false; return end
+    if #list == 0 then
+        -- 空存档：也要能打开，显示提示而不是"按了没反应"（2026-10-24 删档后踩到）
+        if isOpen then
+            layout(s)
+            drawPaper(s)
+            title(s, (getCJK() and "总览") or "Overview", "0/0")
+            txt((getCJK() and "还没有任何记录") or "no records yet", (PADX + 16) * s, (PADY + 60) * s, s * 0.66, INK)
+            txt((getCJK() and "打完一层（换层）之后才会落盘") or "data is written on floor change", (PADX + 16) * s, (PADY + 78) * s, s * 0.52, INK_DIM)
+            txt((getCJK() and "如果整层都没记录，检查日志里的 [FILTER]/[SCAN]") or "check [FILTER]/[SCAN] in log", (PADX + 16) * s, (PADY + 92) * s, s * 0.46, INK_DIM)
+            footer(s, isGamePaused() and "TIME PAUSED    F5 CLOSE" or "F5 CLOSE   (ESC pauses time)")
+        end
+        return
+    end
     if selRun > #list then selRun = #list end
 
     layout(s)

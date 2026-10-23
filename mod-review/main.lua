@@ -138,16 +138,16 @@ local SCAN_MAX_ID    = 2000    -- 同版本最大道具 id = 1763（READABLE-DAT
 
 --- 全量扫描：升序 id 列表，每件一次（HasCollectible 只回答"有没有"）
 local function scanCollectibles(player)
-    -- 2026-10-24 实测：本 REPENTOGON 版本**没有** GetCollectiblesList()，
-    -- 而 HasCollectible(id) 会对 110 多个未持有的 mod 道具返回 true（"图鉴里有"语义）。
-    -- GetCollectibleNum(id) 才是准确持有数，优先用它。
+    -- 2026-10-24 实测：本 REPENTOGON 版本没有 GetCollectiblesList()，
+    -- 而 HasCollectible 会多报（图鉴语义）→ 用 GetCollectibleNum 才算准确。
+    -- 注意：方法引用提到循环外，避免每次 pcall 新建闭包（2000 次/房 → 内存压力）
     local list = {}
-    local okNum, any = pcall(function() return player:GetCollectibleNum(1) end)
-    local useNum = okNum and type(any) == "number"
+    local numFn = player.GetCollectibleNum
+    local hasFn = player.HasCollectible
 
-    if useNum then
+    if numFn then
         for id = 1, SCAN_MAX_ID do
-            local ok, n = pcall(function() return player:GetCollectibleNum(id) end)
+            local ok, n = pcall(numFn, player, id)
             if ok and type(n) == "number" and n > 0 then
                 for _ = 1, n do list[#list + 1] = id end
             end
@@ -157,12 +157,14 @@ local function scanCollectibles(player)
             log(string.format("[SCAN] GetCollectibleNum 扫描：%d 件", #list))
         end
         if scanCount == 1 then itemsProbed2 = true end
+        return list
     end
 
-    -- 兜底：老的 HasCollectible（会多报，只能靠"每房新增 > 12 件"兜住）
-    for id = 1, SCAN_MAX_ID do
-        local ok, has = pcall(function() return player:HasCollectible(id) end)
-        if ok and has then list[#list + 1] = id end
+    if hasFn then
+        for id = 1, SCAN_MAX_ID do
+            local ok, has = pcall(hasFn, player, id)
+            if ok and has then list[#list + 1] = id end
+        end
     end
     return list
 end
@@ -1037,34 +1039,13 @@ end)
 if configui.isReady() then log("ImGui 配置菜单已挂上") else log("ImGui 不可用（或挂载失败），跳过配置菜单") end
 
 add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
-    -- 一次性：按 ModName 聚合 1700~2300 的道具归属，用来查"谁占着 1764~2000 这段"
-    do
-        local agg, okCfg = {}, false
-        local cfg0 = Isaac.GetItemConfig()
-        if cfg0 then okCfg = true end
-        if okCfg then
-            for id = 1700, 2300 do
-                local ok, c = pcall(function() return cfg0:GetCollectible(id) end)
-                if ok and c then
-                    local mn = c.ModName
-                    if mn == nil or mn == "" then mn = "(vanilla/未知)" end
-                    local a = agg[mn]
-                    if not a then a = { min = id, max = id, n = 0 }; agg[mn] = a end
-                    if id < a.min then a.min = id end
-                    if id > a.max then a.max = id end
-                    a.n = a.n + 1
-                end
-            end
-            for mn, a in pairs(agg) do
-                log(string.format("[OWN] %s  id %d~%d  (%d 个)", mn, a.min, a.max, a.n))
-            end
-        end
-    end
     state.store = nil
     state.runActive = true
     state.loaded = false
+    loadData()   -- ← 上一轮修重复行时被误删，导致 store 一直 nil
 
     if isMainPlayer(player) then beginRun(player) end
+    if state.current then flushCurrentRun("开局") end   -- 第一层没换层前也有记录（2026-10-24）
 end)
 
 add(ModCallbacks.MC_POST_NEW_LEVEL, function()
