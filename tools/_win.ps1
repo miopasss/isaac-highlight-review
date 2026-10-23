@@ -362,6 +362,37 @@ function Send-GameKey {
     Start-Sleep -Milliseconds 80
 }
 
+# ---------------------------------------------------------------- 打字（控制台用）
+# 逐字符发扫描码。只收控制台命令用得上的字符；遇到没登记的**直接抛错**，
+# 不要静默跳过——打错一个字符的命令比报错更难查。
+$script:CharScan = @{
+    'a' = 0x1E; 'b' = 0x30; 'c' = 0x2E; 'd' = 0x20; 'e' = 0x12; 'f' = 0x21; 'g' = 0x22
+    'h' = 0x23; 'i' = 0x17; 'j' = 0x24; 'k' = 0x25; 'l' = 0x26; 'm' = 0x32; 'n' = 0x31
+    'o' = 0x18; 'p' = 0x19; 'q' = 0x10; 'r' = 0x13; 's' = 0x1F; 't' = 0x14; 'u' = 0x16
+    'v' = 0x2F; 'w' = 0x11; 'x' = 0x2D; 'y' = 0x15; 'z' = 0x2C
+    '0' = 0x0B; '1' = 0x02; '2' = 0x03; '3' = 0x04; '4' = 0x05
+    '5' = 0x06; '6' = 0x07; '7' = 0x08; '8' = 0x09; '9' = 0x0A
+    ' ' = 0x39; '.' = 0x34; ',' = 0x33; '-' = 0x0C; '=' = 0x0D; '/' = 0x35; ';' = 0x27
+}
+
+function Send-GameText {
+    param(
+        [Parameter(Mandatory = $true)][string]$Text,
+        [int]$HoldMs = 16,
+        [int]$GapMs = 16
+    )
+    foreach ($ch in $Text.ToCharArray()) {
+        $c = ([string]$ch).ToLower()
+        if (-not $script:CharScan.ContainsKey($c)) { throw "控制台打字不支持字符：'$ch'（在 _win.ps1 的 CharScan 里加）" }
+        $scan = [uint16]$script:CharScan[$c]
+        [void][IsaacWin32]::Key([uint16]0, $scan, $false, $false)
+        Start-Sleep -Milliseconds $HoldMs
+        [void][IsaacWin32]::Key([uint16]0, $scan, $true, $false)
+        Start-Sleep -Milliseconds $GapMs
+    }
+    Start-Sleep -Milliseconds 60
+}
+
 # =============================================================================
 # 屏幕几何 / DPI（截图不完整的根因就在这一段）
 #
