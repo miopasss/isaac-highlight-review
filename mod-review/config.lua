@@ -11,8 +11,8 @@ config.maxRuns = 50
 -- 关掉「战力提升 Top3」那几页；四级/零级列表也从终极Boss页里去掉。
 -- 改成 true 就恢复。
 config.pagesPower = false     -- 战力提升 Top3 独立页
-config.showQ4     = false     -- 终极Boss页里的四级道具列表
-config.showQ0     = false     -- 终极Boss页里的零级道具列表
+config.showQ4     = true      -- 终极Boss页里的四级道具列表（作者 2026-10-26 要恢复显示）
+config.showQ0     = true      -- 终极Boss页里的零级道具列表（作者 2026-10-26 要恢复显示）
 
 -- ── 战力跃迁（新页）────────────────────────────────────────────────────
 -- 只算「拿到道具」造成的战力跳变；脏 id（品质<0）和负增量不算。

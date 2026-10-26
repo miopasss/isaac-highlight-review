@@ -2856,3 +2856,18 @@ fmt_test PASS；identity_test 30/30
 
 注意：分支里的 `pills.lua` 带 BOM（`Out-File` 写的），luacheck 直接报
 `unexpected symbol near '<\239>'` —— 已去掉 BOM。
+### 四级/零级道具「看不见了」：是配置关掉的，不是坏了
+
+作者反馈终极 Boss 页的四级/零级道具展示坏了。查证：`config.lua` 里
+
+```lua
+config.showQ4 = false
+config.showQ0 = false
+```
+
+这两行是 2026-10-22「关掉四级/零级页」时的产物——当时同时删了独立页，
+并把终极 Boss 页里那两栏也清空。默认 `false` → 页面上只剩「四级道具 0」和空图标行。
+
+改成 `true` 恢复显示（独立页仍然不再生成，只是终极 Boss 页里重新显示两栏）。
+
+单测确认：`finale q4=1 q0=1`。
