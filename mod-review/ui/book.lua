@@ -469,19 +469,17 @@ end
 --- S+ <=30s, S <=60s, A <=90s, B <=120s, C <=150s, D <=180s, E 更慢
 --- 没打终极 Boss 直接记 D
 local function bossGrade(bk)
-    -- 多个终极 Boss：取**最慢**的那一次（作者 2026-10-24 定）
-    -- 理由：评级代表"这局最难的那场仗"，平均会被速通的那场拉低
-    local worst, n = 0, 0
+    -- 多个终极 Boss：取**平均**用时（作者 2026-10-24 最终确认）
+    local sum, n = 0, 0
     for i = 1, #bk.rooms do
         local r = bk.rooms[i]
         if (r.ub or 0) > 0 then
-            local ms = r.ms or 0
-            if ms > worst then worst = ms end
+            sum = sum + (r.ms or 0)
             n = n + 1
         end
     end
     if n == 0 then return "D" end          -- 没打终极 Boss：直接 D
-    local sec = worst / 1000
+    local sec = (sum / n) / 1000
     if sec <= 30 then return "S+" end
     if sec <= 60 then return "S" end
     if sec <= 120 then return "A" end

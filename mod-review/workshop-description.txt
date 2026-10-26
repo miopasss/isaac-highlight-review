@@ -23,7 +23,7 @@
 
 【本局评级】
 
-取本局终极 Boss 战的用时：≤30 秒 S+，≤60 秒 S，≤120 秒 A，≤200 秒 B，≤300 秒 C，更久 E；没打终极 Boss 记 D。
+取本局终极 Boss 战的**平均用时**（打了多个就取平均）：≤30 秒 S+，≤60 秒 S，≤120 秒 A，≤200 秒 B，≤300 秒 C，更久 E；没打终极 Boss 记 D。
 
 终极 Boss 指：见证者 / 精神错乱 / Boss Rush / Hush / Mega Satan / 三眼霍恩。
 
@@ -75,7 +75,7 @@ Press F5 to open it. You get:
 
 [How the run grade works]
 
-Based on the time spent on ultimate boss fights: <=30s S+, <=60s S, <=120s A, <=200s B, <=300s C, slower E. No ultimate boss = D.
+Based on the AVERAGE time spent on ultimate boss fights (averaged if you fought several): <=30s S+, <=60s S, <=120s A, <=200s B, <=300s C, slower E. No ultimate boss = D.
 
 Ultimate bosses are: The Witness / Delirium / Boss Rush / Hush / Mega Satan / Mother.
 
