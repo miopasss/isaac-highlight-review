@@ -2753,3 +2753,33 @@ F1-01 型01 形1  9.55 -> 9.55 ... 道具0
 ```
 
 **一次扫描都没发生**，也没有再报 `not enough memory`。
+## 高光回顾的工坊元数据 + 封面
+
+### metadata
+
+| 项 | 旧 | 新 |
+|---|---|---|
+| name | `Highlight Review (高光回顾)`（游戏列表乱码） | `Highlight Review [EN/CN]`（纯 ASCII） |
+| version | 0.3.0 | **0.4.0** |
+| tags | 无 | `Lua`, `Tweaks` |
+| description | 274 字符 | **3477 字符**（中英双语，作者改写版） |
+
+坑：描述里 `<=30s` 的 `<` 会破坏 XML，写入 metadata 前做 `&lt;` 转义；
+`workshop-description.txt` 保留原文，供粘贴到工坊网页。
+
+### 封面
+
+`tools\make-cover-review.ps1`：用真实册子截图（`docs\img\src-book-panel.png`，作者提供）
++ 标题「Highlight Review / 高光回顾 · 每局一本战力笔记」+ 金色描边。
+
+产物：`workshop-cover-review.png`（512×512, 200 KB）、`workshop-wide-review.png`（1280×720）。
+
+### 描述按作者改写
+
+- 局内 HUD 单独成节，示例 `PWR 9.55 +1.41 (+15%)`
+- 补「大多数情况下，战斗力 = 攻击力 × 攻速」，再给完整口径
+- 兼容性改成「实测了这 6 个，实际全 MOD 兼容」
+- 终极 Boss 列表写清：见证者 / 精神错乱 / Boss Rush / Hush / Mega Satan / 三眼霍恩
+
+⚠️ **未定**：作者文字写「打多个取平均值」，但代码是「取最慢那场」（2026-10-24 改的）。
+描述里暂时只写「取本局终极 Boss 战的用时」，没写平均/最慢——等作者确认后补。

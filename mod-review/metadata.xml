@@ -1,8 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-    <name>Highlight Review (高光回顾)</name>
+    <name>Highlight Review [EN/CN]</name>
     <directory>highlight-review</directory>
-    <description>After every run, review where your power actually spiked: which floor, which room, and what you picked up. Works together with Item Weight Editor for custom item quality. Requires REPENTOGON. / 每局结束后回看战力到底在哪儿起飞的：哪一层、哪个房间、拿到了什么。配合 Item Weight Editor 可显示自定义道具评级。需要 REPENTOGON。</description>
-    <version>0.3.0</version>
+    <description>本MOD刚需 REPENTOGON。每局结束（或局中任何时候）按 F5，翻一本「高光回顾」：这局战力到底在哪一层、哪一间房起飞的，拿了什么。
+
+【局内 HUD】
+
+六维下面多一行状态栏，显示当前战斗力：
+
+    PWR  9.55   +1.41 (+15%)
+
+拿到道具后 3 秒内显示这次增量与百分比，之后只留当前值。
+
+大多数情况下，战斗力 = 攻击力 × 攻速。
+
+详细口径：攻击力 × 射速 × 形态系数（硫磺花 / 妈刀 / 博士 / 史诗婴儿等 20 种特殊形态）× 道具乘区（死眼 / 书虫）× 幸运期望（严厉的爱 / 圣光 / 安乐死 / 两个辣椒…）× 宝宝倍数，再加固定附加伤害。
+
+【一本册子】
+
+按 F5 打开，能看到：
+
+· 总览：种子、结果（WIN / DEAD）、评级（S+ ~ E）、层数、房间数、开局时间、战力从多少涨到多少
+· 战力跃迁：只统计「拿到道具造成的那一下跳变」，按楼层分组，每层取最大的 8 个，显示图标 + 旧战力 &gt; 新战力 + 百分比 + 层号#房号
+· 楼层详情：每层的六维（射速 / 弹速 / 射程 / 移速 / 幸运 / 伤害）进出值、条形图、诅咒、伤害、停留时间，以及本层道具按品质 Q0~Q5 分行
+· 终极 Boss：打了哪几个、用时多久，以及本局拿到的四级 / 零级道具
+
+【本局评级】
+
+取本局终极 Boss 战的用时：≤30 秒 S+，≤60 秒 S，≤120 秒 A，≤200 秒 B，≤300 秒 C，更久 E；没打终极 Boss 记 D。
+
+终极 Boss 指：见证者 / 精神错乱 / Boss Rush / Hush / Mega Satan / 三眼霍恩。
+
+【用法】
+
+按 F5 开 / 关。册子里：左右翻页，上下切局，回车或右方向键进入楼层详情。键位可在 Item Weight → 设置 里改。
+
+【已知兼容】
+
+做了实测的：天界呼唤（Heaven's Call）、东方系列、塔菲的宇宙、明日方舟、忏悔plus、愚昧。
+
+实际上玩的时候看到什么开什么，全 MOD 兼容。
+
+【注意】
+
+· 数据按存档槽分开存，1/2/3 号档各一份
+· 每换一层落一次盘，崩溃最多丢一层
+· 装了 Item Weight Editor 的话，它设的道具评级会用在四级 / 零级判定上；不装就用官方品质
+· 本 MOD 不修改游戏，也不和其它 MOD 争道具池
+
+需要 REPENTOGON。
+
+源码与问题反馈：https://github.com/miopasss/isaac-highlight-review
+
+—————————————————————————
+
+REQUIRES REPENTOGON. Press F5 in or after any run to flip through a review book: where your power actually spiked, on which floor, in which room, and what you picked up.
+
+[In-game HUD]
+
+One extra line under the six stats, showing your current power:
+
+    PWR  9.55   +1.41 (+15%)
+
+The delta and percentage stay for 3 seconds after each pickup, then only the current value remains.
+
+Most of the time, power = damage x fire rate.
+
+Full formula: damage x fire rate x form multiplier (20 special forms such as Brimstone / Mom's Knife / Dr. Fetus / Epic Fetus) x item multipliers (Dead Eye / Bookworm) x luck expectation (Tough Love / Holy Light / Euthanasia / both peppers, ...) x familiar multiplier, plus fixed added damage.
+
+[A book]
+
+Press F5 to open it. You get:
+
+· Overview: seed, result (WIN / DEAD), grade (S+ to E), floors, rooms, run start time, and power from start to finish
+· Power Jumps: only the jumps caused by picking up an item, grouped by floor, top 8 per floor, shown as icon + old &gt; new power + percentage + floor#room
+· Floor detail: the six stats (tears / shot speed / range / speed / luck / damage) in and out, bar chart, curses, damage taken, time spent, and the floor's items grouped by quality Q0~Q5
+· Ultimate bosses: which ones you fought, how long each took, and the quality-4 / quality-0 items of the run
+
+[How the run grade works]
+
+Based on the time spent on ultimate boss fights: &lt;=30s S+, &lt;=60s S, &lt;=120s A, &lt;=200s B, &lt;=300s C, slower E. No ultimate boss = D.
+
+Ultimate bosses are: The Witness / Delirium / Boss Rush / Hush / Mega Satan / Mother.
+
+[Controls]
+
+F5 toggles the book. Inside: left/right to page, up/down to switch runs, enter or right to open a floor. Rebindable in Item Weight -&gt; Settings.
+
+[Tested with]
+
+Actually tested: Heaven's Call, the Touhou mods, 塔菲的宇宙, Arknights, Repentance+, 愚昧.
+
+In practice it works with everything - whatever mod you play, just open it.
+
+[Notes]
+
+· Data is stored per save slot (save1/2/3 are separate)
+· Written to disk on every floor change, so a crash costs at most one floor
+· If Item Weight Editor is installed, its quality ratings are used for the quality-4 / quality-0 lists; otherwise vanilla quality
+· This mod does not modify the game and does not compete for item pools
+
+Requires REPENTOGON.
+
+Source and issue tracker: https://github.com/miopasss/isaac-highlight-review</description>
+    <version>0.4.0</version>
     <visibility>Private</visibility>
+    <tag id="Lua"/>
+    <tag id="Tweaks"/>
 </metadata>
