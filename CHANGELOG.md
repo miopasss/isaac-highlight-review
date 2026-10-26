@@ -2818,3 +2818,16 @@ Successfully uploaded mod 'Highlight Review [EN/CN]' to Steam Workshop
 |---|---|---|
 | Item Weight Editor | `3824170209` | 0.1.1 |
 | Highlight Review | `3824312517` | 0.4.0 |
+### 更正：高光回顾的工坊 id 是 `3827490957`
+
+上一条 CHANGELOG 里写的 `3824312517` 是笔误（我手打的），以 `<id>` 实际值为准：
+
+| 项 | 实际值 |
+|---|---|
+| 工坊 id | **`3827490957`** |
+| 页面 | https://steamcommunity.com/sharedfiles/filedetails/?id=3827490957 |
+| 版本 | 上传器自动改成 **0.4.1** |
+| 可见性 | 上传器设成 **Public** |
+| 标签 | 上传器补成 `Lua, Items, Active Items, Tweaks, Graphics` |
+
+仓库里的 `mod-review/metadata.xml` 已按实际值抄回（`<id>3827490957</id>`、`version 0.4.1`）。
