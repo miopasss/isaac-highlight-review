@@ -174,13 +174,16 @@ function fmt.encodeRun(run)
     for i = 1, #(run.rooms or {}) do
         lines[#lines + 1] = fmt.encodeRecord("M", run.rooms[i])
     end
+    for i = 1, #(run.pills or {}) do
+        lines[#lines + 1] = fmt.encodeRecord("P", run.pills[i])
+    end
     return lines
 end
 
 --- 从 store 里解出**单独一局**（这是"按需解码"的入口）
 function fmt.decodeRun(store, entry)
     need()
-    local run = { floors = {}, rooms = {} }
+    local run = { floors = {}, rooms = {}, pills = {} }
     for idx = entry.start, entry.start + entry.count - 1 do
         local line = store.lines[idx]
         if line then
@@ -191,6 +194,8 @@ function fmt.decodeRun(store, entry)
                 run.floors[#run.floors + 1] = rec
             elseif scope == "M" then
                 run.rooms[#run.rooms + 1] = rec
+            elseif scope == "P" then
+                run.pills[#run.pills + 1] = rec
             end
         end
     end
@@ -247,6 +252,7 @@ function fmt.splitBlob(blob)
             elseif cur then
                 cur.count = cur.count + 1
                 if scope == "M" then cur.rooms = cur.rooms + 1 end
+                -- P（药丸）行：count 照常 +1，但不算房间
             else
                 warnings[#warnings + 1] = "游离记录（前面没有局头）"
             end

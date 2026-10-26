@@ -2831,3 +2831,28 @@ Successfully uploaded mod 'Highlight Review [EN/CN]' to Steam Workshop
 | 标签 | 上传器补成 `Lua, Items, Active Items, Tweaks, Graphics` |
 
 仓库里的 `mod-review/metadata.xml` 已按实际值抄回（`<id>3827490957</id>`、`version 0.4.1`）。
+## 恢复药丸账单（`feature/pill-ledger-v0.3.2`）
+
+清理旧分支时发现：**药丸账单从来没合进 main**。该分支独有的 `mod-review/core/pills.lua`（72 行）
+在 main 里完全不存在，删分支就等于永久丢弃这个功能。
+
+于是先移植，再清理分支。移植的六处：
+
+| 文件 | 改动 |
+|---|---|
+| `core/pills.lua` | 从分支恢复（72 行白名单，`PILLEFFECT_*` → stat/dir） |
+| `core/schema.lua` | 新增 `P` 作用域（`r`/`f`/`i`/`e`） |
+| `core/fmt.lua` | `encodeRun` 写 `P` 行、`decodeRun` 读回 `run.pills` |
+| `main.lua` | 引入 `core.pills` + `MC_USE_PILL` 回调记录药丸 + `beginRun` 加 `pills = {}` |
+| `core/highlight.lua` | `pillName()` + 生成 `kind = "pills"` 页（次数/占比/提升下降/按层） |
+| `ui/book.lua` | `drawPills()` + 路由 |
+
+冒烟测试：
+
+```
+P 行 2 条；解码 pills=2 条；第一颗 effect=10
+fmt_test PASS；identity_test 30/30
+```
+
+注意：分支里的 `pills.lua` 带 BOM（`Out-File` 写的），luacheck 直接报
+`unexpected symbol near '<\239>'` —— 已去掉 BOM。

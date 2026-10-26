@@ -44,6 +44,8 @@ local dump   = tryRequire("core.dump", "core/dump")
 -- ── 与外部评级 mod 的兼容（Item Weight Editor 会发布 _G.HLR）──
 local itemwatch = tryRequire("core.itemwatch", "core/itemwatch")
 local settings  = tryRequire("core.hlr_settings", "core/hlr_settings")
+local pillmod   = tryRequire("core.pills", "core/pills")
+if pillmod then pcall(pillmod.init) end
 
 --- 读外部评级：读不到就返回 nil，调用方回退官方品质。加载顺序无关。
 local function externalQuality(id)
@@ -578,7 +580,7 @@ local function beginRun(player)
         seq = fmt.nextSeq(state.store),
         id = id, seed = seed, char = char,
         base = 0, final = 0, max = 1, res = 2, t0 = nowSec(), ws = wallText(), hl = 0,
-        floors = {}, rooms = {},
+        floors = {}, rooms = {}, pills = {},
     }
     -- 开局自带道具也算"获得"（角色初始道具、伊甸的随机道具、start with 类 mod 给的东西）
     state.startItems = readCollectibles(player)
@@ -1047,6 +1049,23 @@ add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
 
     if isMainPlayer(player) then beginRun(player) end
     if state.current then flushCurrentRun("开局") end   -- 第一层没换层前也有记录（2026-10-24）
+end)
+
+-- 吃药丸（作者 2026-10-21 定的做法，2026-10-25 恢复）：
+-- 只记 id + 层/房；属性影响靠 core/pills.lua 白名单查表。
+-- 不在这里回读属性——回读会抓到临时/中间值，还会被大药丸/金药丸的倍数搞乱。
+add(ModCallbacks.MC_USE_PILL, function(_, pillEffect, _player, _flags)
+    if not state.current then return end
+    local p = state.pending or {}
+    state.current.pills = state.current.pills or {}
+    state.current.pills[#state.current.pills + 1] = {
+        f = p.f or state.floorDepth or 0,
+        i = p.i or 0,
+        e = pillEffect or -1,
+    }
+    local info = pillmod and pillmod.info(pillEffect)
+    log(string.format("[PILL] effect=%s stat=%s dir=%s",
+        tostring(pillEffect or -1), info and info.stat or "-", info and tostring(info.dir) or "-"))
 end)
 
 add(ModCallbacks.MC_POST_NEW_LEVEL, function()

@@ -13,6 +13,10 @@
 -- ============================================================================
 local highlight = {}
 
+-- 药丸白名单（可选依赖：拿不到就不显示药丸页的属性统计）
+local pillModule = nil
+pcall(function() pillModule = require("core.pills") end)
+
 local DEFAULT_CFG = {
     powerTopN  = 3,      -- 战力提升收录几条
     q4MaxPages = 3,      -- 四级道具最多几页
@@ -86,6 +90,17 @@ function highlight.bossName(code, useEn)
 end
 
 highlight.RESULT_NAMES = { [0] = "死亡", [1] = "通关", [2] = "未完成" }
+
+--- 药丸效果名（作者：吃药丸必然有效果，不做"未鉴定"区分）
+function highlight.pillName(effectId, useEn)
+    local effect = tonumber(effectId) or -1
+    local ok, nm = pcall(function()
+        local cfg = Isaac.GetItemConfig():GetPillEffect(effect)
+        return cfg and cfg.Name
+    end)
+    if ok and nm and nm ~= "" then return tostring(nm) end
+    return (useEn and "Pill #" or "药丸 #") .. tostring(effect)
+end
 
 function highlight.resultName(r)
     return highlight.RESULT_NAMES[r] or ("res" .. tostring(r))
@@ -386,6 +401,62 @@ function highlight.analyze(run, cfg)
         q0 = (cfg.showQ0 ~= false) and q0Items or {},
     }
     table.insert(book.pages, 1, finale)
+
+    -- 3.6) 药丸账单（2026-10-25 从 feature/pill-ledger-v0.3.2 恢复）
+    -- 只记 id，影响靠 core/pills.lua 白名单查表；只给次数不给数值
+    local pills = run.pills or {}
+    if #pills > 0 then
+        local PMOD = nil
+        pcall(function() PMOD = require("core.pills") end)
+        if not PMOD then PMOD = pillModule end
+
+        local counts = {}
+        local affected, upTotal, downTotal = 0, 0, 0
+        local byFloor, floorOrder = {}, {}
+
+        for i = 1, #pills do
+            local pl = pills[i]
+            local info = PMOD and PMOD.info(pl.e)
+            local f = num(pl.f)
+
+            local row = byFloor[f]
+            if not row then
+                row = { f = f, n = 0, affected = 0 }
+                byFloor[f] = row
+                floorOrder[#floorOrder + 1] = f
+            end
+            row.n = row.n + 1
+
+            if info then
+                affected = affected + 1
+                row.affected = row.affected + 1
+                local c = counts[info.stat]
+                if not c then c = { up = 0, down = 0 }; counts[info.stat] = c end
+                if info.dir >= 0 then
+                    c.up = c.up + 1
+                    upTotal = upTotal + 1
+                else
+                    c.down = c.down + 1
+                    downTotal = downTotal + 1
+                end
+            end
+        end
+        table.sort(floorOrder)
+
+        local floors = {}
+        for i = 1, #floorOrder do floors[i] = byFloor[floorOrder[i]] end
+
+        table.insert(book.pages, 2, {
+            kind     = "pills",
+            title    = "药丸账单",
+            total    = #pills,
+            affected = affected,
+            counts   = counts,
+            up       = upTotal,
+            down     = downTotal,
+            floors   = floors,
+        })
+    end
 
     -- 3.8) 战力跃迁页（作者 2026-10-22）：替代原来的 Top3/四级/零级三页
     book.pages[#book.pages + 1] = {

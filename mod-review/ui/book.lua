@@ -615,6 +615,68 @@ local function drawOverview(s, bk, entry)
 end
 
 --- 「终极Boss与终极道具」页：Boss 战斗时间 + 四级图标 + 零级图标
+--- 「药丸账单」页：整局吃药丸的影响（只计次数，不给数值），按层汇总
+local function drawPills(s, bk, idx)
+    local p = bk.pages[idx]
+    if not p then footer(s, "empty"); return end
+    local cn = getCJK()
+
+    title(s, p.title or (cn and "药丸账单" or "PILL LEDGER"),
+        string.format("%d/%d", 1 + idx, bk.pageCount))
+
+    local y = PADY + 28
+    local total = p.total or 0
+    local affected = p.affected or 0
+    local pct = (total > 0) and math.floor(affected * 100 / total + 0.5) or 0
+
+    txt(string.format(cn and "本局共吃 %d 颗，其中 %d 颗影响属性（%d%%）"
+                      or "%d pills, %d affect stats (%d%%)", total, affected, pct),
+        (PADX + 12) * s, y * s, s * 0.62, INK)
+    y = y + 18
+
+    local ORDER = { "rg", "ts", "mv", "lk", "hp" }
+    local NAME = {
+        rg = cn and "射程" or "Range", ts = cn and "攻速" or "Tears",
+        mv = cn and "移速" or "Speed", lk = cn and "幸运" or "Luck",
+        hp = cn and "红心" or "HP",
+    }
+    local counts = p.counts or {}
+
+    local ups, downs = {}, {}
+    for _, k in ipairs(ORDER) do
+        local c = counts[k]
+        if c then
+            if (c.up or 0) > 0 then ups[#ups + 1] = string.format("%s x%d", NAME[k] or k, c.up) end
+            if (c.down or 0) > 0 then downs[#downs + 1] = string.format("%s x%d", NAME[k] or k, c.down) end
+        end
+    end
+
+    txt((cn and "提升   " or "UP     ") .. (#ups > 0 and table.concat(ups, "   ") or (cn and "无" or "none")),
+        (PADX + 12) * s, y * s, s * 0.6, #ups > 0 and INK_UP or INK_DIM)
+    y = y + 14
+    txt((cn and "下降   " or "DOWN   ") .. (#downs > 0 and table.concat(downs, "   ") or (cn and "无" or "none")),
+        (PADX + 12) * s, y * s, s * 0.6, #downs > 0 and INK_DN or INK_DIM)
+    y = y + 14
+    txt(string.format(cn and "结论   提升 %d 次 / 下降 %d 次" or "VERDICT   %d up / %d down",
+        p.up or 0, p.down or 0), (PADX + 12) * s, y * s, s * 0.58, INK_DIM)
+    y = y + 20
+
+    local floors = p.floors or {}
+    if #floors > 0 then
+        txt(cn and "按层" or "BY FLOOR", (PADX + 12) * s, y * s, s * 0.56, INK_DIM)
+        y = y + 13
+        for i = 1, math.min(#floors, 9) do
+            local f = floors[i]
+            txt(string.format("F%-2d  %2d %s   %s %d", f.f or 0, f.n or 0,
+                cn and "颗" or "pills", cn and "影响" or "affect", f.affected or 0),
+                (PADX + 14) * s, y * s, s * 0.58, INK)
+            y = y + 12
+        end
+    end
+
+    footer(s, cn and "← → 翻页    ESC 返回    F5 关闭" or "L/R PAGE    ESC BACK    F5 CLOSE")
+end
+
 local function drawFinale(s, bk, idx)
     local p = bk.pages[idx]
     if not p then footer(s, "empty"); return end
@@ -902,6 +964,8 @@ local function render()
         local pg = bk.pages[page - 1]
         if pg and pg.kind == "finale" then
             drawFinale(s, bk, page - 1)
+        elseif pg and pg.kind == "pills" then
+            drawPills(s, bk, page - 1)
             elseif pg and pg.kind == "jumps" then
                 drawJumps(s, bk, page - 1)
         else
