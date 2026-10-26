@@ -2,6 +2,7 @@
 <metadata>
     <name>Highlight Review [EN/CN]</name>
     <directory>highlight-review</directory>
+    <id>3827490957</id>
     <description>本MOD刚需 REPENTOGON。每局结束（或局中任何时候）按 F5，翻一本「高光回顾」：这局战力到底在哪一层、哪一间房起飞的，拿了什么。
 
 【局内 HUD】
@@ -103,8 +104,11 @@ In practice it works with everything - whatever mod you play, just open it.
 Requires REPENTOGON.
 
 Source and issue tracker: https://github.com/miopasss/isaac-highlight-review</description>
-    <version>0.4.0</version>
-    <visibility>Private</visibility>
+    <version>0.4.1</version>
+    <visibility>Public</visibility>
     <tag id="Lua"/>
+    <tag id="Items"/>
+    <tag id="Active Items"/>
     <tag id="Tweaks"/>
+    <tag id="Graphics"/>
 </metadata>

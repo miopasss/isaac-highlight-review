@@ -2794,3 +2794,27 @@ local sec = (sum / n) / 1000
 ```
 
 描述里也补上「平均用时」（中英各一处），之前为避免描述与实现不一致，那一句是留空的。
+## 高光回顾已发布到创意工坊
+
+```
+Processing 'highlight-review/metadata.xml'... Success
+Ready to upload mod 'Highlight Review [EN/CN]'
+Successfully uploaded mod 'Highlight Review [EN/CN]' to Steam Workshop
+```
+
+- **工坊 ID：`3824312517`**
+- 页面：https://steamcommunity.com/sharedfiles/filedetails/?id=3824312517
+- 版本 `0.4.0`，可见性 `Private`，标签 `Lua, Tweaks`
+
+### `<id>` 已抄回仓库
+
+上传器会往 `mods\highlight-review\metadata.xml` 写 `<id>3824312517</id>`。
+已把部署版整份复制回 `mod-review/metadata.xml`，否则下次 `deploy.ps1` 会覆盖它，
+再上传就不是更新而是**创建重复条目**。
+
+### 两个 mod 的工坊状态
+
+| mod | 工坊 id | 版本 |
+|---|---|---|
+| Item Weight Editor | `3824170209` | 0.1.1 |
+| Highlight Review | `3824312517` | 0.4.0 |
