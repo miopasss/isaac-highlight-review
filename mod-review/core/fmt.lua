@@ -208,6 +208,7 @@ local function newEntry(run, start, count)
     return {
         seq   = run.seq or 0,
         id    = run.id or "?",
+        seed  = run.seed or 0,   -- 按种子去重用（作者 2026-10-26 定）
         res   = run.res or 2,
         max   = run.max or 0,
         base  = run.base or 0,
@@ -355,6 +356,19 @@ function fmt.nextSeq(store)
 end
 
 --- 找"最近一局且未完成"（Save & Quit 续接用）
+--- 按种子找已有条目（落盘时替换用，避免同局存成多份）
+function fmt.findBySeed(store, seed)
+    need()
+    if not store or not store.index then return nil end
+    seed = tonumber(seed) or 0
+    if seed == 0 then return nil end
+    for i = 1, #store.index do
+        if (tonumber(store.index[i].seed) or 0) == seed then return store.index[i] end
+    end
+    return nil
+end
+
+
 function fmt.findUnfinished(store)
     if not store or not store.index then return nil end   -- 空存档：没有未完成的局
     local best = nil
@@ -390,21 +404,24 @@ end
 function fmt.dedupe(store)
     need()
     if not store or not store.index then return 0 end
+    -- 按**种子**去重（作者 2026-10-26 定）：同种子只留记录行数最多的那条。
+    -- 每次落盘都会重写整局，所以后一条是前一条的超集；R 重开同种子会合并掉旧的（作者接受）。
+    -- 种子为 0（读不到）时退回按 id，避免把所有无种子局合并成一条。
     local best, doomed = {}, {}
     for i = 1, #store.index do
         local e = store.index[i]
-        local prev = best[e.id]
+        local key = (tonumber(e.seed) or 0) ~= 0 and ("s" .. tostring(e.seed)) or ("i" .. tostring(e.id))
+        local prev = best[key]
         if not prev then
-            best[e.id] = e
+            best[key] = e
         elseif e.count > prev.count then
             doomed[#doomed + 1] = prev
-            best[e.id] = e
+            best[key] = e
         else
             doomed[#doomed + 1] = e
         end
     end
     if #doomed == 0 then return 0 end
-    -- 从后往前删，避免前面的 start 偏移失效
     table.sort(doomed, function(a, b) return a.start > b.start end)
     for _, e in ipairs(doomed) do fmt.removeEntry(store, e) end
     return #doomed

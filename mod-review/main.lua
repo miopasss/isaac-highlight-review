@@ -590,10 +590,11 @@ end
 --- 把"正在进行的局"刷进 store 并落盘。换层是天然检查点，崩溃最多丢一层。
 local function flushCurrentRun(reason)
     local run = state.current
-    if not run or not state.store then return end
-    if state.currentEntry then fmt.removeEntry(state.store, state.currentEntry) end
+        if not run or not state.store then return end
+    -- 按**种子**替换旧条目：不再只依赖 state.currentEntry（读档/切槽后会失效，2026-10-26 实测存出 5 个同局空壳）
+    local old = fmt.findBySeed(state.store, run.seed)
+    if old then fmt.removeEntry(state.store, old) end
     state.currentEntry = fmt.appendRun(state.store, run)
-    saveData()
     log("检查点落盘（" .. tostring(reason) .. "）：" .. #(run.rooms or {}) .. " 房 / " ..
         #(run.floors or {}) .. " 层")
 end
