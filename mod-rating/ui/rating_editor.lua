@@ -114,6 +114,16 @@ local function heldIds()
     return out
 end
 
+--- 稳定名字（英文名，语言无关）：mod 增删导致 id 漂移时，靠它在加载时重新对上
+local function stableName(id)
+    local ok, nm = pcall(function()
+        local cfg = Isaac.GetItemConfig():GetCollectible(id)
+        return cfg and cfg.Name
+    end)
+    if ok and nm and nm ~= "" then return tostring(nm) end
+    return nil
+end
+
 local function label(id)
     return string.format("%d  %s", id, shownName(id))
 end
@@ -342,7 +352,7 @@ local function buildUI()
             local v = pickNum(a, b)
             if not curId or not v then return end
             if v < 0 then v = 0 elseif v > 4.99 then v = 4.99 end
-            deps.rating.set(curId, v, nil, nil)
+            deps.rating.set(curId, v, nil, nil, stableName(curId))
             dirty = true
             pushValues(); refreshInfo(); refreshLists()
         end, 0.0, 0.01, 0.05, "%.2f")
@@ -353,7 +363,7 @@ local function buildUI()
             local v = pickNum(a, b)
             if not curId or not v then return end
             if v < 0 then v = 0 elseif v > 5 then v = 5 end
-            deps.rating.set(curId, nil, v, nil)
+            deps.rating.set(curId, nil, v, nil, stableName(curId))
             dirty = true
             pushValues(); refreshInfo(); refreshLists()
         end, 1.0, 0.05, 0.1, "%.2f")
@@ -376,7 +386,7 @@ local function buildUI()
             if not curId then return end
             local e = deps.rating.entries[curId]
             local on = not (e and e.on == false)
-            deps.rating.set(curId, nil, nil, not on)
+            deps.rating.set(curId, nil, nil, not on, stableName(curId))
             pushValues(); refreshInfo(); refreshLists()
             if deps.onChanged then deps.onChanged() end
         end)

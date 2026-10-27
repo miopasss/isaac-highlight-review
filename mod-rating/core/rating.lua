@@ -85,7 +85,7 @@ end
 --- 写一条覆盖（改什么传什么，其余保持不变）。
 --- 注意："停用"不是"删除"——停用保留数值只关掉生效，删除请用 R.clear。
 --- 三个参数全为 nil 时才当作删除。
-function R.set(id, q, w, on)
+function R.set(id, q, w, on, name)
     if not id then return end
 
     local cur = R.entries[id]
@@ -101,10 +101,14 @@ function R.set(id, q, w, on)
     end
     cur = cur or {}
 
+    -- 名字也要存：mod 增删会让道具 id 漂移，加载时靠名字重新对上（2026-10-26）
+    local nm = cur.n
+    if name ~= nil and #tostring(name) > 0 then nm = tostring(name) end
     R.entries[id] = {
         q  = q or cur.q or 0,
         w  = w or cur.w or 1,
         on = (on == nil) and (cur.on ~= false) or (on and true or false),
+        n  = nm,
     }
     R.dirty = true
 end
@@ -129,6 +133,26 @@ function R.load(store)
     R.entries = {}
     if not store or not store.lines then return end
 
+    -- mod 增删会让道具 id 漂移 → 用存下来的名字（n）把条目重新对到当前 id
+    local function remapByName()
+        if type(Isaac) ~= "table" or type(Isaac.GetItemIdByName) ~= "function" then return 0 end
+        local moved = 0
+        local list = {}
+        for id, e in pairs(R.entries) do list[#list + 1] = { id = id, e = e } end
+        for i = 1, #list do
+            local id, e = list[i].id, list[i].e
+            if type(e.n) == "string" and #e.n > 0 then
+                local ok, cur = pcall(function() return Isaac.GetItemIdByName(e.n) end)
+                if ok and type(cur) == "number" and cur > 0 and cur ~= id and R.entries[cur] == nil then
+                    R.entries[cur] = e
+                    if R.entries[id] == e then R.entries[id] = nil end
+                    moved = moved + 1
+                end
+            end
+        end
+        return moved
+    end
+
     local function tryPrefix(prefix)
         for i = 1, #store.lines do
             local line = store.lines[i]
@@ -144,6 +168,7 @@ function R.load(store)
     local cur, curOk = tryPrefix(R.PREFIX)
     if curOk and cur and next(cur) ~= nil then
         R.entries = cur
+        if remapByName() > 0 then R.dirty = true end
         R.loaded = true
         return
     end
@@ -152,6 +177,7 @@ function R.load(store)
     local bak, bakOk = tryPrefix(R.BAK)
     if bakOk and bak and next(bak) ~= nil then
         R.entries = bak
+        if remapByName() > 0 then R.dirty = true end
         R.loaded = true
         return
     end

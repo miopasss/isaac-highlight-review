@@ -38,6 +38,11 @@ function J.encode(entries)
         local e = entries[id]
         local fields = { '"q":' .. num(e.q or 0), '"w":' .. num(e.w or 1) }
         if e.on == false then fields[#fields + 1] = '"on":false' end
+            -- n = 道具名（英文名，语言无关）。mod 增删会让 id 漂移，靠它在加载时重新对上
+            if type(e.n) == "string" and #e.n > 0 then
+                local esc = e.n:gsub('\\', '\\\\'):gsub('"', '\\"')
+                fields[#fields + 1] = '"n":"' .. esc .. '"'
+            end
         parts[#parts + 1] = '"' .. tostring(id) .. '":{' .. table.concat(fields, ",") .. '}'
     end
     return '{"v":1,"e":{' .. table.concat(parts, ",") .. '}}'
@@ -58,7 +63,8 @@ function J.decode(s)
             local q = tonumber(body:match('"q"%s*:%s*(%-?[%d%.eE%+]+)')) or 0
             local w = tonumber(body:match('"w"%s*:%s*(%-?[%d%.eE%+]+)')) or 1
             local on = body:match('"on"%s*:%s*false') == nil
-            out[id] = { q = q, w = w, on = on }
+                local nm = body:match('"n"%s*:%s*"([^"]*)"')
+                out[id] = { q = q, w = w, on = on, n = nm }
         end
     end
     return out
