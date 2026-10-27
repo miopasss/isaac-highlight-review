@@ -864,9 +864,9 @@ local function settleRoom(player)
     local msClearFx = p.tClear and (p.tClear - (p.tIn or p.tClear)) or nil
     local msExitGm = tOutGm - (p.tInGame or tOutGm)
     local msClearGm = p.tClearGame and (p.tClearGame - (p.tInGame or p.tClearGame)) or nil
-    local msFinal = msClearFx or msExitFx
+    local msFinal = math.floor((msClearFx or msExitFx) + 0.5)   -- 取整：GetTime 可能返回小数，%d 会炸
     if config.timeProbe then
-        log(string.format("[TIME] 帧: 清房=%s 出房=%s | 游戏: 清房=%s 出房=%s | 采用=%d",
+        log(string.format("[TIME] 帧: 清房=%s 出房=%s | 游戏: 清房=%s 出房=%s | 采用=%dms",
             msClearFx and string.format("%.1fs", msClearFx / 1000) or "-",
             string.format("%.1fs", msExitFx / 1000),
             msClearGm and string.format("%.1fs", msClearGm / 1000) or "-",
@@ -1087,6 +1087,19 @@ end)
 if configui.isReady() then log("ImGui 配置菜单已挂上") else log("ImGui 不可用（或挂载失败），跳过配置菜单") end
 
 add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
+    -- 一次性：导出 700~2600 的 id→名字 对照，用来修被 mod 漂移弄乱的评级配置
+    if config.dumpItemIds then
+        local cfg0 = Isaac.GetItemConfig()
+        if cfg0 then
+            for id = 700, 2600 do
+                local ok, c = pcall(function() return cfg0:GetCollectible(id) end)
+                if ok and c and c.Name and c.Name ~= "" then
+                    log(string.format("[IDS] %d\t%s\t%s", id, tostring(c.Name), tostring(c.ModName or "")))
+                end
+            end
+            log("[IDS] 导出结束")
+        end
+    end
     state.store = nil
     state.runActive = true
     state.loaded = false

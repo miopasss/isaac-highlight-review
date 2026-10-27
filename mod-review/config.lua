@@ -42,6 +42,7 @@ config.selfTest = false
 -- 是否在本次会话第一次进房时，把"游戏实际能给的字段"全量导出到日志
 -- （道具全表 + 当前房间全字段 + 道具池探针）
 config.dumpOnce = true
+config.dumpItemIds = false   -- 一次性：导出 id→名字 对照（修评级配置用）
 
 -- 是否记录房间里的"道具座"坐标。
 -- ⚠️ 实测发现：Data.Spawns 包含的是**所有**刷怪点（怪物、掉落、家具…），

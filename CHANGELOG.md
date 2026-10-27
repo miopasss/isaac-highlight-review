@@ -3052,3 +3052,74 @@ Q={"v":1,"e":{"1074":{"q":3,"w":0.5},"1694":{...}}}
 
 - **旧条目没有名字**，只能等下次在编辑器里改它时才会补上；在此之前 mod 变动仍会错位
 - 道具名解析失败（mod 被卸载）时保持原 id 不动
+## 修好作者存档里被 mod 漂移弄乱的 8 条配置（实测验证）
+
+### 导出当前 id 表
+
+临时探针（`config.dumpItemIds`）在 `PLAYER_INIT` 导出 700~2600 的 `id → 名字`：
+
+```
+[IDS] 975	Peerless Elixir	
+[IDS] 1021	Mountain Ear	
+...
+导出 1928 条
+```
+
+对照 `_logs/items.lua`（配置写入时的旧 id），算出漂移量：
+
+| 名字 | 旧 id | 当前 id |
+|---|---|---|
+| Tooth of the Vampire | 1052 | **953** |
+| Peerless Elixir | 1074 | **975** |
+| Robe of Firerat | 1077 | **978** |
+| Mountain Ear | 1120 | **1021** |
+| Exchange Ticket | 1166 | **1067** |
+| Broken Calendar | 1197 | **1098** |
+| 字刀 | 1382 | **1283** |
+| 龙之歌 | 1491 | **1392** |
+| 亚波伦之翼 | 1598 | **1499** |
+| 胜者之弹 | 1664 | **1565** |
+| OvO | 1694 | **1595** |
+
+### 重写存档
+
+`save1` 5 条、`save3` 19 条，全部按名字迁到新 id 并写上 `"n"` 字段；
+原版道具（id < 732）不动。备份在 `_backup\rating-idfix-20261028-045841\`。
+
+### 中途踩的两个坑
+
+**① `%d` 收到浮点数** —— 新加的清房计时探针用 `Isaac.GetTime()`（小数）喂 `%d`：
+
+```
+main.lua:869: bad argument #6 to 'format' (number has no integer representation)
+```
+
+每进出一次房间就抛一次，`settleRoom` 直接中断（房间记录丢失）。
+修法：`msFinal = math.floor(... + 0.5)`。
+
+**② PowerShell 写 JSON 写出了反引号** —— 手工拼 JSON 时长这样：
+
+```
+"953":{"q":2.25,"w":0,`"on`":false,`"n`":`"Tooth of the Vampire`"}
+```
+
+反引号让 JSON 非法，下次加载会**整份丢弃**。已用 `jsonmini` 重新编解码修复
+（现在两档都是合法 JSON，5 / 19 条完整）。
+
+### 进游戏验证
+
+```
+[WEIGHT] loaded v0.1.3 (REPENTOGON=true)
+[WEIGHT] 载入 5 条评级配置 / 3 行
+编辑器官网打开正常，「已修改」显示 1 The Sad Onion 评级 4.00
+报错：无
+```
+
+探针同时验证了清房计时：
+
+```
+[TIME] 帧: 清房=- 出房=0.3s | 游戏: 清房=- 出房=0.8s | 采用=267ms
+```
+
+注意：同一区间帧数 0.3s、`Isaac.GetTime()` 0.8s —— 两者差 2.6 倍，
+说明 `GetTime` 不是"本房间耗时"的可靠来源（待进一步确认）。
