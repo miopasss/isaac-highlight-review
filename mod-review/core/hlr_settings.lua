@@ -10,6 +10,7 @@
 local S = {}
 
 S.PREFIX = "C="
+S.PREFIX_BAK = "C0="   -- 一代备份行：保存前把上一版 C= 存成 C0=（2026-10-26）
 
 S.defaults = {
     f5   = 294,     -- Keyboard.KEY_F5
@@ -43,23 +44,32 @@ end
 function S.load(store)
     S.init()
     if not store or not store.lines then return end
-    for i = 1, #store.lines do
-        local line = store.lines[i]
-        if line:sub(1, #S.PREFIX) == S.PREFIX then
-            local body = line:sub(#S.PREFIX + 1)
-            -- 字符串值："key":"value"
-            for k, v in body:gmatch('"([%w_]+)"%s*:%s*"([^"]*)"') do
-                if S.defaults[k] then S.values[k] = v end
+
+    local function parseBody(body)
+        for k, v in body:gmatch('"([%w_]+)"%s*:%s*"([^"]*)"') do
+            if S.defaults[k] then S.values[k] = v end
+        end
+        for k, v in body:gmatch('"([%w_]+)"%s*:%s*(%-?%d+%.?%d*)') do
+            if S.defaults[k] and type(S.defaults[k]) == "number" then
+                S.values[k] = tonumber(v)
             end
-            -- 数字值："key":123
-            for k, v in body:gmatch('"([%w_]+)"%s*:%s*(%-?%d+%.?%d*)') do
-                if S.defaults[k] and type(S.defaults[k]) == "number" then
-                    S.values[k] = tonumber(v)
-                end
-            end
-            return
         end
     end
+
+    local function findLine(prefix)
+        for i = 1, #store.lines do
+            local line = store.lines[i]
+            if line:sub(1, #prefix) == prefix then return line:sub(#prefix + 1) end
+        end
+        return nil
+    end
+
+    local body = findLine(S.PREFIX)
+    if body then parseBody(body); return end
+
+    -- C= 丢了 → 用一代备份 C0=（配置被清空时能自愈）
+    body = findLine(S.PREFIX_BAK)
+    if body then parseBody(body) end
 end
 
 local function encodeValue(k)
@@ -71,10 +81,12 @@ end
 --- 写回 store.lines（先删旧的 C= 行）。返回是否变化
 function S.save(store)
     if not store or not store.lines then return false end
-    local kept, before = {}, nil
+    local kept, before, beforeBak = {}, nil, nil
     for i = 1, #store.lines do
         local line = store.lines[i]
-        if line:sub(1, #S.PREFIX) == S.PREFIX then
+        if line:sub(1, #S.PREFIX_BAK) == S.PREFIX_BAK then
+            beforeBak = line
+        elseif line:sub(1, #S.PREFIX) == S.PREFIX then
             before = line
         else
             kept[#kept + 1] = line
@@ -97,6 +109,12 @@ function S.save(store)
     end
     local after = S.PREFIX .. "{" .. table.concat(parts, ",") .. "}"
 
+    -- 一代备份：上一版 C= 存成 C0=（只留一条）
+    if before and before ~= after then
+        kept[#kept + 1] = S.PREFIX_BAK .. before:sub(#S.PREFIX + 1)
+    elseif beforeBak then
+        kept[#kept + 1] = beforeBak
+    end
     store.lines = kept
     store.lines[#store.lines + 1] = after
     return before ~= after

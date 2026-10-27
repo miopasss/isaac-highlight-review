@@ -168,10 +168,13 @@ function R.save(store)
     local lines, kept = store.lines, {}
     local before = nil
     for i = 1, #lines do
-        if lines[i]:sub(1, #R.PREFIX) == R.PREFIX then
-            before = lines[i]
+        local line = lines[i]
+        if line:sub(1, #R.BAK) == R.BAK then
+            -- 旧的 Q0 丢弃：每次保存都会重写一条，不丢会无限累积（实测 16 条）
+        elseif line:sub(1, #R.PREFIX) == R.PREFIX then
+            before = line
         else
-            kept[#kept + 1] = lines[i]
+            kept[#kept + 1] = line
         end
     end
 
@@ -180,7 +183,7 @@ function R.save(store)
         after = R.PREFIX .. J.encode(R.entries)
     end
 
-    -- 一代备份：把这一版 Q= 变成 Q0=，再写新的 Q=
+    -- 一代备份：把上一版 Q= 存成 Q0=；**旧的 Q0 先全部删掉**（否则每保存一次多一行）
     if before and before ~= after then
         kept[#kept + 1] = R.BAK .. before:sub(#R.PREFIX + 1)
     end
