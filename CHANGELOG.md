@@ -2979,3 +2979,35 @@ rating_test 25/25；luacheck 25 文件 0 失败
 代码注释里写着「GetTime 不可靠」，所以先对照再决定要不要切换时钟。
 
 开关：`config.timeProbe = true`（默认开，查完可关）。
+## 修：首房起始道具未记录 + 飞行判定探针
+
+### ① 一直持有的四级道具没记录（真 bug）
+
+实测最近三局：**第一间房的道具列表全是空**。
+
+```
+seq29  首房 it: 空
+seq30  首房 it: 空
+seq31  首房 it: 空
+```
+
+原因：`state.startItems` 在 `MC_POST_PLAYER_INIT` 里读取，**那一刻玩家还没拿到起始道具**
+（D6、mod 的初始道具都是在这之后才挂上）。所以 `#st == 0`，首房什么也不记，
+「开局自带/一直持有的道具」永远进不了册子。
+
+修法：出第一间房时若 `startItems` 为空，用**当前持有**补一次。
+
+### ② 飞行判定
+
+原来是 `player.CanFly and true or false`。如果 `CanFly` 在这个 REPENTOGON 版本里是**方法**
+而不是字段，取到的是函数对象 → 恒为真 → 「总是会飞」。
+
+改成类型自适应：
+
+```lua
+local ft = type(player.CanFly)
+local fv = (ft == "function") and (player:CanFly()) or player.CanFly
+s.canFly = (fv == true)
+```
+
+并加一次性探针：`[FLY] type=boolean 求值=true → canFly=true`，确认到底是哪种。

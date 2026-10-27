@@ -388,7 +388,22 @@ local function snapshot(player)
     pcall(function()
         s.damage       = player.Damage or 0
         s.maxFireDelay = player.MaxFireDelay or 10
-        s.canFly       = player.CanFly and true or false
+        -- 飞行：CanFly 可能是字段也可能是方法（REPENTOGON 版本差异），自适应 + 一次性探针
+        do
+            local ft = type(player.CanFly)
+            local fv = nil
+            if ft == "function" then
+                local ok, r = pcall(function() return player:CanFly() end)
+                fv = ok and r or false
+            else
+                fv = player.CanFly
+            end
+            s.canFly = (fv == true)
+            if not state.flyProbed then
+                state.flyProbed = true
+                log(string.format("[FLY] type=%s 求值=%s → canFly=%s", ft, tostring(fv), tostring(s.canFly)))
+            end
+        end
     end)
     s.explode   = hasExplosionImmunity(player)
     s.form      = detectForm(player)
@@ -735,6 +750,9 @@ local function settleRoom(player)
     if firstRoom then
         gained = {}
         local st = state.startItems or {}
+        -- 兜底：beginRun 那一刻玩家还没拿到起始道具（D6 / mod 初始道具都在这之后挂上），
+        -- 所以 startItems 往往是空的。出第一间房时用当前持有补一次（2026-10-26）
+        if #st == 0 then st = items end
         for k = 1, #st do gained[k] = st[k] end
     end
     -- 扫描降级路径：HasCollectible 会误报（见 docs/PERFORMANCE.md §1.1）
