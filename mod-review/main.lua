@@ -399,10 +399,6 @@ local function snapshot(player)
                 fv = player.CanFly
             end
             s.canFly = (fv == true)
-            if not state.flyProbed then
-                state.flyProbed = true
-                log(string.format("[FLY] type=%s 求值=%s → canFly=%s", ft, tostring(fv), tostring(s.canFly)))
-            end
         end
     end)
     s.explode   = hasExplosionImmunity(player)
@@ -733,7 +729,6 @@ local function settleRoom(player)
         local n = #items
         local prev = state.lastItemCount or 0
         if n - prev >= 20 then
-            log(string.format("[PROBE] 持有数 %d → %d（+%d），疑似误报", prev, n, n - prev))
         end
         state.lastItemCount = n
     end
@@ -1121,9 +1116,6 @@ add(ModCallbacks.MC_USE_PILL, function(_, pillEffect, _player, _flags)
         i = p.i or 0,
         e = pillEffect or -1,
     }
-    local info = pillmod and pillmod.info(pillEffect)
-    log(string.format("[PILL] effect=%s stat=%s dir=%s",
-        tostring(pillEffect or -1), info and info.stat or "-", info and tostring(info.dir) or "-"))
 end)
 
 add(ModCallbacks.MC_POST_NEW_LEVEL, function()
@@ -1232,7 +1224,6 @@ add(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function()
                 if b and b ~= 0 then state.pending.bossIn = b end   -- 只在取到非 0 时覆盖（清房瞬间可能返回 0）
                 local u = ultimateBossNow()
                 if u and u ~= 0 then state.pending.ubIn = u end
-                log(string.format("[BOSSCLEAR] type=%d boss=%d ub=%d", t, state.pending.bossIn, state.pending.ubIn))
             end
         end
 end)

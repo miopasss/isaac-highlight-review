@@ -3123,3 +3123,30 @@ main.lua:869: bad argument #6 to 'format' (number has no integer representation)
 
 注意：同一区间帧数 0.3s、`Isaac.GetTime()` 0.8s —— 两者差 2.6 倍，
 说明 `GetTime` 不是"本房间耗时"的可靠来源（待进一步确认）。
+## 关掉所有诊断探针（作者 2026-10-28）
+
+进游戏验证：**探针行一条都没有**，正常日志还在。
+
+| 探针 | 处理 |
+|---|---|
+| `config.timeProbe`（`[TIME]` 双时钟对照） | `true` → **`false`** |
+| `config.dumpOnce`（几百行 `[DUMP]` 数据面板） | `true` → **`false`** |
+| `config.dumpItemIds`（1900+ 行 `[IDS]`） | 已是 `false` |
+| `[FLY]` 飞行判定类型探针 | 删除（自适应逻辑保留） |
+| `[PROBE]` 持有列表暴涨诊断 | 删除（守卫逻辑保留） |
+| `[BOSSCLEAR]` Boss 清房诊断 | 删除 |
+| `[PILL]` 药丸 effect 诊断 | 删除 |
+| 评级编辑器 `[WEIGHT] 持有 N 件` | 删除 |
+
+保留的正常日志：`loaded` / `载入 N 条评级配置` / `[UI]` / 每间房一行 `F1-03 ...` / `落盘 OK`。
+
+验证输出：
+
+```
+探针行：✔ 一条都没有
+正常日志：[WEIGHT] 载入 5 条评级配置 / 2 行
+          [HIGHLIGHT] F1-03 型01 形1  9.55 -> 9.55 ... 0.3s
+报错：✔ 无
+```
+
+单测：`fmt_test PASS`、`identity_test 30/30`、`rating_test 25/25`。

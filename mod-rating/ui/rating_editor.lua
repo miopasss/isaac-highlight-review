@@ -248,7 +248,6 @@ local function refreshLists()
     if deps and deps.log and #ids > 0 then
         local parts = {}
         for k = 1, #ids do parts[k] = tostring(ids[k]) end
-        deps.log(string.format("[WEIGHT] 持有 %d 件: %s", #ids, table.concat(parts, ",")))
     end
     ownedList = {}
     for i = 1, #ids do ownedList[i] = { id = ids[i], label = label(ids[i]) } end
