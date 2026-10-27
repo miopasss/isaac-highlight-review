@@ -115,6 +115,14 @@ local function nowMs()
 end
 
 local function nowSec() return math.floor(nowMs() / 1000) end
+--- 游戏内时间（毫秒）。REPENTOGON 的 Isaac.GetTime 可能不可靠，
+--- 这里只用于对照探针，取不到就返回 0。
+local function gameTimeMs()
+    local ok, t = pcall(function() return Isaac.GetTime() end)
+    if ok and type(t) == "number" and t >= 0 then return t end
+    return 0
+end
+
 
 --- 墙钟时间文本（"2026/10/22 14:36"）。
 --- 实测：os.time() 被沙盒换成返回 0，但 os.date()（不传时间戳）拿到的是**真实系统时间**
@@ -683,6 +691,7 @@ local function beginRoom(player)
         stIn    = { dv = snap.damage, ts = snap.tears, ss = snap.shotspeed,
                     rg = snap.rangeStat, mv = snap.movespeed, lk = snap.luck },
         tIn = nowMs(),
+        tInGame = gameTimeMs(),   -- 游戏内时间（探针：和帧数对照）
         dmg = 0,
         cleared = false,
     }
@@ -830,6 +839,23 @@ local function settleRoom(player)
     local bossId = p.bossIn or 0
     local firstVisit = p.firstIn or false
 
+    -- 时长：清房即停（有清房时间戳就用它），并打出两种时钟的对照
+    local tOutFx  = nowMs()
+    local tOutGm  = gameTimeMs()
+    local msExitFx = tOutFx - (p.tIn or tOutFx)
+    local msClearFx = p.tClear and (p.tClear - (p.tIn or p.tClear)) or nil
+    local msExitGm = tOutGm - (p.tInGame or tOutGm)
+    local msClearGm = p.tClearGame and (p.tClearGame - (p.tInGame or p.tClearGame)) or nil
+    local msFinal = msClearFx or msExitFx
+    if config.timeProbe then
+        log(string.format("[TIME] 帧: 清房=%s 出房=%s | 游戏: 清房=%s 出房=%s | 采用=%d",
+            msClearFx and string.format("%.1fs", msClearFx / 1000) or "-",
+            string.format("%.1fs", msExitFx / 1000),
+            msClearGm and string.format("%.1fs", msClearGm / 1000) or "-",
+            string.format("%.1fs", msExitGm / 1000),
+            msFinal))
+    end
+
     local rec = {
         r = run.seq, f = p.idx and state.floorDepth or state.floorDepth, i = p.idx,
         t = p.ident.type, s = p.ident.shape, d = p.ident.doors,
@@ -844,7 +870,7 @@ local function settleRoom(player)
         rgo = (p.stIn and p.stIn.rg) or 0, mvo = (p.stIn and p.stIn.mv) or 0,
         lko = (p.stIn and p.stIn.lk) or 0,
         p = p.p, po = snap.power,
-        ms = math.floor(nowMs() - p.tIn),
+        ms = msFinal,   -- 清房即停（没有清房时间戳时退回出房时间）
         dmg = math.floor(p.dmg + 0.5),
         clr = p.cleared,
         it = gained,
@@ -1161,6 +1187,11 @@ end)
 
 add(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function()
     if state.pending then state.pending.cleared = true end
+        -- 清房即停：记下这一刻，结算时用它代替出房时间（作者 2026-10-26）
+        if state.pending and not state.pending.tClear then
+            state.pending.tClear = nowMs()
+            state.pending.tClearGame = gameTimeMs()
+        end
         -- Boss 房：清房这一刻 GetBossID() 才可靠（cuerlib / antibirth music 都是死后才读）
         if state.pending then
             local t = 0
