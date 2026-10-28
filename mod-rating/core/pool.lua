@@ -16,7 +16,7 @@ local P = {}
 P.snap      = {}     -- [poolType] = { [id] = weight }   局开头快照
 P.hasSnap   = false
 P.inCallback = false
-P.maxRetry  = 4
+P.maxRetry  = 16    -- 2026-10-29：4 次太少（小池子反复抽到同一件），提到 16
 P.warnedUp  = false  -- "提高权重未实现"只警告一次
 P.stats     = { reRolled = 0, banned = 0, gaveUp = 0 }
 
@@ -87,6 +87,12 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
     end
     local mul = ratings.getWeightMul(itemID)
     if mul == nil then return nil end              -- 没配置：完全不动
+    -- 埋点（2026-10-28）：权重 <= 0 = 该道具应被完全禁掉。每次抽到都打一行，
+    -- 后面无论重掷成功还是放弃，都能从日志定性"池子给的"还是"别处给的"。
+    if mul <= 0 and log then
+        log(string.format("[BAN] 抽到禁止道具 id=%d pool=%s → 尝试重掷", itemID, tostring(poolType)))
+    end
+
     if mul >= 1 then
         if mul > 1 and not P.warnedUp and log then
             P.warnedUp = true
@@ -114,7 +120,9 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
     P.inCallback = true
     local result = nil
     for i = 1, P.maxRetry do
-        local newSeed = (s + i * 7919) % 2147483647
+        -- 2026-10-29：原来的 s + i*7919 步长固定，容易反复命中同一个 id。
+          -- 改成 LCG 混合（仍完全由 s 决定 → 种子可复现），每次落点更散。
+            local newSeed = (s * 1103515245 + i * 12345 + 7919) % 2147483647
         local ok, alt = pcall(function()
             return pool:GetCollectible(poolType, false, newSeed)
         end)
@@ -133,13 +141,18 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
         -- 验证用日志：权重是否真的在改抽签结果（每局最多 30 行，避免刷屏）
         P.logged = (P.logged or 0) + 1
         if log and P.logged <= 30 then
-            log(string.format("[POOL] 重掷 %d -> %d  （倍数 %.2f）", itemID, result, mul))
+            log(string.format("[POOL] 重掷成功 %d -> %d  （倍数 %.2f）", itemID, result, mul))
         end
         P.stats.reRolled = P.stats.reRolled + 1
         if mul <= 0 then P.stats.banned = P.stats.banned + 1 end
         return result
     end
     P.stats.gaveUp = P.stats.gaveUp + 1
+    -- 埋点（2026-10-28）：重掷失败 = 原道具会照样发出，必须留证据
+    if log then
+        log(string.format("[BAN] 重掷失败 id=%d pool=%s（试了 %d 次没换到）→ 原道具保留",
+            itemID, tostring(poolType), P.maxRetry))
+    end
     return nil
 end
 
