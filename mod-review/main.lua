@@ -860,16 +860,6 @@ local function settleRoom(player)
     local msExitGm = tOutGm - (p.tInGame or tOutGm)
     local msClearGm = p.tClearGame and (p.tClearGame - (p.tInGame or p.tClearGame)) or nil
     local msFinal = math.floor((msClearFx or msExitFx) + 0.5)   -- 取整：GetTime 可能返回小数，%d 会炸
-    -- Boss 房窄探针（作者 2026-10-28）：验证"清房即停"是否生效，其余房间不输出
-    if config.bossProbe ~= false then
-        local rt = tonumber(p.ident and p.ident.type) or 0
-        local isBossRoom = (rt == 5) or (rt == 17) or ((p.ubIn or 0) > 0)
-        if isBossRoom then
-            log(string.format("[BT] 帧: 清房=%s 出房=%.1fs | 采用=%dms",
-                msClearFx and string.format("%.1fs", msClearFx / 1000) or "-",
-                msExitFx / 1000, msFinal))
-        end
-    end
     if config.timeProbe then
         log(string.format("[TIME] 帧: 清房=%s 出房=%s | 游戏: 清房=%s 出房=%s | 采用=%dms",
             msClearFx and string.format("%.1fs", msClearFx / 1000) or "-",

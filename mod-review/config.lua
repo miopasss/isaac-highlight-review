@@ -34,7 +34,6 @@ config.maxBlobBytes = 1200000
 -- 是否往 log.txt 打印采集细节（v0.1 必须开，否则什么都看不见）
 config.debug = true
 config.timeProbe = false  -- 打印房间时长对照（帧数 vs 游戏内时间），默认关
-config.bossProbe = true   -- 只对 Boss 房打印清房/出房时长（验证清房即停，验证完可关）
 
 -- 自测开关（开发用，作者 2026-10-23）：true 时进局后自动逐件给道具 → 记战力 → 再移除。
 -- 结果打在 [HIGHLIGHT] [TEST] 行。**平时必须 false。**
