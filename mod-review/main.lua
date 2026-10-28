@@ -128,7 +128,7 @@ end
 --- 实测：os.time() 被沙盒换成返回 0，但 os.date()（不传时间戳）拿到的是**真实系统时间**
 --- （明日方舟 mod 也这么用：os.date("%Y%m%d") 判每日）。年份合理才认，否则返回 nil。
 local function wallText()
-    local ok, t = pcall(function() return os.date("%Y/%m/%d %H:%M") end)
+    local ok, t = pcall(function() return os.date("%Y-%m-%d %H:%M") end)
     if not ok or type(t) ~= "string" then return nil end
     local y = tonumber(t:sub(1, 4))
     if not y or y < 2001 then return nil end
@@ -399,10 +399,6 @@ local function snapshot(player)
                 fv = player.CanFly
             end
             s.canFly = (fv == true)
-            if not state.flyProbed then
-                state.flyProbed = true
-                log(string.format("[FLY] type=%s 求值=%s → canFly=%s", ft, tostring(fv), tostring(s.canFly)))
-            end
         end
     end)
     s.explode   = hasExplosionImmunity(player)
@@ -733,7 +729,6 @@ local function settleRoom(player)
         local n = #items
         local prev = state.lastItemCount or 0
         if n - prev >= 20 then
-            log(string.format("[PROBE] 持有数 %d → %d（+%d），疑似误报", prev, n, n - prev))
         end
         state.lastItemCount = n
     end
@@ -926,6 +921,7 @@ local function finishRun(result, player)
     local run = state.current
     if not run then return end
     run.res = result
+      run.we = wallText()   -- 结束墙钟时间（作者 2026-10-28 要求，显示在总览）
     if player then run.final = snapshot(player).power end
     state.current = nil
     -- 换层检查点已经把这局写进去过一份，先撤掉，否则同一局会存两条
@@ -1121,9 +1117,6 @@ add(ModCallbacks.MC_USE_PILL, function(_, pillEffect, _player, _flags)
         i = p.i or 0,
         e = pillEffect or -1,
     }
-    local info = pillmod and pillmod.info(pillEffect)
-    log(string.format("[PILL] effect=%s stat=%s dir=%s",
-        tostring(pillEffect or -1), info and info.stat or "-", info and tostring(info.dir) or "-"))
 end)
 
 add(ModCallbacks.MC_POST_NEW_LEVEL, function()
@@ -1232,7 +1225,6 @@ add(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function()
                 if b and b ~= 0 then state.pending.bossIn = b end   -- 只在取到非 0 时覆盖（清房瞬间可能返回 0）
                 local u = ultimateBossNow()
                 if u and u ~= 0 then state.pending.ubIn = u end
-                log(string.format("[BOSSCLEAR] type=%d boss=%d ub=%d", t, state.pending.bossIn, state.pending.ubIn))
             end
         end
 end)
