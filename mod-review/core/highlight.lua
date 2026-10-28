@@ -189,7 +189,21 @@ function highlight.analyze(run, cfg)
         floors = {}, rooms = {}, pages = {},
         statMax = {}, statMin = {}, curve = {},
         ws = run.ws,
-    we = run.we,   -- 结束墙钟（作者 2026-10-28 要求）
+        we = run.we,   -- 结束墙钟（作者 2026-10-28 要求）
+        -- 幸运币（作者 2026-10-29）：捡了会 +1 幸运的金币。用现有数据推：
+        -- 房间金币增量 dc 与幸运增量 dl 同时为正、且 dl <= dc 才算（dl > dc 说明幸运来自别的来源）
+        luckyCoins = (function()
+            local total = 0
+            for k = 1, #(run.rooms or {}) do
+                local rm = run.rooms[k]
+                local dc = num(rm.co) - num(rm.c)
+                local dl = num(rm.lk) - num(rm.lko)
+                if dc >= 1 and dl >= 1 and dl <= dc + 0.001 then
+                    total = total + math.floor(dl + 0.5)
+                end
+            end
+            return total
+        end)(),
     }
 
     -- 1) 展平房间 + 六维进出

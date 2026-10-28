@@ -561,9 +561,10 @@ local function drawOverview(s, bk, entry)
         if at then return string.format("F%d#%d", at.f or 0, at.i or 0) end
         return (L and "有") or "yes"
     end
-    txt(string.format("%s %s   %s %s",
+    txt(string.format("%s %s   %s %s   %s %d",
         ((getCJK() and "飞行") or "FLY"),   capText(bk.flightNow,  bk.flight,  bk.flightStart),
-        ((getCJK() and "防爆") or "BLAST"), capText(bk.explodeNow, bk.explode, bk.explodeStart)),
+        ((getCJK() and "防爆") or "BLAST"), capText(bk.explodeNow, bk.explode, bk.explodeStart),
+        ((getCJK() and "幸运币") or "LUCKY$"), tonumber(bk.luckyCoins) or 0),
         (PADX + 12) * s, y * s, s * 0.54, INK_DIM)
     y = y + 10
 
