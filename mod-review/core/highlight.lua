@@ -196,10 +196,16 @@ function highlight.analyze(run, cfg)
             local total = 0
             for k = 1, #(run.rooms or {}) do
                 local rm = run.rooms[k]
-                local dc = num(rm.co) - num(rm.c)
-                local dl = num(rm.lk) - num(rm.lko)
-                if dc >= 1 and dl >= 1 and dl <= dc + 0.001 then
-                    total = total + math.floor(dl + 0.5)
+                if rm.lc ~= nil then
+                    -- 新版直接计数（CoinSubType.COIN_LUCKYPENNY）
+                    total = total + num(rm.lc)
+                else
+                    -- 旧数据回退：金币增量与幸运增量同时为正且 dl <= dc
+                    local dc = num(rm.co) - num(rm.c)
+                    local dl = num(rm.lk) - num(rm.lko)
+                    if dc >= 1 and dl >= 1 and dl <= dc + 0.001 then
+                        total = total + math.floor(dl + 0.5)
+                    end
                 end
             end
             return total

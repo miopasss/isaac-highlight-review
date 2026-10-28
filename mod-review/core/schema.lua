@@ -105,6 +105,7 @@ schema.scopes = {
         mxhpo = "i",   -- 出房最大血量（半心）
         c     = "i",   -- 进房金币
         co    = "i",   -- 出房金币
+        lc    = "i",   -- 本房捡到的幸运币数（CoinSubType.COIN_LUCKYPENNY）
         bmb   = "i",   -- 进房炸弹
         bmbo  = "i",   -- 出房炸弹
         key   = "i",   -- 进房钥匙

@@ -705,6 +705,7 @@ local function beginRoom(player)
         tInGame = gameTimeMs(),   -- 游戏内时间（探针：和帧数对照）
         dmg = 0,
         cleared = false,
+        lc = 0,   -- 本房幸运币计数（2026-10-29）
     }
 
     if run.base == nil or run.base <= 0 then
@@ -894,6 +895,7 @@ local function settleRoom(player)
         foes = p.foes or 0,
         mxhp = p.mxhpIn or 0, mxhpo = snap.maxhp or 0,
         c = p.pockets and p.pockets.c or 0, co = pok.c,
+        lc = p.lc or 0,   -- 本房捡到的幸运币数
         bmb = p.pockets and p.pockets.b or 0, bmbo = pok.b,
         key = p.pockets and p.pockets.k or 0, keyo = pok.k,
         boss = bossId, ub = p.ubIn or 0, first = firstVisit,
@@ -1104,6 +1106,36 @@ add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
     if isMainPlayer(player) then beginRun(player) end
     if state.current then flushCurrentRun("开局") end   -- 第一层没换层前也有记录（2026-10-24）
 end)
+
+-- 幸运币（作者 2026-10-29）：直接按 CoinSubType.COIN_LUCKYPENNY 计数，
+-- 不再依赖"金币+1 且幸运+1"的推断（那样会误判药丸/道具带来的幸运）。
+-- 注意：CoinSubType 可能是 userdata 而非 table，必须惰性解析 + pcall，
+--       否则 type() 判断失败会让整个回调静默不注册。
+local LUCKY_COIN_SUB = nil
+local luckySubLogged = false
+local function luckyCoinSub()
+    if LUCKY_COIN_SUB == nil then
+        pcall(function() LUCKY_COIN_SUB = CoinSubType.COIN_LUCKYPENNY end)
+        if LUCKY_COIN_SUB == nil then LUCKY_COIN_SUB = config.luckyCoinSub end
+        if LUCKY_COIN_SUB ~= nil and not luckySubLogged then
+            luckySubLogged = true
+            log("幸运币 subtype = " .. tostring(LUCKY_COIN_SUB))
+        end
+    end
+    return LUCKY_COIN_SUB
+end
+
+add(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup, collider)
+    local sub = luckyCoinSub()
+    if sub == nil or not state.pending or not pickup then return end
+    if pickup.Variant ~= 20 then return end                        -- PickupVariant.PICKUP_COIN
+    if pickup.SubType ~= sub then return end
+    local isPlayer = false
+    pcall(function() isPlayer = collider and collider.ToPlayer ~= nil and collider:ToPlayer() ~= nil end)
+    if isPlayer then
+        state.pending.lc = (state.pending.lc or 0) + 1
+    end
+end, 20)
 
 -- 吃药丸（作者 2026-10-21 定的做法，2026-10-25 恢复）：
 -- 只记 id + 层/房；属性影响靠 core/pills.lua 白名单查表。

@@ -3327,3 +3327,40 @@ CB288BBA  幸运币 6   24986B01  幸运币 4
 
 - 同一房间既捡金币又吃「幸运上升」药丸时，可能多算（dl ≤ dc 的约束挡掉一部分）
 - 幸运币如果被 mod 改成 +2 幸运，会被算成 2 枚
+## 幸运币改成直接计数（作者 2026-10-29）
+
+上一版是靠「金币 +1 且幸运 +1」推断的，会误判药丸/道具带来的幸运。现在直接认硬币：
+
+### 关键发现
+
+`CoinSubType.COIN_LUCKYPENNY` 是真实存在的枚举，装着的 mod 都在用：
+
+```
+aslans_mind.lua:38   if s == CoinSubType.COIN_LUCKYPENNY then return 1 end
+geist_binding_rope   [CoinSubType.COIN_LUCKYPENNY] = { target = FLOWER_COIN }
+shamrockLeaf.lua:50  Utils.choose(CoinSubType.COIN_PENNY, CoinSubType.COIN_LUCKYPENNY)
+```
+
+### 实现
+
+```lua
+add(ModCallbacks.MC_PRE_PICKUP_COLLISION, function(_, pickup, collider)
+    local sub = luckyCoinSub()          -- CoinSubType.COIN_LUCKYPENNY（惰性解析）
+    if pickup.Variant ~= 20 then return end   -- PICKUP_COIN
+    if pickup.SubType ~= sub then return end
+    if 是玩家碰到的 then state.pending.lc = state.pending.lc + 1 end
+end, 20)
+```
+
+### 踩的坑
+
+`CoinSubType` 在 REPENTOGON 里**可能是 userdata 而不是 table**，
+原来的 `if type(CoinSubType) == "table"` 判断失败 → 回调**静默不注册**（不报错，永远计数 0）。
+
+改成惰性解析 + `pcall`，并且第一次解析时打一行 `幸运币 subtype = N` 便于确认；
+再加 `config.luckyCoinSub` 作为手动兜底。
+
+### 数据兼容
+
+- 新数据：房间记录新增 `lc` 字段，直接累加
+- 旧数据：`lc` 为 nil → 自动回退到「金币/幸运增量」推断，历史局照常显示
