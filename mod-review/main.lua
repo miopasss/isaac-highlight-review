@@ -128,7 +128,7 @@ end
 --- 实测：os.time() 被沙盒换成返回 0，但 os.date()（不传时间戳）拿到的是**真实系统时间**
 --- （明日方舟 mod 也这么用：os.date("%Y%m%d") 判每日）。年份合理才认，否则返回 nil。
 local function wallText()
-    local ok, t = pcall(function() return os.date("%Y/%m/%d %H:%M") end)
+    local ok, t = pcall(function() return os.date("%Y-%m-%d %H:%M") end)
     if not ok or type(t) ~= "string" then return nil end
     local y = tonumber(t:sub(1, 4))
     if not y or y < 2001 then return nil end
@@ -921,6 +921,7 @@ local function finishRun(result, player)
     local run = state.current
     if not run then return end
     run.res = result
+      run.we = wallText()   -- 结束墙钟时间（作者 2026-10-28 要求，显示在总览）
     if player then run.final = snapshot(player).power end
     state.current = nil
     -- 换层检查点已经把这局写进去过一份，先撤掉，否则同一局会存两条

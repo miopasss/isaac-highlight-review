@@ -189,6 +189,7 @@ function highlight.analyze(run, cfg)
         floors = {}, rooms = {}, pages = {},
         statMax = {}, statMin = {}, curve = {},
         ws = run.ws,
+    we = run.we,   -- 结束墙钟（作者 2026-10-28 要求）
     }
 
     -- 1) 展平房间 + 六维进出

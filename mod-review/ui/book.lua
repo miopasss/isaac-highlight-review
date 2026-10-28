@@ -494,6 +494,8 @@ local function whenText(ws)
     ws = ws:gsub("^%s+", ""):gsub("%s+$", "")
     if ws == "" then return nil end
     if ws:find("^1970") then return nil end
+    -- 旧数据里的 "/" 被存档转义成了 "_"，显示前还原成 "-"
+    ws = ws:gsub("^(%d%d%d%d)_(%d%d)_(%d%d)", "%1-%2-%3")
     return ws
 end
 
@@ -505,11 +507,22 @@ local function drawOverview(s, bk, entry)
         tostring(entry.id), RES_NAME[bk.result] or "?", bossGrade(bk), bk.maxFloor, #bk.rooms),
         (PADX + 12) * s, y * s, s * 0.64, INK_DIM)
     y = y + 11
-    local whenStr = whenText(bk.ws)
-    if whenStr then
-        txt(whenStr, (PADX + 14) * s, y * s, s * 0.52, INK_DIM)
-        y = y + 10
-    end
+      -- 开 / 终 墙钟时间（作者 2026-10-28 要求）
+      local startStr = whenText(bk.ws)
+      local endStr   = whenText(bk.we)
+      if startStr or endStr then
+          local cn2 = getCJK()
+          local line
+          if startStr and endStr then
+              line = string.format(cn2 and "开 %s     终 %s" or "START %s     END %s", startStr, endStr)
+          elseif startStr then
+              line = string.format(cn2 and "开 %s     （进行中）" or "START %s     (in progress)", startStr)
+          else
+              line = string.format(cn2 and "终 %s" or "END %s", endStr)
+          end
+          txt(line, (PADX + 14) * s, y * s, s * 0.52, INK_DIM)
+          y = y + 10
+      end
 
     -- 本局四级道具（最多 8 个一行）
     local fin = bk.pages and bk.pages[1]
