@@ -3188,3 +3188,15 @@ fmt_test PASS；identity_test 30/30
 
 - 用 `Select-Object -Skip ($n-1)` 取行号时，`$n` 可能是数组（多文件匹配）→ 用 `(Select-String ...).LineNumber`
 - 直接按下标覆盖行会**连带吃掉后面的 12 行**（q4 图标渲染），已 git checkout 恢复后改按「跳过原块 N 行」重做
+### Boss 房窄探针（验证「清房即停」）
+
+只对 Boss 房（房型 5/17 或有终极 Boss）打一行，其余房间不输出：
+
+```
+[BT] 帧: 清房=12.3s 出房=19.8s | 采用=12300ms
+```
+
+判读：**清房 < 出房且「采用」= 清房值** → 清房即停生效；
+清房为 `-` 或两者相等 → 没生效（`MC_PRE_SPAWN_CLEAN_AWARD` 没触发/没记上）。
+
+开关 `config.bossProbe = true`，验证完置 false。
