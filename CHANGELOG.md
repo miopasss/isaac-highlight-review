@@ -3232,3 +3232,7 @@ seq36  F3E26AF5-0  res=1  341 房  开=2026-10-28 09:21  终=2026-10-28 10:02  �
 ## 探针已删除
 
 `[BT]` 代码块与 `config.bossProbe` 一起删除，只留 `timeProbe/dumpOnce/dumpItemIds` 三个关掉的开关。
+### 收尾：误入仓库的临时探针
+
+`squash` 合并时把 `tests/_we2.lua`（验证 `we` 往返的临时脚本）带进了 main，已 `git rm`。
+今后临时脚本统一用 `_` 前缀且**提交前检查** `git status`。
