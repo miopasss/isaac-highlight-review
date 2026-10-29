@@ -113,7 +113,15 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
     local chance = 1 - math.max(0, math.min(1, mul))
     local okRoll, roll = pcall(function() return rng:NextFloat() end)
     if not okRoll or not roll then return nil end
-    if roll >= chance then return nil end          -- 这次保留原结果
+    if roll >= chance then
+        -- 埋点（2026-10-29）：明确记录"保留了原道具"。没有这行时，权重 0.1 的道具被保留后
+        -- 日志一片空白，分不清是"保留"还是"根本没进回调"。
+        if log then
+            log(string.format("[POOL] 保留 id=%d pool=%s（倍数 %.2f，保留概率 %.0f%%，掷出 %.2f）",
+                itemID, tostring(poolType), mul, (1 - chance) * 100, roll))
+        end
+        return nil                                  -- 这次保留原结果
+    end
 
     -- 重掷：换成同池子的别的道具，最多试几次
     local pool = Game():GetItemPool()
