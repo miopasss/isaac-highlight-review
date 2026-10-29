@@ -489,6 +489,36 @@ local function bossGrade(bk)
 end
 
 --- 墙钟时间文本：2026/10/22 14:36。取不到（os.date 不可用或旧记录没 w0）就返回 nil
+
+--- 把 "2026-10-29 22:41" 折算成分钟数（不依赖 os.time —— 沙盒里它恒为 0）
+--- 用 Howard Hinnant 的 days-from-civil 算法，纯整数运算
+local function wallMinutes(s)
+    if type(s) ~= "string" then return nil end
+    local y, mo, d, h, mi = s:match("^(%d%d%d%d)%-(%d%d)%-(%d%d) (%d%d):(%d%d)")
+    if not y then
+        -- 兼容旧格式 "2026_10_29 22:41" / "2026/10/29 22:41"
+        y, mo, d, h, mi = s:match("^(%d%d%d%d)[_/](%d%d)[_/](%d%d) (%d%d):(%d%d)")
+    end
+    if not y then return nil end
+    y, mo, d, h, mi = tonumber(y), tonumber(mo), tonumber(d), tonumber(h), tonumber(mi)
+    local yy = y - ((mo <= 2) and 1 or 0)
+    local era = math.floor(yy / 400)
+    local yoe = yy - era * 400
+    local doy = math.floor((153 * (mo + ((mo > 2) and -3 or 9)) + 2) / 5) + d - 1
+    local doe = yoe * 365 + math.floor(yoe / 4) - math.floor(yoe / 100) + doy
+    local days = era * 146097 + doe - 719468
+    return days * 1440 + h * 60 + mi
+end
+
+--- 耗时文案：55m / 2h03m
+local function durationBetween(a, b)
+    local ma, mb = wallMinutes(a), wallMinutes(b)
+    if not ma or not mb then return nil end
+    local d = mb - ma
+    if d < 0 then return nil end
+    if d < 60 then return string.format("%dm", d) end
+    return string.format("%dh%02dm", math.floor(d / 60), d % 60)
+end
 local function whenText(ws)
     if type(ws) ~= "string" then return nil end
     ws = ws:gsub("^%s+", ""):gsub("%s+$", "")
@@ -514,7 +544,13 @@ local function drawOverview(s, bk, entry)
           local cn2 = getCJK()
           local line
           if startStr and endStr then
-              line = string.format(cn2 and "开 %s     终 %s" or "START %s     END %s", startStr, endStr)
+              local dur = durationBetween(startStr, endStr)
+              if dur then
+                  line = string.format(cn2 and "开 %s     终 %s     耗时 %s" or "START %s     END %s     %s",
+                      startStr, endStr, dur)
+              else
+                  line = string.format(cn2 and "开 %s     终 %s" or "START %s     END %s", startStr, endStr)
+              end
           elseif startStr then
               line = string.format(cn2 and "开 %s     （进行中）" or "START %s     (in progress)", startStr)
           else
