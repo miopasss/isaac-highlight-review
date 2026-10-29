@@ -475,9 +475,33 @@ end
 --   两个特例必须靠实体类型认：
 --     祸兽（The Beast）房间返回 0，实体 Type 951
 --     Boss Rush 没有 bossID，靠房型 17
-local UB = { HUSH = 1, BOSSRUSH = 2, MEGASATAN = 3, MOTHER = 4, BEAST = 5, DELIRIUM = 6 }
+local UB = { HUSH = 1, BOSSRUSH = 2, MEGASATAN = 3, MOTHER = 4, BEAST = 5, DELIRIUM = 6,
+             TOHOU_NOTE = 7, TOHOU_DOREMY = 8 }   -- 东方 mod（作者 2026-10-29 要求）
 
 local function num(v) if type(v) == "number" and v == v then return v end return 0 end
+-- 东方 mod 的终极 Boss（作者 2026-10-29 要求）：
+-- 用**实体名**解析类型，不用硬编码 Type —— mod 的 Type 会随加载顺序漂移。
+-- 名字来自 reverie 的 content/entities2.xml：name="Note" / name="Doremy Sweet"
+local MOD_BOSS_BY_NAME = {
+    ["Note"]         = UB.TOHOU_NOTE,     -- 音符（东方）
+    ["Doremy Sweet"] = UB.TOHOU_DOREMY,   -- 哆来咪（东方）
+}
+
+local modBossTypes = nil   -- name -> type
+local function modBossType(entityType)
+    if modBossTypes == nil then
+        modBossTypes = {}
+        for name, code in pairs(MOD_BOSS_BY_NAME) do
+            local ok, t = pcall(function() return Isaac.GetEntityTypeByName(name) end)
+            if ok and type(t) == "number" and t > 0 then modBossTypes[t] = code end
+        end
+        local n = 0
+        for _ in pairs(modBossTypes) do n = n + 1 end
+        log(string.format("东方 Boss 识别：%d/%d 个名字解析成功", n, (function() local c = 0 for _ in pairs(MOD_BOSS_BY_NAME) do c = c + 1 end return c end)()))
+    end
+    return modBossTypes[entityType]
+end
+
 local function ultimateBossNow()
     local code = 0
     pcall(function()
@@ -498,7 +522,8 @@ local function ultimateBossNow()
                 elseif t == 951 then code = UB.BEAST
                 elseif t == 912 then code = UB.MOTHER
                 elseif t == 274 then code = UB.MEGASATAN
-                elseif t == 412 then code = UB.DELIRIUM end
+                elseif t == 412 then code = UB.DELIRIUM
+                else code = modBossType(t) or 0 end
                 if code ~= 0 then break end
             end
         end
@@ -1242,23 +1267,22 @@ add(ModCallbacks.MC_POST_UPDATE, function()
 end)
 
 add(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function()
-    if state.pending then state.pending.cleared = true end
-        -- 清房即停：记下这一刻，结算时用它代替出房时间（作者 2026-10-26）
-        if state.pending and not state.pending.tClear then
-            state.pending.tClear = nowMs()
-            state.pending.tClearGame = gameTimeMs()
-        end
-        -- Boss 房：清房这一刻 GetBossID() 才可靠（cuerlib / antibirth music 都是死后才读）
-        if state.pending then
-            local t = 0
-            pcall(function() t = num(Game():GetRoom():GetType()) end)
-            if t == 5 or t == 17 then
-                local b = bossIdNow()
-                if b and b ~= 0 then state.pending.bossIn = b end   -- 只在取到非 0 时覆盖（清房瞬间可能返回 0）
-                local u = ultimateBossNow()
-                if u and u ~= 0 then state.pending.ubIn = u end
-            end
-        end
+    if not state.pending then return end
+    state.pending.cleared = true
+
+    -- 清房即停：记下这一刻，结算时用它代替出房时间（作者 2026-10-26）
+    if not state.pending.tClear then
+        state.pending.tClear = nowMs()
+        state.pending.tClearGame = gameTimeMs()
+    end
+
+    -- 清房这一刻 GetBossID() 才可靠（cuerlib / antibirth music 都是死后才读）
+    -- 2026-10-29：不再限定 t==5/17 —— 东方 mod 的 Boss 房是自定义房型（如图书馆 variant 5802），
+    --             限定房型会让音符/哆来咪永远识别不到
+    local b = bossIdNow()
+    if b and b ~= 0 then state.pending.bossIn = b end   -- 只在取到非 0 时覆盖（清房瞬间可能返回 0）
+    local u = ultimateBossNow()
+    if u and u ~= 0 then state.pending.ubIn = u end
 end)
 
 local dmgProbed, dmgLogged = false, false

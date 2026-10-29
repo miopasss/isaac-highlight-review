@@ -81,6 +81,8 @@ highlight.ULTIMATE_BOSS = {
     [4] = { cn = "老干妈",     en = "Mother" },
     [5] = { cn = "祸兽",       en = "The Beast" },
     [6] = { cn = "百变怪",     en = "Delirium" },
+    [7] = { cn = "音符",       en = "Note" },      -- 东方 mod（reverie）
+    [8] = { cn = "哆来咪",     en = "Doremy" },    -- 东方 mod（reverie）
 }
 
 function highlight.bossName(code, useEn)

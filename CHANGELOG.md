@@ -3364,3 +3364,61 @@ end, 20)
 
 - 新数据：房间记录新增 `lc` 字段，直接累加
 - 旧数据：`lc` 为 nil → 自动回退到「金币/幸运增量」推断，历史局照常显示
+## 终极 Boss 支持东方 mod：音符 / 哆来咪（作者 2026-10-29）
+
+### 怎么找到这两个 Boss 的
+
+在 `reverie_2538556220` 里：
+
+```
+content/entities2.xml:224   <entity name="Note" ... variant="5822">      ← 音符
+content/entities2.xml:587   <entity name="Doremy Sweet" ...>             ← 哆来咪
+scripts/bosses/reverie_note.lua:7   local Note = ModEntity("Reverie", "REVERIE_NOTE")
+```
+
+### 实现
+
+UB 编码表新增：
+
+```lua
+local UB = { HUSH = 1, ..., DELIRIUM = 6,
+             TOHOU_NOTE = 7, TOHOU_DOREMY = 8 }
+```
+
+识别按**实体名**解析类型，不硬编码 Type：
+
+```lua
+local MOD_BOSS_BY_NAME = {
+    ["Note"]         = UB.TOHOU_NOTE,
+    ["Doremy Sweet"] = UB.TOHOU_DOREMY,
+}
+-- 首次使用时 Isaac.GetEntityTypeByName(name) 解析并缓存
+```
+
+原因：mod 的 `EntityType` 会随 mod 加载顺序漂移（同一个坑我们已经在道具 id 上踩过两次），
+但实体**名字**是稳定的。
+
+### 顺带修了一个会导致永远识别不到的 bug
+
+清房回调原本只在 `t == 5 or t == 17`（普通 Boss 房 / Boss Rush）时才去读 Boss：
+
+```lua
+if t == 5 or t == 17 then ... ultimateBossNow() ... end
+```
+
+而东方 Boss 房是**自定义房型**（音符房是 `ROOM_LIBRARY` variant 5802），这个条件直接把
+它们挡在外面 —— 加多少名字都没用。现在改成**任何房间清房都检测**（开销可忽略）。
+
+### 显示
+
+`highlight.ULTIMATE_BOSS` 增加：
+
+```
+[7] = { cn = "音符",   en = "Note" }
+[8] = { cn = "哆来咪", en = "Doremy" }
+```
+
+### 验证
+
+部署后会打一行 `东方 Boss 识别：2/2 个名字解析成功`，
+若显示 `0/2` 说明 `GetEntityTypeByName` 没解析到（届时贴日志给我）。
