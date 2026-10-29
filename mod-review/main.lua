@@ -1132,6 +1132,21 @@ add(ModCallbacks.MC_POST_PLAYER_INIT, function(player)
     if state.current then flushCurrentRun("开局") end   -- 第一层没换层前也有记录（2026-10-24）
 end)
 
+-- 东方 mod Boss：在 **NPC 生成时**识别（作者 2026-10-29）
+-- 为什么不在清房时扫：清房那一刻房间已经空了，GetEntities() 里没有 Boss 实体，
+-- 所以按实体扫描永远认不到。
+add(ModCallbacks.MC_POST_NPC_INIT, function(_, npc)
+    if not state.pending or not npc then return end
+    local code = modBossType(num(npc.Type))
+    if code and code ~= 0 then
+        if (state.pending.ubIn or 0) ~= code then
+            state.pending.ubIn = code
+            local nm = ({ [UB.TOHOU_NOTE] = "音符", [UB.TOHOU_DOREMY] = "哆来咪" })[code] or tostring(code)
+            log(string.format("[UB] 检测到东方 Boss：%s（type=%d）", nm, num(npc.Type)))
+        end
+    end
+end)
+
 -- 幸运币（作者 2026-10-29）：直接按 CoinSubType.COIN_LUCKYPENNY 计数，
 -- 不再依赖"金币+1 且幸运+1"的推断（那样会误判药丸/道具带来的幸运）。
 -- 注意：CoinSubType 可能是 userdata 而非 table，必须惰性解析 + pcall，

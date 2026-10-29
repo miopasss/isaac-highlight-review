@@ -3459,3 +3459,28 @@ F3E26AF5  09:21 -> 10:02   41m
 ```
 
 未完成的局（`we` 为空）仍显示「（进行中）」，不算耗时。
+### 修：东方 Boss 在清房时扫不到
+
+第一次部署后进游戏，日志里**根本没有** `东方 Boss 识别` 那行 —— 说明 `modBossType` 从未被调用。
+
+原因：识别写在 `ultimateBossNow()` 的实体扫描里，而 `ultimateBossNow()` 是在**清房回调**里调的。
+清房那一刻房间里已经空了（敌人尸体被移除），`GetEntities()` 返回空表 →
+循环一次都不执行 → 名字解析永远不触发。
+
+修法：加 `MC_POST_NPC_INIT`，在 **NPC 生成时**就判断类型：
+
+```lua
+add(ModCallbacks.MC_POST_NPC_INIT, function(_, npc)
+    if not state.pending then return end
+    local code = modBossType(num(npc.Type))
+    if code and code ~= 0 then state.pending.ubIn = code; log("[UB] 检测到东方 Boss：…") end
+end)
+```
+
+命中时会打：
+
+```
+[UB] 检测到东方 Boss：音符（type=1234）
+```
+
+`ultimateBossNow()` 里的实体扫描保留（对普通 Boss 房仍然有效），两条路径互补。
