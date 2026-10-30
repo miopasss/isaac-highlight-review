@@ -120,13 +120,18 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
     pcall(function() rng:SetSeed(s, 35) end)
 
     local chance = 1 - math.max(0, math.min(1, mul))
+    -- 2026-10-30：这个构建里 RNG 的浮点方法是 RandomFloat()，不是 NextFloat()！
+    -- 之前只调 NextFloat → pcall 失败 → 静默 return nil → 权重从未生效过。
     local okRoll, roll = false, nil
     if rng then
-        okRoll, roll = pcall(function() return rng:NextFloat() end)
+        okRoll, roll = pcall(function() return rng:RandomFloat() end)
+        if not okRoll or not roll then
+            okRoll, roll = pcall(function() return rng:NextFloat() end)
+        end
     end
     if not okRoll or not roll then
         roll = fallbackRoll(s)
-        if log then log(string.format("[POOL] 兜底随机 id=%d 掷出=%.3f", itemID, roll)) end
+        if log then log(string.format("[POOL] 引擎 RNG 取数失败，用兜底随机 id=%d 掷出=%.3f", itemID, roll)) end
     end
     if log then
         log(string.format("[POOL] 判定 id=%d pool=%s 倍数=%.2f 掷出=%.3f 阈值=%.3f（掷出≥阈值=保留）",

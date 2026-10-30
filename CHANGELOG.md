@@ -3563,3 +3563,61 @@ end
 | 换成别的 | `[POOL] 重掷成功 a -> b` |
 | 换失败 | `[BAN] 重掷失败 …` |
 | RNG 异常 | `[POOL] RNG 不可用 / 兜底随机` |
+## 权重从未生效的真因：`rng:NextFloat()` 这个方法不存在
+
+### 自检怎么发现的
+
+加了开局自检（`POOL_SELFTEST`，在 `loadData()` 之后用假 itemID/seed 跑 `onPostGet`），
+第一次跑就暴露两个问题：
+
+```
+[SELFTEST] id=1570 权重=-1.00 → 返回 nil     ← 1 号档没有这两条配置（预期）
+[SELFTEST] id=118  权重=0.00  → 返回 nil     ← 权重 0 也没拦住？！
+```
+
+手动把自检从 PLAYER_INIT 顶部移到 `loadData()` 之后，`id=118` 立刻正常：
+
+```
+[BAN] 抽到禁止道具 id=118 pool=0 → 尝试重掷
+[POOL] 判定 id=118 倍数=0.00 掷出=0.311 阈值=1.000
+[POOL] 重掷成功 118 -> 285
+```
+
+但日志里出现了 **`兜底随机`** —— 说明引擎 RNG 取数失败，走的是纯 Lua 兜底。
+
+### 根因
+
+```lua
+rng:NextFloat()   -- ❌ 这个构建里不存在 → pcall 失败 → 静默 return nil
+rng:RandomFloat() -- ✅ 正确方法（31 处 mod 代码都在用）
+```
+
+于是每次抽到受控道具都「静默放弃干预」，**权重从上线起就没生效过**。
+
+### 修法
+
+```lua
+okRoll, roll = pcall(function() return rng:RandomFloat() end)
+if not okRoll or not roll then
+    okRoll, roll = pcall(function() return rng:NextFloat() end)   -- 兼容旧版
+end
+if not okRoll or not roll then roll = fallbackRoll(s) end          -- 纯 Lua 兜底
+```
+
+修完自检输出（引擎 RNG 正常，无"兜底随机"）：
+
+```
+[POOL] 判定 id=118 倍数=0.00 掷出=0.001 阈值=1.000
+[POOL] 重掷成功 118 -> 285
+[SELFTEST] id=118 seed=11111 权重=0.00 → 返回 285
+```
+
+### 自检开关
+
+`POOL_SELFTEST = true`（`mod-rating/main.lua` 顶部），每局开局跑 9 次并打日志。
+验证完改成 `false` 即可。
+
+### 教训
+
+`pcall` + 静默 return 是这次连查三天的根源：日志里只有"抽到"，没有任何结论。
+**任何 pcall 失败都必须留一行日志**。
