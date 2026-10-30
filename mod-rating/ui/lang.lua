@@ -112,6 +112,24 @@ local STR = {
     },
 }
 
+--- 测试钩子（离线单测用）：所有文案键的并集，排序后返回
+function L.keys()
+    local seen, ks = {}, {}
+    for _, set in pairs(STR) do
+        for k in pairs(set) do
+            if not seen[k] then seen[k] = true; ks[#ks + 1] = k end
+        end
+    end
+    table.sort(ks)
+    return ks
+end
+
+--- 测试钩子：按语言取原始串（不回落、不做兜底）
+function L.rawFor(code, key)
+    local set = STR[code]
+    return set and set[key] or nil
+end
+
 --- 当前语言代码
 function L.code() return STATE.code end
 

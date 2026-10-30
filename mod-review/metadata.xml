@@ -104,7 +104,7 @@ In practice it works with everything - whatever mod you play, just open it.
 Requires REPENTOGON.
 
 Source and issue tracker: https://github.com/miopasss/isaac-highlight-review</description>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Items"/>

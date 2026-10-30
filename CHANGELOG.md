@@ -3635,3 +3635,64 @@ PLAYER_INIT 读起始道具）。把结论固化成文档，避免下次再犯�
    存档字符串转义、Font 坐标空间、ImGui 限制
 4. **速查表**：「我要做 X → 挂哪个回调」
 5. 教训：先确认真实时序再写代码；pcall 失败必须留日志；能用假数据自检就别靠运气
+## 补单测：权重决策 / 双语 / 设置（作者 2026-10-30 要求：每个分支都要有 assert）
+
+### 新增三个单测文件
+
+| 文件 | 断言数 | 覆盖什么 |
+|---|---|---|
+| `tests/pool_test.lua` | **26** | 权重决策 `P.decide` 全部分支 + 兜底随机 |
+| `tests/lang_test.lua` | **31** | 中英文案完整性、`L.t/tFor/init/set/needRestart` 全部分支 |
+| `tests/settings_test.lua` | **22** | `C=` 读取、`C0=` 兜底、一代备份、`S.only`、往返 |
+
+### 为了让逻辑可测，抽出了纯函数
+
+```lua
+-- core/pool.lua
+function P.decide(mul, roll)   -- "skip" / "keep" / "reroll"，不碰引擎
+function P.fallbackRoll(seed)  -- [0,1) 伪随机，同 seed 可复现
+```
+
+`onPostGet` 现在调用它们，判定逻辑因此可以离线覆盖。
+
+### pool_test 覆盖的分支
+
+| 分支 | 断言 |
+|---|---|
+| `mul == nil`（没配置） | 掷点 0 / 0.99 都 skip |
+| `mul >= 1`（提高出现率 v1 未实现） | 1.0 / 2.0 / 999 都 skip |
+| `mul == 0`（禁止） | 掷点 0 / 0.5 / 0.999 都 reroll |
+| `mul == 0.1` | 0.0 / 0.5 / 0.899 → reroll；**0.9 边界** / 0.99 → keep |
+| `mul == 0.5` | 0.49 → reroll；0.5 边界 → keep；0.51 → keep |
+| `mul < 0` | 按 0 处理 → reroll |
+| `roll == nil` | 按 0 处理 |
+| `fallbackRoll` | 500 个种子全在 [0,1)；同 seed 一致；均值 0.35~0.65；极端 seed 不崩 |
+
+### lang_test 覆盖的分支
+
+- zh / en **键完全一致**（少一条英文界面会露出 key 名）
+- 无空串
+- **占位符数量两边一致**（否则 `string.format` 报错）
+- `t()` 未知 key → 返回 key 名
+- `tFor()` 未知语言 → 回落中文，且**不改全局状态**
+- `init(nil / lang=en / 未知语言 / get 抛错 / 返回非字符串)` 五个分支
+- `set(fake / nil / 抛错)` 三个分支 + 写回内容校验
+- `needRestart()` 中英两套文案
+
+### settings_test 覆盖的分支
+
+- 读 `C=` 正常（数字 + 字符串两种值）
+- `C=` 缺失但 `C0=` 存在 → 兜底
+- 两者都没有 → 默认值
+- 坏数据不崩
+- 保存时旧 `C=` → `C0=`，**连续保存 3 次仍只有 1 条 C0=**
+- `S.only` 只写自己的键（新 `C=` 不含 f6/lang）
+- 保存不影响其它行（`Q=` 保留）
+- 保存 → 重新读 往返一致
+
+### 版本号
+
+| mod | 旧 | 新 |
+|---|---|---|
+| Item Weight Editor | 0.1.3 | **0.1.4** |
+| Highlight Review | 0.4.1 | **0.4.2** |

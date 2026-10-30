@@ -73,6 +73,25 @@ end
 --- MC_POST_GET_COLLECTIBLE 的处理函数。
 --- 参数与回调一致：(itemID, poolType, decrease, seed)
 --- 返回：替换后的 id，或 nil 表示不改。
+--- 纯决策函数（无引擎依赖，可离线单测）
+--- @param mul number|nil  配置的权重倍数（nil = 没配置）
+--- @param roll number    [0,1) 的掷点
+--- @return string "skip"（不干预）/ "keep"（保留原道具）/ "reroll"（重掷）
+function P.decide(mul, roll)
+    if mul == nil then return "skip" end
+    if mul >= 1 then return "skip" end          -- 只有 < 1 生效（> 1 的加权 v1 未实现）
+    local m = math.max(0, math.min(1, mul))
+    local chance = 1 - m                        -- 进入重掷的概率
+    if (roll or 0) >= chance then return "keep" end
+    return "reroll"
+end
+
+--- 纯函数：兜底伪随机（同 seed 可复现）
+function P.fallbackRoll(seed)
+    local x = (seed * 1103515245 + 12345) % 2147483648
+    return (x % 10000) / 10000
+end
+
 function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
     -- 防重入：下面会再调一次 pool:GetCollectible()，那会再次触发本回调
     if P.inCallback then return nil end
@@ -105,11 +124,7 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
 
     -- 随机数用回调给的 seed 派生，保证种子可复现
     local rng
-    -- 纯 Lua 伪随机兜底：若 RNG/NextFloat 不可用，权重也至少能生效（同种子可复现）
-    local function fallbackRoll(seed)
-        local x = (seed * 1103515245 + 12345) % 2147483648
-        return (x % 10000) / 10000
-    end
+    local fallbackRoll = P.fallbackRoll   -- 纯 Lua 兜底（可单测）
 
     local okRng, r = pcall(function() return RNG(s) end)
     if not okRng or not r then
@@ -137,7 +152,8 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
         log(string.format("[POOL] 判定 id=%d pool=%s 倍数=%.2f 掷出=%.3f 阈值=%.3f（掷出≥阈值=保留）",
             itemID, tostring(poolType), mul, roll, chance))
     end
-    if roll >= chance then
+    -- 判定交给纯函数（离线单测覆盖 "skip"/"keep"/"reroll" 三个分支）
+    if P.decide(mul, roll) == "keep" then
         -- 埋点（2026-10-29）：明确记录"保留了原道具"。没有这行时，权重 0.1 的道具被保留后
         -- 日志一片空白，分不清是"保留"还是"根本没进回调"。
         if log then
