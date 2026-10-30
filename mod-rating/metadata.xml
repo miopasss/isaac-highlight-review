@@ -39,7 +39,7 @@
 · 愚昧
 
 【注意】
-· 权重目前只能降低，不能提高（填 > 1 会保存但不生效）。
+· 权重目前只能降低，不能提高（填 &gt; 1 会保存但不生效）。
   提高需要重新分配整个池子的概率，风险大，留到以后做。
 · 配置按存档槽保存，1/2/3 号档各自一份。
 
@@ -71,7 +71,7 @@ How it works: after the game draws an item from a pool, this mod rolls one more 
 
 It can also override item quality - if Highlight Review is installed, its "quality 4" list uses the ratings you set here.
 
-How to use: press F6 in game, or rebind it in the ImGui menu: Item Weight -> Settings.
+How to use: press F6 in game, or rebind it in the ImGui menu: Item Weight -&gt; Settings.
 Three ways to find an item: search / owned items / already modified. You can search by item id or English name.
 
 [Tested with]
@@ -89,7 +89,14 @@ Three ways to find an item: search / owned items / already modified. You can sea
 
 Requires REPENTOGON.
 
-Source and issue tracker: https://github.com/miopasss/isaac-highlight-review</description>
+Source and issue tracker: https://github.com/miopasss/isaac-highlight-review
+
+
+【0.1.4 修复】自定义权重此前从未生效：随机数用的引擎方法名不对，且失败被静默吞掉。
+现在改为确定性的纯 Lua 散列，权重 0~1 之间的每个档位都真实生效（0.9=九成出现，0.5=一半，0.1=一成）。
+
+[0.1.4 FIX] Custom weights never took effect: the RNG method name was wrong and the failure was silently swallowed.
+Now uses a deterministic Lua hash, so every value between 0 and 1 works as expected (0.9 = appears 90%, 0.5 = 50%, 0.1 = 10%).</description>
     <version>0.1.4</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>

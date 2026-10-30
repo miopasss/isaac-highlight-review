@@ -99,3 +99,17 @@ In practice it works with everything - whatever mod you play, just open it.
 Requires REPENTOGON.
 
 Source and issue tracker: https://github.com/miopasss/isaac-highlight-review
+
+【0.4.2 新增】
+· 终极 Boss 支持东方 mod：音符、哆来咪（按实体名识别，不受 mod 加载顺序影响）
+· 总览显示开局/结束时间与本局耗时
+· 总览显示幸运币（会 +1 幸运的那种金币）拾取数量
+· 房间时长改为"清房即停"：打完 Boss 后捡道具、逛房间的时间不再计入
+· 修复：飞行/防爆在总览里永远显示"无"
+
+[0.4.2 NEW]
+· Ultimate bosses now include Touhou mod bosses: Note and Doremy (matched by entity name, immune to mod load order)
+· Overview shows run start/end time and total duration
+· Overview shows lucky coin pickups
+· Room duration stops at room clear (looting after a boss no longer counts)
+· Fixed: flight / blast immunity always shown as "none" in the overview

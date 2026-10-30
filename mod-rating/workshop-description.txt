@@ -85,3 +85,10 @@ Three ways to find an item: search / owned items / already modified. You can sea
 Requires REPENTOGON.
 
 Source and issue tracker: https://github.com/miopasss/isaac-highlight-review
+
+
+【0.1.4 修复】自定义权重此前从未生效：随机数用的引擎方法名不对，且失败被静默吞掉。
+现在改为确定性的纯 Lua 散列，权重 0~1 之间的每个档位都真实生效（0.9=九成出现，0.5=一半，0.1=一成）。
+
+[0.1.4 FIX] Custom weights never took effect: the RNG method name was wrong and the failure was silently swallowed.
+Now uses a deterministic Lua hash, so every value between 0 and 1 works as expected (0.9 = appears 90%, 0.5 = 50%, 0.1 = 10%).

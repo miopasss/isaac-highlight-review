@@ -36,7 +36,6 @@ local jsonmini = tryRequire("core.jsonmini", "core/jsonmini")
 local rating   = tryRequire("core.rating", "core/rating")
 local ratedata = tryRequire("core.rating_data", "core/rating_data")
 local poolmod  = tryRequire("core.pool", "core/pool")
-local POOL_SELFTEST = true   -- 临时（2026-10-30）：开局自检权重拦截链路，验证完改 false
 local settings = tryRequire("core.iwe_settings", "core/iwe_settings")
 local storemod = tryRequire("core.store", "core/store")
 local rates    = rating
@@ -205,29 +204,6 @@ add(ModCallbacks.MC_POST_PLAYER_INIT, function()
     if rating then rating.loaded = false end
     loadData()
 
-        -- 自检（作者 2026-10-30 要求）：必须放在 loadData() 之后 —— 之前评级表是空的，
-        -- getWeightMul 一律返回 nil，自检会全部"返回 nil"且没有判定日志。
-        if POOL_SELFTEST and poolmod then
-            -- 先打一组掷点样本，直接看分布是否均匀（0.001/0.003 这种就是坏的）
-            do
-                local parts = {}
-                for _, sd in ipairs({ 11111, 22222, 33333, 44444, 55555, 66666, 77777, 88888, 99999, 123456 }) do
-                    local v, src = poolmod.rollFor(sd)
-                    parts[#parts + 1] = string.format("%.3f(%s)", v, src == "engine" and "E" or "L")
-                end
-                log("[SELFTEST] 掷点样本: " .. table.concat(parts, " "))
-            end
-            for _, tid in ipairs({ 1570, 1565, 118 }) do
-                for _, sd in ipairs({ 11111, 22222, 33333 }) do
-                    local ok, err = pcall(function()
-                        local r = poolmod.onPostGet(rating, tid, 0, false, sd, log)
-                        log(string.format("[SELFTEST] id=%d seed=%d 权重=%.2f → 返回 %s",
-                            tid, sd, rating.getWeightMul(tid) or -1, tostring(r)))
-                    end)
-                    if not ok then log("[SELFTEST] 抛错: " .. tostring(err)) end
-                end
-            end
-        end
 end)
 
 -- 每出一间房比对一次持有列表：给新拿到的道具编号（顺序只在本局内有效）
