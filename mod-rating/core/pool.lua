@@ -105,14 +105,33 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
 
     -- 随机数用回调给的 seed 派生，保证种子可复现
     local rng
+    -- 纯 Lua 伪随机兜底：若 RNG/NextFloat 不可用，权重也至少能生效（同种子可复现）
+    local function fallbackRoll(seed)
+        local x = (seed * 1103515245 + 12345) % 2147483648
+        return (x % 10000) / 10000
+    end
+
     local okRng, r = pcall(function() return RNG(s) end)
-    if not okRng or not r then return nil end
+    if not okRng or not r then
+        if log then log(string.format("[POOL] RNG 不可用 id=%d seed=%s → 用纯 Lua 兜底随机", itemID, tostring(s))) end
+        r = nil
+    end
     rng = r
     pcall(function() rng:SetSeed(s, 35) end)
 
     local chance = 1 - math.max(0, math.min(1, mul))
-    local okRoll, roll = pcall(function() return rng:NextFloat() end)
-    if not okRoll or not roll then return nil end
+    local okRoll, roll = false, nil
+    if rng then
+        okRoll, roll = pcall(function() return rng:NextFloat() end)
+    end
+    if not okRoll or not roll then
+        roll = fallbackRoll(s)
+        if log then log(string.format("[POOL] 兜底随机 id=%d 掷出=%.3f", itemID, roll)) end
+    end
+    if log then
+        log(string.format("[POOL] 判定 id=%d pool=%s 倍数=%.2f 掷出=%.3f 阈值=%.3f（掷出≥阈值=保留）",
+            itemID, tostring(poolType), mul, roll, chance))
+    end
     if roll >= chance then
         -- 埋点（2026-10-29）：明确记录"保留了原道具"。没有这行时，权重 0.1 的道具被保留后
         -- 日志一片空白，分不清是"保留"还是"根本没进回调"。

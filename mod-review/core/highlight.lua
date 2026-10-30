@@ -176,7 +176,8 @@ function highlight.gainPoint(rooms, keyIn, keyOut)
     if not k then return nil end                  -- 整局没有过
     if k == 1 and rooms[1][keyIn] then return nil end  -- 开局自带
 
-    return { f = num(rooms[k].f), i = num(rooms[k].i) }
+    -- 注意：展平后的房间字段是 floor / idx（不是 f / i），两个都兼容（2026-10-30）
+    return { f = num(rooms[k].f or rooms[k].floor), i = num(rooms[k].i or rooms[k].idx) }
 end
 
 --- 把一局分析成册子结构
@@ -250,6 +251,9 @@ function highlight.analyze(run, cfg)
             hs = num(r.hs), hso = num(r.hso), hb = num(r.hb), hbo = num(r.hbo),
             it = r.it or {}, iq = r.iq or {},
             ub = num(r.ub), cleared = r.clr and true or false,
+            -- 飞行 / 防爆（2026-10-30 修：之前没复制这两个字段，导致总览永远显示“无”）
+            fli = (r.fli == true), fl = (r.fl == true),
+            exi = (r.exi == true), ex = (r.ex == true),
             stats = stats,
         }
     end

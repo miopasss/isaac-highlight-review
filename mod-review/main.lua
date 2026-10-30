@@ -895,6 +895,21 @@ local function settleRoom(player)
             msFinal))
     end
 
+    -- 飞行状态变化诊断（作者 2026-10-30：没飞过却报 true，需要原始值）
+    do
+        local cur = (snap.canFly == true)
+        if state.lastFly ~= nil and cur ~= state.lastFly then
+            local raw, rt = "?", "?"
+            pcall(function()
+                local pl = Game():GetPlayer(0)
+                rt = type(pl.CanFly)
+                raw = tostring(pl.CanFly)
+            end)
+            log(string.format("[FLY] %s → %s  在 F%s#%s  原始类型=%s 值=%s",
+                tostring(state.lastFly), tostring(cur), tostring(p.f), tostring(p.i), rt, raw))
+        end
+        state.lastFly = cur
+    end
     local rec = {
         r = run.seq, f = p.idx and state.floorDepth or state.floorDepth, i = p.idx,
         t = p.ident.type, s = p.ident.shape, d = p.ident.doors,

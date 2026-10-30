@@ -3509,3 +3509,57 @@ end)
 | 保留原道具 | `[POOL] 保留 …（掷出 x.xx）` |
 | 换成别的 | `[POOL] 重掷成功 a -> b` |
 | 换失败 | `[BAN] 重掷失败 …（试了 16 次没换到）` |
+## 权重 0.1 反复出现：定位到「静默失败」
+
+### 现象
+
+```
+[POOL] 抽到受控道具 id=1570 pool=0 倍数=0.10
+[POOL] 抽到受控道具 id=1570 pool=0 倍数=0.10
+（后面什么都没有：没有"保留"、没有"重掷成功/失败"）
+```
+
+按 `倍数=0.10`，每次有 90% 应进入重掷流程，但日志里一条结论都没有。
+
+### 原因
+
+`onPostGet` 里两条**静默返回**：
+
+```lua
+local okRng, r = pcall(function() return RNG(s) end)
+if not okRng or not r then return nil end          -- 静默
+
+local okRoll, roll = pcall(function() return rng:NextFloat() end)
+if not okRoll or not roll then return nil end      -- 静默
+```
+
+`RNG` 或 `NextFloat` 一旦不可用 → **权重完全不生效，原道具照发**，且日志一片空白。
+
+### 修法
+
+1. 两条静默路径都补日志（`RNG 不可用` / `兜底随机`）
+2. 加**纯 Lua 伪随机兜底**（同种子可复现），保证 `RNG` 不可用时权重仍生效：
+
+```lua
+local function fallbackRoll(seed)
+    local x = (seed * 1103515245 + 12345) % 2147483648
+    return (x % 10000) / 10000
+end
+```
+
+3. 判定前打一行结果，任何一次抽签都能自证：
+
+```
+[POOL] 判定 id=1570 pool=0 倍数=0.10 掷出=0.573 阈值=0.900（掷出≥阈值=保留）
+```
+
+### 埋点现状（4 条覆盖全部分支）
+
+| 分支 | 日志 |
+|---|---|
+| 抽到被配置过的道具 | `[POOL] 抽到受控道具` |
+| 判定 | `[POOL] 判定 … 掷出=… 阈值=…` |
+| 保留 | `[POOL] 保留 …` |
+| 换成别的 | `[POOL] 重掷成功 a -> b` |
+| 换失败 | `[BAN] 重掷失败 …` |
+| RNG 异常 | `[POOL] RNG 不可用 / 兜底随机` |
