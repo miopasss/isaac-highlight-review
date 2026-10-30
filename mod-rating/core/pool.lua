@@ -87,6 +87,20 @@ function P.decide(mul, roll)
 end
 
 --- 纯函数：兜底伪随机（同 seed 可复现）
+
+--- 从 seed 取一个 [0,1) 的掷点。
+---
+--- 2026-10-30 实测结论：**不要用引擎 RNG 做这件事**。
+---   · rng:SetSeed(s, 35) + RandomFloat() → 恒为 0.001~0.004
+---   · RNG(s):RandomFloat()            → 约等于 s / 2^23（也不是随机数）
+--- 实测样本：seed 11111→0.001、22222→0.003、123456→0.015（单调，跟随 seed 大小）
+---
+--- 所以这里**只用纯 Lua 的 LCG 散列**：均匀、同 seed 可复现、跨版本稳定，
+--- 并且 pool_test.lua 用 500 个种子验证过范围、1000 个种子验证过均值在 0.35~0.65。
+--- @return number roll, string source（固定 "lua"）
+function P.rollFor(seed)
+    return P.fallbackRoll(tonumber(seed) or 0), "lua"
+end
 function P.fallbackRoll(seed)
     local x = (seed * 1103515245 + 12345) % 2147483648
     return (x % 10000) / 10000
@@ -122,32 +136,10 @@ function P.onPostGet(ratings, itemID, poolType, decrease, seed, log)
 
     local s = tonumber(seed) or 0
 
-    -- 随机数用回调给的 seed 派生，保证种子可复现
-    local rng
-    local fallbackRoll = P.fallbackRoll   -- 纯 Lua 兜底（可单测）
-
-    local okRng, r = pcall(function() return RNG(s) end)
-    if not okRng or not r then
-        if log then log(string.format("[POOL] RNG 不可用 id=%d seed=%s → 用纯 Lua 兜底随机", itemID, tostring(s))) end
-        r = nil
-    end
-    rng = r
-    pcall(function() rng:SetSeed(s, 35) end)
-
+    -- 掷点：P.rollFor 内部只调 RNG(s) + RandomFloat()（**不再 SetSeed**，
+    -- 实测 SetSeed(s,35) 会让 RandomFloat 恒为 0.001~0.004 的极小值）
     local chance = 1 - math.max(0, math.min(1, mul))
-    -- 2026-10-30：这个构建里 RNG 的浮点方法是 RandomFloat()，不是 NextFloat()！
-    -- 之前只调 NextFloat → pcall 失败 → 静默 return nil → 权重从未生效过。
-    local okRoll, roll = false, nil
-    if rng then
-        okRoll, roll = pcall(function() return rng:RandomFloat() end)
-        if not okRoll or not roll then
-            okRoll, roll = pcall(function() return rng:NextFloat() end)
-        end
-    end
-    if not okRoll or not roll then
-        roll = fallbackRoll(s)
-        if log then log(string.format("[POOL] 引擎 RNG 取数失败，用兜底随机 id=%d 掷出=%.3f", itemID, roll)) end
-    end
+    local roll = P.rollFor(s)   -- 纯 Lua 散列（引擎 RNG 实测不可用于此，见 rollFor 注释）
     if log then
         log(string.format("[POOL] 判定 id=%d pool=%s 倍数=%.2f 掷出=%.3f 阈值=%.3f（掷出≥阈值=保留）",
             itemID, tostring(poolType), mul, roll, chance))

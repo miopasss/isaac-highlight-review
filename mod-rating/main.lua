@@ -37,6 +37,26 @@ local rating   = tryRequire("core.rating", "core/rating")
 local ratedata = tryRequire("core.rating_data", "core/rating_data")
 local poolmod  = tryRequire("core.pool", "core/pool")
 local POOL_SELFTEST = true   -- 临时（2026-10-30）：开局自检权重拦截链路，验证完改 false
+local settings = tryRequire("core.iwe_settings", "core/iwe_settings")
+local storemod = tryRequire("core.store", "core/store")
+local rates    = rating
+
+local editor, configui
+pcall(function() editor = include("ui.rating_editor") end)
+pcall(function() configui = include("ui.config") end)
+local lang
+pcall(function() lang = include("ui.lang") end)
+
+local function log(msg) emit(LOG_PREFIX .. tostring(msg)) end
+local function err(msg) emit(LOG_PREFIX .. "ERROR: " .. tostring(msg)) end
+
+
+if not (rating and jsonmini and storemod) then
+    err("模块载入失败（rating=" .. tostring(rating ~= nil) ..
+        " jsonmini=" .. tostring(jsonmini ~= nil) ..
+        " store=" .. tostring(storemod ~= nil) .. "）")
+    return
+end
 
 -- ── 引擎 API 自检（2026-10-30）──────────────────────────────────────────────
 -- 为什么需要：`rng:NextFloat()` 在这个构建里根本不存在，而 pcall 把失败静默吞了，
@@ -60,26 +80,6 @@ do
     else
         log("[API] 缺失: " .. table.concat(missing, ", ") .. " —— 对应功能会降级，请上报")
     end
-end
-local settings = tryRequire("core.iwe_settings", "core/iwe_settings")
-local storemod = tryRequire("core.store", "core/store")
-local rates    = rating
-
-local editor, configui
-pcall(function() editor = include("ui.rating_editor") end)
-pcall(function() configui = include("ui.config") end)
-local lang
-pcall(function() lang = include("ui.lang") end)
-
-local function log(msg) emit(LOG_PREFIX .. tostring(msg)) end
-local function err(msg) emit(LOG_PREFIX .. "ERROR: " .. tostring(msg)) end
-
-
-if not (rating and jsonmini and storemod) then
-    err("模块载入失败（rating=" .. tostring(rating ~= nil) ..
-        " jsonmini=" .. tostring(jsonmini ~= nil) ..
-        " store=" .. tostring(storemod ~= nil) .. "）")
-    return
 end
 
 -- ── 状态 ────────────────────────────────────────────────────────────────────
@@ -208,6 +208,15 @@ add(ModCallbacks.MC_POST_PLAYER_INIT, function()
         -- 自检（作者 2026-10-30 要求）：必须放在 loadData() 之后 —— 之前评级表是空的，
         -- getWeightMul 一律返回 nil，自检会全部"返回 nil"且没有判定日志。
         if POOL_SELFTEST and poolmod then
+            -- 先打一组掷点样本，直接看分布是否均匀（0.001/0.003 这种就是坏的）
+            do
+                local parts = {}
+                for _, sd in ipairs({ 11111, 22222, 33333, 44444, 55555, 66666, 77777, 88888, 99999, 123456 }) do
+                    local v, src = poolmod.rollFor(sd)
+                    parts[#parts + 1] = string.format("%.3f(%s)", v, src == "engine" and "E" or "L")
+                end
+                log("[SELFTEST] 掷点样本: " .. table.concat(parts, " "))
+            end
             for _, tid in ipairs({ 1570, 1565, 118 }) do
                 for _, sd in ipairs({ 11111, 22222, 33333 }) do
                     local ok, err = pcall(function()

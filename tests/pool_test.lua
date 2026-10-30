@@ -86,6 +86,38 @@ ok(mean > 0.35 and mean < 0.65, string.format("fallbackRoll 均值 %.3f 在 0.35
 ok(type(pool.fallbackRoll(0)) == "number", "seed=0 有返回值")
 ok(type(pool.fallbackRoll(2147483647)) == "number", "seed=INT_MAX 有返回值")
 
+print("== P.rollFor ==")
+
+-- 分支 12：范围与来源（现在固定走纯 Lua）
+local srcBad, rangeBad = 0, 0
+for seed = 1, 300 do
+    local v, src = pool.rollFor(seed)
+    if src ~= "lua" then srcBad = srcBad + 1 end
+    if type(v) ~= "number" or v < 0 or v >= 1 then rangeBad = rangeBad + 1 end
+end
+eq(srcBad, 0, "rollFor 来源固定为 lua（引擎 RNG 实测不可用）")
+eq(rangeBad, 0, "rollFor(1..300) 全部落在 [0,1)")
+
+-- 分支 13：同 seed 复现、不同 seed 不同
+eq(pool.rollFor(11111), pool.rollFor(11111), "rollFor 同 seed 可复现")
+ok(pool.rollFor(11111) ~= pool.rollFor(22222), "rollFor 不同 seed 不同")
+
+-- 分支 14：相邻种子不该单调（引擎 RNG 的毛病就是随 seed 单调）
+local mono = 0
+local prev = pool.rollFor(1)
+for seed = 2, 100 do
+    local cur = pool.rollFor(seed)
+    if cur > prev then mono = mono + 1 end
+    prev = cur
+end
+ok(mono > 20 and mono < 80, string.format("相邻种子非单调（上升 %d/99 次，应大致一半）", mono))
+
+-- 分支 15：分布均匀（300 个种子的均值）
+local s2 = 0
+for seed = 1, 300 do s2 = s2 + pool.rollFor(seed) end
+local m2 = s2 / 300
+ok(m2 > 0.4 and m2 < 0.6, string.format("rollFor 均值 %.3f 在 0.4~0.6 之间", m2))
+
 print("")
 print(string.format("[pool_test] %d 通过 / %d 失败", pass, fail))
 if fail > 0 then os.exit(1) end
