@@ -3621,3 +3621,17 @@ if not okRoll or not roll then roll = fallbackRoll(s) end          -- 纯 Lua �
 
 `pcall` + 静默 return 是这次连查三天的根源：日志里只有"抽到"，没有任何结论。
 **任何 pcall 失败都必须留一行日志**。
+## 新增 docs/CALLBACKS.md（回调时机与踩坑总结）
+
+作者指出：这一轮我至少三次把代码插错时机（自检放在 loadData 之前、清房时扫实体、
+PLAYER_INIT 读起始道具）。把结论固化成文档，避免下次再犯。
+
+内容：
+
+1. **一局的生命周期**（按时间顺序）：mod main → MC_POST_MODS_LOADED → 主菜单 →
+   PLAYER_INIT → GAME_STARTED → NEW_ROOM → UPDATE/RENDER → PRE_SPAWN_CLEAN_AWARD → …
+2. **每个关键回调的「能做 / 不能做」**，每条都附我们踩过的真实 bug
+3. **沙盒环境的硬事实**：os.time()=0、RNG 浮点方法叫 RandomFloat()、HasCollectible 语义、
+   存档字符串转义、Font 坐标空间、ImGui 限制
+4. **速查表**：「我要做 X → 挂哪个回调」
+5. 教训：先确认真实时序再写代码；pcall 失败必须留日志；能用假数据自检就别靠运气
