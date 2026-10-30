@@ -37,6 +37,30 @@ local rating   = tryRequire("core.rating", "core/rating")
 local ratedata = tryRequire("core.rating_data", "core/rating_data")
 local poolmod  = tryRequire("core.pool", "core/pool")
 local POOL_SELFTEST = true   -- 临时（2026-10-30）：开局自检权重拦截链路，验证完改 false
+
+-- ── 引擎 API 自检（2026-10-30）──────────────────────────────────────────────
+-- 为什么需要：`rng:NextFloat()` 在这个构建里根本不存在，而 pcall 把失败静默吞了，
+-- 导致"权重从未生效"藏了好几天。离线单测抓不到这种**环境缺失**，只能在运行时断言。
+-- 任何一项缺失都会打 [API] 缺失: …，方便一眼定位。
+do
+    local checks = {
+        { "RNG",                 function() return RNG end },
+        { "RNG(1).RandomFloat",  function() return RNG(1).RandomFloat end },
+        { "Isaac.GetEntityTypeByName", function() return Isaac.GetEntityTypeByName end },
+        { "Isaac.GetItemIdByName",     function() return Isaac.GetItemIdByName end },
+        { "Game():GetItemPool",        function() return Game():GetItemPool() end },
+    }
+    local missing = {}
+    for _, c in ipairs(checks) do
+        local okc, v = pcall(c[2])
+        if not okc or v == nil then missing[#missing + 1] = c[1] end
+    end
+    if #missing == 0 then
+        log("[API] 依赖自检通过（" .. #checks .. " 项）")
+    else
+        log("[API] 缺失: " .. table.concat(missing, ", ") .. " —— 对应功能会降级，请上报")
+    end
+end
 local settings = tryRequire("core.iwe_settings", "core/iwe_settings")
 local storemod = tryRequire("core.store", "core/store")
 local rates    = rating
