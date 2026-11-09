@@ -3834,3 +3834,23 @@ dist\highlight-review.zip   27 文件  1,295,368 B
 相对结构（逐层上涨、单房变短）中等偏上；**绝对数值只能当 ±50% 量级参考**。
 
 可复现脚本：`tests/floor_power_stats.lua`（只读，不硬编码路径）。
+## 闪退普查（2026-11-09）：25 次里 16 次是三个第三方 mod，我们没有份
+
+查了 `Documents\...\isaacv*.txt/.dmp` 和事件查看器里 10-20~11-09 的 25 次 `Application Error`：
+
+| 次数 | 崩溃点 | 责任方 | 时机 |
+|---:|---|---|---|
+| 7 | `GetCurrentRoomDesc` ← `heaven's call/save_manager.lua(323)` | heaven's call 1.6.11 | 只在**退出游戏**时（房间已 delete） |
+| 5 | `RemoveTrinket` ← `benighted soul/marks.lua(126)` | benighted soul 0.11.6.0 | **开新局**，`MC_POST_GAME_STARTED` |
+| 4 | `GetTrinketMultiplier` ← `retribution/training_seat.lua(26)`（3 次）+ `GetData` ← `manager_itemstate.lua(38)` | retribution 1.39 | **开新局**，起始房 |
+| 4 | `ntdll 0xC0000374` 堆损坏 | 未知 | 10-22 x2 / 10-30 / 11-05，签名完全一致 |
+| 4 | `RemoveWindow` / `Sprite_Load` | 我们 | 10-20 / 10-22，**都已修** |
+| 1 | `GetRoomShape` ← `run-chronicle/main.lua(169)` | 已卸载的 mod | 10-20 02:25 |
+
+- **9 次"玩着崩"全部发生在开新局进第一层起始房的那几秒**（`RNG Start Seed [New]` → `m_Stage 1` → `Room 1.2`），
+  唯一例外是 10-21 02:24 的 `[Continue]` 读档后立刻用主动道具。
+- dmp 解析：`0xC0000005` **读** 目标地址 `0x356C4484` / `0x3C090C06` → 是野指针，不是空指针。
+- 10-22 之后，25 次里没有一次栈上出现 `highlight-review` / `highlight-rating`。
+- 不是硬件：没有 `nvlddmkm` / WHEA；近 60 天只有 9-12 两次 `Kernel-Power 41`。
+
+详情（含三步二分验证法、`disable.it` 命令、复查脚本）：`_debug/crash-2026-11.md`。
