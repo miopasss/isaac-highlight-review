@@ -3854,3 +3854,20 @@ dist\highlight-review.zip   27 文件  1,295,368 B
 - 不是硬件：没有 `nvlddmkm` / WHEA；近 60 天只有 9-12 两次 `Kernel-Power 41`。
 
 详情（含三步二分验证法、`disable.it` 命令、复查脚本）：`_debug/crash-2026-11.md`。
+## 存档定时快照：`tools/backup-saves.ps1` + 计划任务 `IsaacSaveBackup`（2026-11-12）
+
+**游戏内做不到"保住历史"**：mod 的 `saveData()` 只解决"当前局最多丢一层"，
+解决不了 `maxBlobBytes` 1.2 MB 预算把旧局淘汰、也解决不了写盘途中进程崩。所以做成外部快照。
+
+- `tools/backup-saves.ps1`
+  - `-Once` 跑一次（计划任务调这个）/ `-Install` / `-Uninstall` / `-Status`
+  - 来源：`<游戏>\data\highlight-*\*.dat`（review 的 `MRV2` + rating 的 `IWE1`，含 save1/save3）
+  - 校验：魔数 + **连读两次内容一致**才算稳定（存档没有结尾换行，不能靠长度判断），失败重试 4 次
+  - 去重：与 `latest\` 比对 SHA256，内容没变不落一份
+  - 存放：`_logs\save-backup\{auto,daily,latest}\`；auto 滚动 100 份，daily 每天一份留 60 天
+  - 日志：`_logs\save-backup\backup.log`（超 300 KB 自动裁到 2000 行）
+- `tools/backup-saves.vbs`：隐藏窗口启动，计划任务不会闪黑框（路径从自身位置推导，不写死）
+- 计划任务 `IsaacSaveBackup`：每 10 分钟，动作 `wscript.exe tools\backup-saves.vbs`
+
+实测：注册后手动触发 `LastTaskResult=0x0`，日志正常；把 `latest\highlight-review_save1.dat`
+挪走后再跑 → 判为"有变化"并补一份，再跑一次 → "未变"。
