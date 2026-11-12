@@ -3871,3 +3871,26 @@ dist\highlight-review.zip   27 文件  1,295,368 B
 
 实测：注册后手动触发 `LastTaskResult=0x0`，日志正常；把 `latest\highlight-review_save1.dat`
 挪走后再跑 → 判为"有变化"并补一份，再跑一次 → "未变"。
+## 改成"看得见的备份窗口"：桌面 .cmd + 开机自启（2026-11-12）
+
+隐藏任务看不到发生了什么，作者要"开机自启但能看到"。方案换成**常驻控制台窗口**：
+
+- `tools\save-watch.ps1`：常驻循环，按 `tools\watch-sources.json` 里每个来源自己的
+  `everyMinutes` 到期就备份，**当场打印**（绿=已存、灰=未变、红=失败、黄=警告），
+  窗口标题实时显示"下次 HH:mm:ss"，每 10 分钟一行心跳。
+  **单实例**：`_logs\save-backup\.watcher.lock` 记 PID，桌面和自启同时拉起时后开的那个自己退出。
+- `tools\save-watch.cmd`：`chcp 65001` + `cd` 到仓库 + 启动上面那个 ps1（纯 ASCII，cmd 不会乱码）。
+- `tools\install-watch.ps1`：
+  - 生成 `桌面\以撒存档备份.cmd`
+  - 生成 `启动\以撒存档备份（开机自启）.cmd`
+  - 顺手**停用**旧的隐藏计划任务 `IsaacSaveBackup`（否则两边重复备份）
+  - `-Uninstall` / `-Status` / `-KeepTask` / `-NoDesktop` / `-NoStartup`
+- `tools\save-lib.ps1`：读写/校验/去重/清理抽成公共库，`backup-saves.ps1` 与 `save-watch.ps1` 共用同一份配置，
+  以后加来源只改 JSON 一处（`%ISAAC%` / `%USERPROFILE%` 可用，`validator` 可选 mrv2/iwe1/auto/none）。
+- `backup-saves.ps1` 瘦身成无窗口 CLI（`-Once` / `-Status` / `-Install` / `-Uninstall`），
+  作为"没开窗口时的兜底"，不再是主方案。
+
+实测：
+- `-Once` 正常；常驻窗口跑 6 秒后仍在运行并打印两行"未变"；
+- 同时开第二个窗口 → 打印"另一个备份窗口正在运行（PID …），本窗口退出"；
+- 直接执行桌面那个 `.cmd` → 中文正常（`chcp 65001` 生效），`cd` 到仓库成功，两个来源各跑一轮。

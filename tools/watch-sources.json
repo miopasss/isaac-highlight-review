@@ -1,0 +1,33 @@
+{
+  "_note": "加一份来源就在 sources 里加一条。path 支持 %ISAAC%（游戏根目录）和 %USERPROFILE% 等环境变量；validator 可选 mrv2 / iwe1 / auto / none。",
+  "defaults": {
+    "everyMinutes": 10,
+    "keep": 100,
+    "keepDays": 60,
+    "validator": "auto"
+  },
+  "sources": [
+    {
+      "name": "highlight-review",
+      "path": "%ISAAC%\\data\\highlight-review\\*.dat",
+      "validator": "mrv2",
+      "everyMinutes": 10
+    },
+    {
+      "name": "highlight-rating",
+      "path": "%ISAAC%\\data\\highlight-rating\\*.dat",
+      "validator": "iwe1",
+      "everyMinutes": 10
+    },
+    {
+      "_comment": "示例（默认关闭）：想连原版存档一起备就改成 true",
+      "name": "isaac-documents",
+      "path": "%USERPROFILE%\\Documents\\My Games\\Binding of Isaac Repentance\\*.dat",
+      "validator": "none",
+      "everyMinutes": 120,
+      "keep": 20,
+      "keepDays": 14,
+      "enabled": false
+    }
+  ]
+}
