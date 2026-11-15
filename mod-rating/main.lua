@@ -34,6 +34,7 @@ end
 
 local jsonmini = tryRequire("core.jsonmini", "core/jsonmini")
 local rating   = tryRequire("core.rating", "core/rating")
+local idmap    = tryRequire("core.idmap",  "core/idmap")
 local ratedata = tryRequire("core.rating_data", "core/rating_data")
 local poolmod  = tryRequire("core.pool", "core/pool")
 local settings = tryRequire("core.iwe_settings", "core/iwe_settings")
@@ -149,7 +150,10 @@ local function loadData()
         initUI()
     end
     rating.load(state.store)
-    log(string.format("载入 %d 条评级配置 / %d 行", rating.count(), #state.store.lines))
+    local fix = rating.lastFix or {}
+    log(string.format("载入 %d 条评级配置 / %d 行（迁移 %d 补名 %d 挂起 %d）",
+        rating.count(), #state.store.lines,
+        fix.moved or 0, fix.stamped or 0, fix.parked or 0))
 end
 
 saveData = function()
@@ -173,7 +177,7 @@ end
 
 -- ── 初始化 ──────────────────────────────────────────────────────────────────
 
-rating.init(jsonmini, ratedata or {})
+rating.init(jsonmini, ratedata or {}, idmap)
 if settings then
     settings.init()
     settings.only = { "f6", "lang" }

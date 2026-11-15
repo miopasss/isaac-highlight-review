@@ -14,6 +14,7 @@
 -- 局外可用 PowerShell ConvertFrom-Json 直接解析。
 -- ============================================================================
 local J = ...   -- 由 init 注入（避免依赖 require 路径）
+local idmap = nil   -- 由 init 注入：core/idmap.lua，道具 id ↔ 名字 的双向索引
 
 local R = {}
 
@@ -32,7 +33,7 @@ R.dirty    = false
 
 local function find(id)
     local e = R.entries[id]
-    if e then return e, "user" end
+    if e and not e.dead then return e, "user" end
     local d = R.defaults[id]
     if d then return d, "default" end
     return nil, nil
@@ -66,17 +67,31 @@ function R.has(id)
     return R.getRating(id) ~= nil
 end
 
---- 当前所有"用户覆盖"的 id（已排序）
+--- 当前所有"生效中"的 id（已排序；挂起的不算）
 function R.list()
     local ids = {}
-    for id in pairs(R.entries) do ids[#ids + 1] = id end
+    for id, e in pairs(R.entries) do
+        if type(e) ~= "table" or not e.dead then ids[#ids + 1] = id end
+    end
     table.sort(ids)
     return ids
 end
 
+--- 生效条数（挂起的不算）
 function R.count()
     local n = 0
-    for _ in pairs(R.entries) do n = n + 1 end
+    for _, e in pairs(R.entries) do
+        if type(e) ~= "table" or not e.dead then n = n + 1 end
+    end
+    return n
+end
+
+--- 挂起条数（道具当前不存在：mod 被关/删，数据仍留在存档里等它回来）
+function R.parkedCount()
+    local n = 0
+    for _, e in pairs(R.entries) do
+        if type(e) == "table" and e.dead then n = n + 1 end
+    end
     return n
 end
 
@@ -123,34 +138,71 @@ end
 
 -- ── 存档 ────────────────────────────────────────────────────────────────────
 
-function R.init(jsonmini, defaults)
+function R.init(jsonmini, defaults, idmapRef)
     J = jsonmini
     R.defaults = defaults or {}
+    idmap = idmapRef
 end
+
+--- 上一次 load 的修正统计（给 main 打日志用）
+R.lastFix = { moved = 0, parked = 0, stamped = 0 }
 
 --- 从 store.lines 里读 Q= 行
 function R.load(store)
     R.entries = {}
+    R.lastFix = { moved = 0, parked = 0, stamped = 0 }
     if not store or not store.lines then return end
 
-    -- mod 增删会让道具 id 漂移 → 用存下来的名字（n）把条目重新对到当前 id
-    local function remapByName()
-        if type(Isaac) ~= "table" or type(Isaac.GetItemIdByName) ~= "function" then return 0 end
-        local moved = 0
+    -- mod 增删会让道具 id 漂移 → 用存下来的名字（n）把条目重新对到当前 id。
+    -- 对不上的（mod 被关/删）**挂起**（dead）：数据留在存档里等它回来，
+    -- 但绝不让它继续作用在旧 id 上 —— 那正是"ban 位串到别的道具"的根因。
+    local function resolveAll()
+        local fix = R.lastFix
+        -- 先把索引建起来（懒加载，一次几毫秒）
+        if idmap and type(idmap.build) == "function" then pcall(idmap.build) end
+        -- 索引必须真的建起来了才敢"挂起"。build 失败（ItemConfig 拿不到）时
+        -- byId 是空表，这时候挂起会把所有配置全部停用 —— 那种情况什么都不做。
+        local haveIndex = (idmap ~= nil)
+            and type(idmap.byId) == "table" and next(idmap.byId) ~= nil
         local list = {}
         for id, e in pairs(R.entries) do list[#list + 1] = { id = id, e = e } end
         for i = 1, #list do
             local id, e = list[i].id, list[i].e
-            if type(e.n) == "string" and #e.n > 0 then
-                local ok, cur = pcall(function() return Isaac.GetItemIdByName(e.n) end)
-                if ok and type(cur) == "number" and cur > 0 and cur ~= id and R.entries[cur] == nil then
-                    R.entries[cur] = e
-                    if R.entries[id] == e then R.entries[id] = nil end
-                    moved = moved + 1
+            if type(e) == "table" and not e.dead then
+                -- ① 没名字：按当前 id 补一个，把现状冻结住（往后就能靠名字追踪）
+                local nm = e.n
+                if (type(nm) ~= "string" or #nm == 0) and idmap then
+                    local cur = idmap.nameOf(id)
+                    if cur then e.n = cur; nm = cur; fix.stamped = fix.stamped + 1 end
+                end
+
+                -- ② 名字 → 当前 id：本地索引优先，引擎反查兜底
+                local target = nil
+                if type(nm) == "string" and #nm > 0 then
+                    if idmap then target = idmap.idOf(nm) end
+                    if not target and type(Isaac) == "table" and type(Isaac.GetItemIdByName) == "function" then
+                        local ok, v = pcall(function() return Isaac.GetItemIdByName(nm) end)
+                        if ok and type(v) == "number" and v > 0 then target = v end
+                    end
+                end
+
+                if type(nm) == "string" and #nm > 0 and target == nil then
+                    if haveIndex then
+                        e.dead = true                   -- 道具不在：挂起，不生效
+                        fix.parked = fix.parked + 1
+                    end
+                elseif target and target ~= id then
+                    if R.entries[target] == nil then
+                        R.entries[target] = e
+                        if R.entries[id] == e then R.entries[id] = nil end
+                        fix.moved = fix.moved + 1
+                    else
+                        e.dead = true                   -- 两条名字撞同一个 id：后来的挂起
+                        fix.parked = fix.parked + 1
+                    end
                 end
             end
         end
-        return moved
     end
 
     local function tryPrefix(prefix)
@@ -168,7 +220,8 @@ function R.load(store)
     local cur, curOk = tryPrefix(R.PREFIX)
     if curOk and cur and next(cur) ~= nil then
         R.entries = cur
-        if remapByName() > 0 then R.dirty = true end
+        resolveAll()
+        if R.lastFix.moved > 0 or R.lastFix.stamped > 0 or R.lastFix.parked > 0 then R.dirty = true end
         R.loaded = true
         return
     end
@@ -177,7 +230,8 @@ function R.load(store)
     local bak, bakOk = tryPrefix(R.BAK)
     if bakOk and bak and next(bak) ~= nil then
         R.entries = bak
-        if remapByName() > 0 then R.dirty = true end
+        resolveAll()
+        if R.lastFix.moved > 0 or R.lastFix.stamped > 0 or R.lastFix.parked > 0 then R.dirty = true end
         R.loaded = true
         return
     end

@@ -8,6 +8,23 @@ local function loadmod(p) return loadfile(ROOT .. p)() end
 
 local J = loadmod("mod-rating/core/jsonmini.lua")
 local R = loadmod("mod-rating/core/rating.lua")
+local IM = loadmod("mod-rating/core/idmap.lua")
+
+-- 假 ItemConfig：只放测试用的几件道具（id 与"现状"一致）
+local FAKE_ITEMS = {
+    [1]    = { Name = "The Sad Onion" },
+    [118]  = { Name = "#BRIMSTONE_NAME" },
+    [953]  = { Name = "Tooth of the Vampire" },
+    [975]  = { Name = "Peerless Elixir" },
+    [2000] = { Name = "字刀" },
+}
+_G.Isaac = {
+    GetItemConfig = function()
+        return { GetCollectible = function(_, id) return FAKE_ITEMS[id] end }
+    end,
+    -- 故意让它查不到：逼 idmap 用本地索引（线上那句也要能兜底）
+    GetItemIdByName = function() return 0 end,
+}
 
 local pass, fail = 0, 0
 local function check(name, cond, detail)
@@ -23,7 +40,7 @@ print("  编码结果: " .. tostring(enc))
 -- ② 装默认表
 R.init(J, {
     [1052] = { q = 2.0, w = 0.5 },   -- 默认：官方 4 级，这里 2
-})
+}, IM)
 R.publish()
 
 check("默认表生效：getRating(1052)=2.0", R.getRating(1052) == 2.0, R.getRating(1052))
@@ -91,6 +108,29 @@ check("非数字 id 被忽略", next(R.entries) == nil, next(R.entries))
 R.entries = J.decode("这不是 json") or {}
 check("乱码返回空表", next(R.entries) == nil, next(R.entries))
 check("版本号缺失返回空表", next(J.decode('{"e":{"118":{"q":3}}}')) == nil, "ok")
+
+-- ⑧ 抗 id 漂移：名字优先，本地索引兜底，找不到的挂起（不准落到旧 id 上）
+IM.invalidate()
+local okIM, det = IM.selftest()
+check("idmap 自检", okIM, det)
+
+local R3 = loadmod("mod-rating/core/rating.lua")
+R3.init(J, {}, IM)
+local st3 = { lines = { [[Q={"v":1,"e":{"1074":{"q":3,"w":0.5,"n":"Peerless Elixir"},"1598":{"q":1,"w":0,"n":"亚波伦之翼"},"118":{"q":4,"w":1,"n":"#BRIMSTONE_NAME"},"2000":{"q":2,"w":1}}}]] } }
+R3.load(st3)
+check("漂移：1074 按名字迁到 975", R3.getWeightMul(975) == 0.5, tostring(R3.getWeightMul(975)))
+check("漂移：旧 id 1074 不再生效", R3.getWeightMul(1074) == nil, tostring(R3.getWeightMul(1074)))
+check("消失的道具被挂起（1598 不生效）", R3.getWeightMul(1598) == nil, "还在生效")
+check("挂起计数 = 1", R3.parkedCount() == 1, R3.parkedCount())
+check("本地化 key 归一化后对上 118", R3.getRating(118) == 4, R3.getRating(118))
+check("没名字的条目被补名 2000=字刀", (R3.entries[2000] or {}).n == "字刀", (R3.entries[2000] or {}).n)
+check("补名后仍然生效", R3.getRating(2000) == 2, R3.getRating(2000))
+
+-- 挂起的条目必须写回存档（mod 回来时才能自动复活）
+R3.save(st3)
+local q3 = nil
+for _, l in ipairs(st3.lines) do if l:sub(1, 2) == "Q=" then q3 = l end end
+check("挂起条目写回存档", q3 ~= nil and q3:find("亚波伦之翼") ~= nil, q3)
 
 print("")
 print(string.format("结果：%d 通过 / %d 失败", pass, fail))
