@@ -151,9 +151,9 @@ local function loadData()
     end
     rating.load(state.store)
     local fix = rating.lastFix or {}
-    log(string.format("载入 %d 条评级配置 / %d 行（迁移 %d 补名 %d 挂起 %d）",
-        rating.count(), #state.store.lines,
-        fix.moved or 0, fix.stamped or 0, fix.parked or 0))
+    log(string.format("载入 %d 条评级配置 / %d 行（格式 v%s，解析 %d 迁移 %d 补名 %d 挂起 %d）",
+        rating.count(), #state.store.lines, tostring(rating.format or "?"),
+        fix.resolved or 0, fix.moved or 0, fix.stamped or 0, fix.parked or 0))
 end
 
 saveData = function()

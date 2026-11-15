@@ -9,9 +9,13 @@
 --   2. rating_data.lua 默认表（写在代码里，真全局）
 --   3. 原版 ItemConfig.Quality（调用方自己回退）
 --
--- 存盘形态：saveN.dat 里一行
---   Q={"v":1,"e":{"118":{"q":3.5,"w":2}}}
--- 局外可用 PowerShell ConvertFrom-Json 直接解析。
+-- 存盘形态（v2，2026-11-16 起）：
+--   Q={"v":2,"e":{"Peerless Elixir":{"q":3,"w":0.5}}}
+--   键 = 道具内部名 → mod 增删不再漂移，不需要追 id。
+-- 兼容 v1（数字 id 键 + n）：读进来后立刻按名字迁移，下次保存升级为 v2。
+--
+-- 运行时仍然是 [id] 表（池子每帧要查，不能每次查名字）：
+--   读档时 名字 → 当前 id；查不到的进 orphans（挂起：不生效但写回存档）。
 -- ============================================================================
 local J = ...   -- 由 init 注入（避免依赖 require 路径）
 local idmap = nil   -- 由 init 注入：core/idmap.lua，道具 id ↔ 名字 的双向索引
@@ -22,12 +26,15 @@ R.PREFIX = "Q="
 
 --- 一代备份行：保存前把上一版 Q= 存成 Q0=。误清空时 load 会用它兜底。
 R.BAK = "Q0="
-R.VERSION = 1
+R.VERSION = 2
 
-R.entries  = {}   -- [id] = { q = number, w = number, on = boolean }
-R.defaults = {}   -- [id] = { q, w, on }   来自 rating_data
-R.loaded = false   -- 是否已经从存档里读过（没读过就不允许写，防止把已有配置清掉）
+R.entries  = {}   -- [id]      = { q = number, w = number, on = boolean, n = name }
+R.orphans  = {}   -- [name]    = { q, w, on }   名字还在、道具当前不在
+R.defaults = {}   -- [id]      = { q, w, on }   来自 rating_data
+R.loaded   = false   -- 是否已经从存档里读过（没读过就不允许写，防止把已有配置清掉）
 R.dirty    = false
+R.format   = nil     -- 上一次读到的版本（1 / 2）
+R.lastFix  = { moved = 0, parked = 0, stamped = 0, resolved = 0, version = nil }
 
 -- ── 取值 ────────────────────────────────────────────────────────────────────
 
@@ -89,6 +96,7 @@ end
 --- 挂起条数（道具当前不存在：mod 被关/删，数据仍留在存档里等它回来）
 function R.parkedCount()
     local n = 0
+    for _ in pairs(R.orphans) do n = n + 1 end
     for _, e in pairs(R.entries) do
         if type(e) == "table" and e.dead then n = n + 1 end
     end
@@ -116,7 +124,7 @@ function R.set(id, q, w, on, name)
     end
     cur = cur or {}
 
-    -- 名字也要存：mod 增删会让道具 id 漂移，加载时靠名字重新对上（2026-10-26）
+    -- 名字也要存：即使 v2 直接按名字存盘，运行时还要靠它知道"这条是哪个道具"
     local nm = cur.n
     if name ~= nil and #tostring(name) > 0 then nm = tostring(name) end
     R.entries[id] = {
@@ -144,97 +152,119 @@ function R.init(jsonmini, defaults, idmapRef)
     idmap = idmapRef
 end
 
---- 上一次 load 的修正统计（给 main 打日志用）
-R.lastFix = { moved = 0, parked = 0, stamped = 0 }
+local function ensureIndex()
+    if idmap and type(idmap.build) == "function" then pcall(idmap.build) end
+    return (idmap ~= nil) and type(idmap.byId) == "table" and next(idmap.byId) ~= nil
+end
 
---- 从 store.lines 里读 Q= 行
-function R.load(store)
-    R.entries = {}
-    R.lastFix = { moved = 0, parked = 0, stamped = 0 }
-    if not store or not store.lines then return end
+--- 名字 → 当前 id。本地索引优先；引擎反查只作兜底。
+local function resolveName(name)
+    if type(name) ~= "string" or #name == 0 then return nil end
+    local target = nil
+    if idmap then target = idmap.idOf(name) end
+    if not target and type(Isaac) == "table" and type(Isaac.GetItemIdByName) == "function" then
+        local ok, v = pcall(function() return Isaac.GetItemIdByName(name) end)
+        if ok and type(v) == "number" and v > 0 then target = v end
+    end
+    return target
+end
 
-    -- mod 增删会让道具 id 漂移 → 用存下来的名字（n）把条目重新对到当前 id。
-    -- 对不上的（mod 被关/删）**挂起**（dead）：数据留在存档里等它回来，
-    -- 但绝不让它继续作用在旧 id 上 —— 那正是"ban 位串到别的道具"的根因。
-    local function resolveAll()
-        local fix = R.lastFix
-        -- 先把索引建起来（懒加载，一次几毫秒）
-        if idmap and type(idmap.build) == "function" then pcall(idmap.build) end
-        -- 索引必须真的建起来了才敢"挂起"。build 失败（ItemConfig 拿不到）时
-        -- byId 是空表，这时候挂起会把所有配置全部停用 —— 那种情况什么都不做。
-        local haveIndex = (idmap ~= nil)
-            and type(idmap.byId) == "table" and next(idmap.byId) ~= nil
-        local list = {}
-        for id, e in pairs(R.entries) do list[#list + 1] = { id = id, e = e } end
-        for i = 1, #list do
-            local id, e = list[i].id, list[i].e
-            if type(e) == "table" and not e.dead then
-                -- ① 没名字：按当前 id 补一个，把现状冻结住（往后就能靠名字追踪）
-                local nm = e.n
-                if (type(nm) ~= "string" or #nm == 0) and idmap then
-                    local cur = idmap.nameOf(id)
-                    if cur then e.n = cur; nm = cur; fix.stamped = fix.stamped + 1 end
+--- v2：键就是名字 → 直接对到当前 id；对不上的进 orphans
+local function applyV2(map)
+    local fix = R.lastFix
+    ensureIndex()
+    for name, e in pairs(map) do
+        local target = resolveName(name)
+        if target and R.entries[target] == nil then
+            e.n = name
+            R.entries[target] = e
+            fix.resolved = fix.resolved + 1
+        elseif target then
+            R.orphans[name] = e            -- 同名撞车：留一条在挂起里，别覆盖
+            fix.parked = fix.parked + 1
+        else
+            R.orphans[name] = e            -- 道具当前不在：挂起
+            fix.parked = fix.parked + 1
+        end
+    end
+end
+
+--- v1：数字 id 键 → 用名字迁移；没名字的按当前 id 补名；查不到的挂起
+local function resolveV1()
+    local fix = R.lastFix
+    local haveIndex = ensureIndex()
+    local list = {}
+    for id, e in pairs(R.entries) do list[#list + 1] = { id = id, e = e } end
+    for i = 1, #list do
+        local id, e = list[i].id, list[i].e
+        if type(e) == "table" and not e.dead then
+            -- ① 没名字：按当前 id 补一个，把现状冻结住（往后就能靠名字追踪）
+            local nm = e.n
+            if (type(nm) ~= "string" or #nm == 0) and haveIndex then
+                local cur = idmap.nameOf(id)
+                if cur then e.n = cur; nm = cur; fix.stamped = fix.stamped + 1 end
+            end
+
+            local target = nil
+            if type(nm) == "string" and #nm > 0 then target = resolveName(nm) end
+
+            if type(nm) == "string" and #nm > 0 and target == nil then
+                if haveIndex then
+                    e.dead = true                  -- 道具不在：挂起，不生效
+                    fix.parked = fix.parked + 1
                 end
-
-                -- ② 名字 → 当前 id：本地索引优先，引擎反查兜底
-                local target = nil
-                if type(nm) == "string" and #nm > 0 then
-                    if idmap then target = idmap.idOf(nm) end
-                    if not target and type(Isaac) == "table" and type(Isaac.GetItemIdByName) == "function" then
-                        local ok, v = pcall(function() return Isaac.GetItemIdByName(nm) end)
-                        if ok and type(v) == "number" and v > 0 then target = v end
-                    end
-                end
-
-                if type(nm) == "string" and #nm > 0 and target == nil then
-                    if haveIndex then
-                        e.dead = true                   -- 道具不在：挂起，不生效
-                        fix.parked = fix.parked + 1
-                    end
-                elseif target and target ~= id then
-                    if R.entries[target] == nil then
-                        R.entries[target] = e
-                        if R.entries[id] == e then R.entries[id] = nil end
-                        fix.moved = fix.moved + 1
-                    else
-                        e.dead = true                   -- 两条名字撞同一个 id：后来的挂起
-                        fix.parked = fix.parked + 1
-                    end
+            elseif target and target ~= id then
+                if R.entries[target] == nil then
+                    R.entries[target] = e
+                    if R.entries[id] == e then R.entries[id] = nil end
+                    fix.moved = fix.moved + 1
+                else
+                    e.dead = true                  -- 撞车：后来的挂起
+                    fix.parked = fix.parked + 1
                 end
             end
         end
     end
+end
+
+--- 从 store.lines 里读 Q= 行
+function R.load(store)
+    R.entries, R.orphans = {}, {}
+    R.format = nil
+    R.lastFix = { moved = 0, parked = 0, stamped = 0, resolved = 0, version = nil }
+    if not store or not store.lines then return end
 
     local function tryPrefix(prefix)
         for i = 1, #store.lines do
             local line = store.lines[i]
             if line:sub(1, #prefix) == prefix then
-                local decoded = J.decode(line:sub(#prefix + 1))
-                if decoded ~= nil then return decoded, true end
-                return nil, false          -- 解码失败：坏数据，别标记 loaded
+                local decoded, ver = J.decode(line:sub(#prefix + 1))
+                if decoded ~= nil and ver ~= nil then return decoded, ver, true end
+                return nil, nil, false          -- 解码失败：坏数据，别标记 loaded
             end
         end
-        return nil, nil
+        return nil, nil, nil
     end
 
-    local cur, curOk = tryPrefix(R.PREFIX)
-    if curOk and cur and next(cur) ~= nil then
-        R.entries = cur
-        resolveAll()
-        if R.lastFix.moved > 0 or R.lastFix.stamped > 0 or R.lastFix.parked > 0 then R.dirty = true end
+    local function apply(decoded, ver)
+        R.format = ver
+        R.lastFix.version = ver
+        if ver == 2 then
+            applyV2(decoded)
+        else
+            R.entries = decoded
+            resolveV1()
+            R.dirty = true                      -- 读的是 v1：下次保存顺手升级成 v2
+        end
         R.loaded = true
-        return
     end
+
+    local cur, curVer, curOk = tryPrefix(R.PREFIX)
+    if curOk and cur and next(cur) ~= nil then apply(cur, curVer); return end
 
     -- 当前 Q= 丢了或空了 → 用一代备份 Q0= 兜底（2026-10-24：作者评级被清空两次）
-    local bak, bakOk = tryPrefix(R.BAK)
-    if bakOk and bak and next(bak) ~= nil then
-        R.entries = bak
-        resolveAll()
-        if R.lastFix.moved > 0 or R.lastFix.stamped > 0 or R.lastFix.parked > 0 then R.dirty = true end
-        R.loaded = true
-        return
-    end
+    local bak, bakVer, bakOk = tryPrefix(R.BAK)
+    if bakOk and bak and next(bak) ~= nil then apply(bak, bakVer); return end
 
     if curOk == false or bakOk == false then return end   -- 有坏数据：不置 loaded，拒绝写盘
     R.loaded = true
@@ -246,11 +276,13 @@ function R.save(store)
     if not R.loaded then return false end   -- 还没读过档：原样保留，绝不覆盖
     if not store or not store.lines then return false end
     local lines, kept = store.lines, {}
-    local before = nil
+    local before, oldBak = nil, nil
     for i = 1, #lines do
         local line = lines[i]
         if line:sub(1, #R.BAK) == R.BAK then
-            -- 旧的 Q0 丢弃：每次保存都会重写一条，不丢会无限累积（实测 16 条）
+            -- 旧的 Q0 先记下；本次内容变了就换成新的，没变就原样保留
+            -- （以前无条件丢弃 → 一次空转 save 就把备份吃掉了）
+            oldBak = line
         elseif line:sub(1, #R.PREFIX) == R.PREFIX then
             before = line
         else
@@ -258,14 +290,32 @@ function R.save(store)
         end
     end
 
+    -- 优先 v2（按名字存）；有任何一条拿不到名字就退回 v1，避免丢条目
+    local items, canV2 = {}, true
+    for id, e in pairs(R.entries) do
+        local nm = e.n
+        if (type(nm) ~= "string" or #nm == 0) and idmap then nm = idmap.nameOf(id) end
+        if type(nm) == "string" and #nm > 0 then
+            items[nm] = { q = e.q, w = e.w, on = e.on }
+        else
+            canV2 = false
+        end
+    end
+
     local after = nil
-    if next(R.entries) ~= nil then
-        after = R.PREFIX .. J.encode(R.entries)
+    if next(R.entries) ~= nil or next(R.orphans) ~= nil then
+        if canV2 then
+            after = R.PREFIX .. J.encodeV2(items, R.orphans)
+        else
+            after = R.PREFIX .. J.encode(R.entries)
+        end
     end
 
     -- 一代备份：把上一版 Q= 存成 Q0=；**旧的 Q0 先全部删掉**（否则每保存一次多一行）
     if before and before ~= after then
         kept[#kept + 1] = R.BAK .. before:sub(#R.PREFIX + 1)
+    elseif oldBak then
+        kept[#kept + 1] = oldBak          -- 内容没变：保留上一代备份
     end
     store.lines = kept
     if after then store.lines[#store.lines + 1] = after end

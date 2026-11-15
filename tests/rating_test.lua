@@ -132,6 +132,42 @@ local q3 = nil
 for _, l in ipairs(st3.lines) do if l:sub(1, 2) == "Q=" then q3 = l end end
 check("挂起条目写回存档", q3 ~= nil and q3:find("亚波伦之翼") ~= nil, q3)
 
+-- ⑨ v2 格式：键就是名字（不再有数字 id），挂起项照样保留
+local R4 = loadmod("mod-rating/core/rating.lua")
+R4.init(J, {}, IM)
+local st4 = { lines = { [[Q={"v":2,"e":{"Peerless Elixir":{"q":3,"w":0.5},"已删除的道具":{"q":1,"w":0}}}]] } }
+R4.load(st4)
+check("v2：名字直接对上 975", R4.getWeightMul(975) == 0.5, tostring(R4.getWeightMul(975)))
+check("v2：不存在的道具进挂起", R4.parkedCount() == 1, R4.parkedCount())
+R4.save(st4)
+local q4 = nil
+for _, l in ipairs(st4.lines) do if l:sub(1, 2) == "Q=" then q4 = l end end
+check("v2：保存后仍是 v2", q4 ~= nil and q4:find('"v":2') ~= nil, q4)
+check("v2：挂起项写回", q4 ~= nil and q4:find("已删除的道具") ~= nil, q4)
+check("v2：不再出现数字键", q4 ~= nil and q4:find('"975"') == nil, q4)
+
+-- ⑩ v1 读进来 → 保存时升级成 v2（无名字的靠 idmap 补名）
+local R5 = loadmod("mod-rating/core/rating.lua")
+R5.init(J, {}, IM)
+local st5 = { lines = { [[Q={"v":1,"e":{"2000":{"q":2,"w":1}}}]] } }
+R5.load(st5)
+check("v1：无名字按当前 id 补名", (R5.entries[2000] or {}).n == "字刀", (R5.entries[2000] or {}).n)
+check("v1：读到的是 v1", R5.format == 1, tostring(R5.format))
+R5.save(st5)
+local q5 = nil
+for _, l in ipairs(st5.lines) do if l:sub(1, 2) == "Q=" then q5 = l end end
+check("v1 升级为 v2", q5 ~= nil and q5:find('"v":2') ~= nil and q5:find("字刀") ~= nil, q5)
+
+-- ⑪ Q0 一代备份：内容没变时不能被空转 save 吃掉
+local R6 = loadmod("mod-rating/core/rating.lua")
+R6.init(J, {}, IM)
+local st6 = { lines = { [[Q0={"v":2,"e":{"字刀":{"q":4,"w":1}}}]] } }
+R6.load(st6)
+R6.save(st6)
+local hasBak = false
+for _, l in ipairs(st6.lines) do if l:sub(1, 3) == "Q0=" then hasBak = true end end
+check("无变化时保留 Q0 备份", hasBak, "Q0 被吃掉了")
+
 print("")
 print(string.format("结果：%d 通过 / %d 失败", pass, fail))
 return pass .. "/" .. (pass + fail)
