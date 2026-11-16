@@ -3971,3 +3971,34 @@ v2: {"v":2,"e":{"Peerless Elixir":{"q":3,"w":0.5}}}
 
 `tests/rating_test.lua` **43/43**（新增 v2 编解码、v1→v2 升级、挂起保留、Q0 保留、中文/引号名字往返）；
 `luacheck` 26 文件 0 失败。
+## 加卡顿探针 `[STUTTER]`（2026-11-16）
+
+作者报"每隔几分钟掉到 5-7 帧"。先做现场排查（**没抓到 I/O 或后台任务**）：
+
+| 检查 | 结果 |
+|---|---|
+| 采样 86 秒（游戏在跑） | CPU 45~150%（单核占比），`PhysicalDisk` 队列几乎恒 0 |
+| 日志增长 | 12 分钟 255 KB / 4447 行，无断言洪水（`ASSERT` 仅 4 条） |
+| Defender | 只有每小时一次的 health report，无扫描事件 |
+| 云同步盘 | 无（OneDrive/Dropbox 都没跑） |
+| 备份窗口 | 日志停在 11-14 15:50 → **现在没在跑**，可以排除 |
+| 帧率现状 | 截图右上角 58 FPS（正常时没问题） |
+
+抓不到现场 → 加探针。**为什么不用 `Isaac.GetFrameCount()`**：它是"帧数折算"，掉帧时反而不准；
+`Isaac.GetTime()` 是**开机以来的真实毫秒**（官方文档明说与帧数无关）。
+
+```lua
+add(ModCallbacks.MC_POST_UPDATE, function()
+    local t = Isaac.GetTime()
+    local d = t - lastT
+    if d >= 200 then
+        log("[STUTTER] %dms F%s#%s 内存 %.0fKB 最近=%s", d, floor, room, mem, state.mark)
+    end
+    lastT = t
+end)
+```
+
+`state.mark` 在"开局 / 检查点（换层）/ 落盘"处更新 —— 掉帧那行会直接告诉我们是哪一步卡的。
+平时换层生成整层出现一两条属正常，**密集出现**才是问题。
+
+`luacheck` 26 文件 0 失败；已 `deploy -Mod review`（26 个文件）。**重启游戏后才生效**。

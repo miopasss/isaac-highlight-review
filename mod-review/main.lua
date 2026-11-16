@@ -609,6 +609,7 @@ local function beginRun(player)
     state.lastStageKey = nil
     state.floorDepth   = 0
     state.roomInFloor  = 0
+    state.mark         = "开局"
 
     -- 续接：只有"最新那一局 + 未完成 + 同 runId"才认
     local entry = fmt.findUnfinished(state.store)
@@ -634,6 +635,7 @@ end
 --- 把"正在进行的局"刷进 store 并落盘。换层是天然检查点，崩溃最多丢一层。
 local function flushCurrentRun(reason)
     local run = state.current
+    state.mark = "检查点（" .. tostring(reason) .. "）"
         if not run or not state.store then return end
     -- 按**种子**替换旧条目：不再只依赖 state.currentEntry（读档/切槽后会失效，2026-10-26 实测存出 5 个同局空壳）
     local old = fmt.findBySeed(state.store, run.seed)
@@ -987,6 +989,7 @@ saveData = function()
     if not state.store then return end
     -- 本会话没进过局（只在菜单里切了存档槽）→ 不写盘，避免把 A 档数据写进 B 档
     if not state.runActive then return end
+    state.mark = "落盘"
     local removed = fmt.trimToCount(state.store, config.maxRuns)
     if removed > 0 then
         log(string.format("超出局数上限 %d，淘汰了最旧的 %d 局", config.maxRuns, removed))
@@ -1113,6 +1116,30 @@ add(ModCallbacks.MC_POST_RENDER, function()
     end
     if bookui and bookui.renderHud then uiGuard("renderHud", bookui.renderHud) end
 end)
+
+-- ── 卡顿探针（2026-11-16）────────────────────────────────────────────────
+-- 帧间隔用 Isaac.GetTime()：开机以来的**真实毫秒**，跟帧率无关
+-- （Isaac.GetFrameCount() 是按帧数折算的，掉帧时反而不准）。
+-- 超过 200ms 记一行，带上"停在哪一房 + 内存 + 上一次重活是什么"。
+-- 平时看到一两条属正常（换层会生成整层），密集出现才是问题。
+do
+    local lastT = nil
+    add(ModCallbacks.MC_POST_UPDATE, function()
+        local ok, t = pcall(function() return Isaac.GetTime() end)
+        if not ok or type(t) ~= "number" then return end
+        if lastT then
+            local d = t - lastT
+            if d >= 200 then
+                local mem = 0
+                pcall(function() mem = collectgarbage("count") or 0 end)
+                log(string.format("[STUTTER] %dms  F%s#%s  内存 %.0fKB  最近=%s",
+                    d, tostring(state.floorDepth or "?"), tostring(state.roomInFloor or "?"),
+                    mem, tostring(state.mark or "?")))
+            end
+        end
+        lastT = t
+    end)
+end
 
 configui.init({ settings = settings, log = log, onChanged = function() pcall(saveData) end })
 
