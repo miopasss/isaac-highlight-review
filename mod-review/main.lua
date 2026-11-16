@@ -1118,21 +1118,37 @@ add(ModCallbacks.MC_POST_RENDER, function()
 end)
 
 -- ── 卡顿探针（2026-11-16）────────────────────────────────────────────────
--- 帧间隔用 Isaac.GetTime()：开机以来的**真实毫秒**，跟帧率无关
--- （Isaac.GetFrameCount() 是按帧数折算的，掉帧时反而不准）。
--- 超过 200ms 记一行，带上"停在哪一房 + 内存 + 上一次重活是什么"。
--- 平时看到一两条属正常（换层会生成整层），密集出现才是问题。
+-- 第一版用 Isaac.GetTime() 量帧间隔，实测**一行都没出**：这个版本里它不可靠
+-- （本文件 gameTimeMs() 早就记过一句"可能不可靠"）。改用**墙钟秒 + 渲染帧数**：
+--   os.date("*t") 拿秒（这个 mod 里已经验证能用），
+--   每 >=2 秒算一次 fps，低于 25 就记一行 —— 掉到 5~7 帧必然被抓到。
+-- 顺带在启动时打一行 [CLOCK]，确认两个时钟各自返回什么。
 do
-    local lastT = nil
-    add(ModCallbacks.MC_POST_UPDATE, function()
+    local okT, tval = pcall(function() return Isaac.GetTime() end)
+    local okTab, tabType = pcall(function() return type(os.date("*t")) end)
+    log(string.format("[CLOCK] GetTime=%s  os.date=%s  os.date(*t)=%s",
+        tostring(okT and tval or "err"),
+        tostring(os.date and os.date("%H:%M:%S") or "nil"),
+        tostring(okTab and tabType or "err")))
+
+    -- 逐帧量间隔：掉到 5~7 帧 = 每帧 140~200ms，阈值取 100ms 才抓得到
+    -- （第一版挂在 POST_UPDATE + 200ms，正好卡在边界上，一行没出）
+    local lastT, lastLog, probeN = nil, 0, 0
+    add(ModCallbacks.MC_POST_RENDER, function()
         local ok, t = pcall(function() return Isaac.GetTime() end)
         if not ok or type(t) ~= "number" then return end
+
         if lastT then
             local d = t - lastT
-            if d >= 200 then
+            if probeN < 3 then
+                probeN = probeN + 1
+                log(string.format("[CLOCK] 帧间隔 #%d = %dms", probeN, d))
+            end
+            if d >= 100 and (t - lastLog) >= 1000 then
+                lastLog = t
                 local mem = 0
                 pcall(function() mem = collectgarbage("count") or 0 end)
-                log(string.format("[STUTTER] %dms  F%s#%s  内存 %.0fKB  最近=%s",
+                log(string.format("[FPS] 卡顿 %dms  F%s#%s  内存 %.0fKB  最近=%s",
                     d, tostring(state.floorDepth or "?"), tostring(state.roomInFloor or "?"),
                     mem, tostring(state.mark or "?")))
             end
