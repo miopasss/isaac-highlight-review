@@ -1123,6 +1123,7 @@ end)
 --   os.date("*t") 拿秒（这个 mod 里已经验证能用），
 --   每 >=2 秒算一次 fps，低于 25 就记一行 —— 掉到 5~7 帧必然被抓到。
 -- 顺带在启动时打一行 [CLOCK]，确认两个时钟各自返回什么。
+if config.stutterProbe then
 do
     local okT, tval = pcall(function() return Isaac.GetTime() end)
     local okTab, tabType = pcall(function() return type(os.date("*t")) end)
@@ -1156,6 +1157,7 @@ do
         lastT = t
     end)
 end
+end   -- if config.stutterProbe
 
 configui.init({ settings = settings, log = log, onChanged = function() pcall(saveData) end })
 

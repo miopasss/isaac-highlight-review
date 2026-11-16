@@ -44,6 +44,11 @@ config.selfTest = false
 config.dumpOnce = false
 config.dumpItemIds = false   -- 一次性：导出 id→名字 对照（修评级配置用）
 
+-- 卡顿探针（2026-11-16 排查"每隔几秒掉到 5-7 帧"时加的）。
+-- 默认关：只有真怀疑掉帧时改成 true。打开后启动会打 3 行 [CLOCK] 帧间隔自检，
+-- 掉帧（单帧 >=100ms）时打 [FPS] 卡顿 XXXms F层#房 内存 最近=...（1 秒最多一条）。
+config.stutterProbe = false
+
 -- 是否记录房间里的"道具座"坐标。
 -- ⚠️ 实测发现：Data.Spawns 包含的是**所有**刷怪点（怪物、掉落、家具…），
 -- 不只是道具座。默认关闭，等做了"按 EntityType/Subtype 过滤"再开。
